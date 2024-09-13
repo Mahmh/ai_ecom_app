@@ -1,0 +1,12 @@
+@font-face {
+  font-family: "GeistVF";
+  src: url("../../lib/assets/fonts/GeistVF.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GeistMonoVF";
+  src: url("../../lib/assets/fonts/GeistMonoVF.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}

@@ -1,0 +1,1 @@
+from setuptools import setup, find_packages; setup(name='ai-ecom-app', packages=find_packages())

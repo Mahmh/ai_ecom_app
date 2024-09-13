@@ -1,0 +1,5 @@
+services:
+  db:
+    build: ./db
+    container_name: db_c
+    env_file: [../.env]

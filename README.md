@@ -1,0 +1,40 @@
+# AI-Powered E-Commerce Website
+<u>Problem statement</u>: A fictional company wants to integrate AI technology in their e-commerce website to enhance user experience and customer satisfaction. Their plan was to add the following AI-powered features:
+
+- **Chatbot Assistant**: It uses a large language model (LLM) that has access to the company's internal database of products and other helpful information (e.g., delivery info, product discounts).
+- **Review analyzer**: The company wants to train an internal model that is trained on nearly 5000 Amazon product reviews. It should read users' reviews on a particular product and analyze their sentiment (positive, neutral, or negative) to provide information to the readers.
+- **Product Recommender**: A trained custom AI model is used to recommend products to users based on their preferences and purchasing style.
+
+<u>Solution</u>: This is where they hire me to implement and integrate all of these features into the web application.
+
+# Custom AI Models
+Here is a more detailed description for each aforementioned model:
+- **Chatbot Assistant**:
+    1. Queries the internal database.
+    2. Store the top relevant results in an index for better retrieval.
+    3. Pass them as embedded information to the LLM's input.
+    4. The LLM decides to use which information to properly answer the users' questions.
+- **Review analyzer**:
+    1. Trained on many Amazon product reviews.
+    2. Preprocesses and postprocesses user and output data, respectively.
+    3. Displays the output to the end user.
+- **Product Recommender**:
+    ...
+
+# Tech Stack
+Here are all the tools that I used to create that project:
+- LLM:
+    - **Mistral** from Ollama (hosted locally)
+    - Size: 4.1 GB
+- Frontend:
+    - **Next.js** (website programming)
+    - **SASS** (website styling)
+- Backend:
+    - **Python** (functionality)
+    - **PostgreSQL** (database)
+
+# Data
+I got the data needed to train my AI models from the below sources:
+- [Amazon Reviews](https://www.kaggle.com/datasets/tarkkaanko/amazon)
+    - Number of rows: 4915
+    - Size: 1.6 MB

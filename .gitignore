@@ -1,0 +1,12 @@
+.env
+.venv/
+.vscode/
+.pytest_cache/
+**/__pycache__/
+
+src/*egg-info/
+src/server/logs/
+src/client/node_modules/
+src/client/.next/
+src/client/out/
+src/client/scss/
