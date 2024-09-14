@@ -1,4 +1,4 @@
-"""A script for generating synthetic product data using a LLM"""
+"""Generate synthetic product data using an LLM"""
 from textwrap import dedent
 import json, sys
 from src.lib.modules.constants import CREATIVE_LLM

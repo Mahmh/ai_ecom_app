@@ -1,3 +1,4 @@
+"""Print the contents of the DB"""
 from src.lib.modules.db import DBConn, User, Product
 
 if __name__ == '__main__':

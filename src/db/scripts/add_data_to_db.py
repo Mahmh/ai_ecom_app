@@ -1,12 +1,12 @@
+"""Supply the DB with synthetic data"""
 import os, json, random, string, pandas as pd
 from src.lib.modules.db import DBConn, User, Product
 from src.lib.modules.logger import log
-from src.lib.modules.constants import CREATIVE_LLM
+from src.lib.modules.constants import CURRENT_DIR, CREATIVE_LLM
 
 if __name__ == '__main__':
     # Loading
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    products_json = os.path.join(current_dir, '../data/products.json')
+    products_json = os.path.join(CURRENT_DIR, '../data/products.json')
 
     with open(products_json) as file:
         products_df = pd.DataFrame(json.load(file))

@@ -2,15 +2,18 @@
 .venv/
 .vscode/
 .pytest_cache/
-**/__pycache__/
-**/prototyping.ipynb
+mlruns/
 tasks.txt
 
 *egg-info/
+**/__pycache__/
+**/prototyping.ipynb
 **/build/
+
 src/lib/assets/images/
 src/server/logs/
 src/client/node_modules/
 src/client/.next/
 src/client/out/
 src/client/scss/
+src/db/vectorstore/
