@@ -3,8 +3,12 @@
 .vscode/
 .pytest_cache/
 **/__pycache__/
+**/prototyping.ipynb
+tasks.txt
 
-src/*egg-info/
+*egg-info/
+**/build/
+src/lib/assets/images/
 src/server/logs/
 src/client/node_modules/
 src/client/.next/

@@ -1,6 +1,6 @@
 #!/bin/bash
 web_serve() {
-    cd src/client/
+    cd src/client
     if [ "$1" = "prod" ]; then
         # run in production mode
         if mkdir out/; then
@@ -13,6 +13,14 @@ web_serve() {
         # run in developer mode
         npm run dev
     fi
+    cd ..
 }
 
-web_serve $1
+db_serve() {
+    cd src
+    sudo docker-compose up
+    cd ..
+}
+
+sudo echo -n ''
+db_serve & web_serve $1

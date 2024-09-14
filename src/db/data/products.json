@@ -1,0 +1,642 @@
+[
+    {
+        "name": "Samsung Galaxy S21 Ultra",
+        "description": "High-end Android smartphone with a versatile camera system, large screen, and powerful performance.",
+        "ratings": [
+            45,
+            48,
+            5,
+            40,
+            178
+        ],
+        "price": 1199.99,
+        "discount": 0.15,
+        "category": "Electronics",
+        "owner": "Samsung Electronics Co., Ltd.",
+        "reviews": []
+    },
+    {
+        "name": "Zara Graphic T-Shirt",
+        "description": "Fashionable t-shirt with a bold graphic design, available in multiple sizes and colors.",
+        "ratings": [
+            173,
+            11,
+            238,
+            223,
+            178
+        ],
+        "price": 19.99,
+        "discount": 0.2,
+        "category": "Clothes",
+        "owner": "Inditex Group - Zara",
+        "reviews": []
+    },
+    {
+        "name": "Apple Watch Series 7",
+        "description": "Stylish and advanced smartwatch featuring health monitoring, wireless charging, and various custom watch faces.",
+        "ratings": [
+            0,
+            203,
+            8,
+            75,
+            132
+        ],
+        "price": 399.0,
+        "discount": 0.1,
+        "category": "Accessories",
+        "owner": "Apple Inc.",
+        "reviews": []
+    },
+    {
+        "name": "Modern Oak Dining Table",
+        "description": "Contemporary dining table made of solid oak wood with a sleek design and ample seating space.",
+        "ratings": [
+            203,
+            76,
+            221,
+            72,
+            192
+        ],
+        "price": 799.99,
+        "discount": 0.0,
+        "category": "Furniture",
+        "owner": "IKEA",
+        "reviews": []
+    },
+    {
+        "name": "Samsung Galaxy S21",
+        "description": "A high-performance smartphone with an incredible camera system.",
+        "ratings": [
+            38,
+            140,
+            31,
+            126,
+            218
+        ],
+        "price": 799.99,
+        "discount": 0.05,
+        "category": "Electronics",
+        "owner": "Samsung Electronics",
+        "reviews": []
+    },
+    {
+        "name": "Levi's 501 Jeans",
+        "description": "Classic Levi's 501 jeans in authentic style.",
+        "ratings": [
+            141,
+            33,
+            82,
+            33,
+            18
+        ],
+        "price": 59.99,
+        "discount": 0.2,
+        "category": "Clothes",
+        "owner": "Levi Strauss & Co.",
+        "reviews": []
+    },
+    {
+        "name": "Apple Watch Series 6",
+        "description": "Experience health and fitness tracking like never before with the Apple Watch Series 6.",
+        "ratings": [
+            115,
+            16,
+            85,
+            55,
+            237
+        ],
+        "price": 399.0,
+        "discount": 0.1,
+        "category": "Accessories",
+        "owner": "Apple Inc.",
+        "reviews": []
+    },
+    {
+        "name": "Modern Leather Sofa",
+        "description": "Elegant modern leather sofa with a sleek and timeless design.",
+        "ratings": [
+            4,
+            99,
+            6,
+            92,
+            89
+        ],
+        "price": 1299.0,
+        "discount": 0.0,
+        "category": "Furniture",
+        "owner": "West Elm",
+        "reviews": []
+    },
+    {
+        "name": "Samsung Galaxy S21 Plus",
+        "description": "Android smartphone with top-notch camera and long battery life.",
+        "ratings": [
+            75,
+            137,
+            114,
+            96,
+            131
+        ],
+        "price": 999.99,
+        "discount": 0.1,
+        "category": "Electronics",
+        "owner": "Samsung Electronics",
+        "reviews": []
+    },
+    {
+        "name": "Ray-Ban RB2132 Wayfarer Classic Sunglasses",
+        "description": "Iconic, timeless sunglasses that are perfect for any style.",
+        "ratings": [
+            42,
+            205,
+            150,
+            200,
+            46
+        ],
+        "price": 150.0,
+        "discount": 0.0,
+        "category": "Clothes",
+        "owner": "Ray-Ban",
+        "reviews": []
+    },
+    {
+        "name": "Apple Magic Keyboard",
+        "description": "Wireless keyboard for Apple devices with a sleek and compact design.",
+        "ratings": [
+            201,
+            4,
+            137,
+            133,
+            136
+        ],
+        "price": 129.0,
+        "discount": 0.05,
+        "category": "Accessories",
+        "owner": "Apple Inc.",
+        "reviews": []
+    },
+    {
+        "name": "Ikea Malm 6-Drawer Chest",
+        "description": "Practical and stylish furniture piece with six drawers for ample storage space.",
+        "ratings": [
+            122,
+            43,
+            111,
+            177,
+            232
+        ],
+        "price": 109.99,
+        "discount": 0.15,
+        "category": "Furniture",
+        "owner": "Ikea",
+        "reviews": []
+    },
+    {
+        "name": "iPhone 13 Pro Max",
+        "description": "Apple's latest flagship device, featuring a Super Retina XDR display, A15 Bionic chip, Pro camera system, and MagSafe technology.",
+        "ratings": [
+            29,
+            205,
+            63,
+            197,
+            98
+        ],
+        "price": 1099.99,
+        "discount": 0.0,
+        "category": "Electronics",
+        "owner": "Apple Inc.",
+        "reviews": []
+    },
+    {
+        "name": "Levi's Vintage Jeans",
+        "description": "Authentic Levi's 501 Jeans, made with the original iconic design and premium quality materials.",
+        "ratings": [
+            219,
+            63,
+            127,
+            72,
+            160
+        ],
+        "price": 89.99,
+        "discount": 0.2,
+        "category": "Clothes",
+        "owner": "Levi Strauss & Co.",
+        "reviews": []
+    },
+    {
+        "name": "Wireless Gaming Headset",
+        "description": "Immerse yourself in high-quality audio and stay one step ahead of the competition with our wireless gaming headset, featuring noise canceling technology and RGB lighting.",
+        "ratings": [
+            19,
+            232,
+            225,
+            119,
+            58
+        ],
+        "price": 199.99,
+        "discount": 0.1,
+        "category": "Accessories",
+        "owner": "Razer Inc.",
+        "reviews": []
+    },
+    {
+        "name": "Modern Leather Sofa Set",
+        "description": "Bring style and comfort to your living room with our modern leather sofa set, featuring a sleek design, premium leather upholstery, and comfortable cushions.",
+        "ratings": [
+            219,
+            116,
+            40,
+            73,
+            132
+        ],
+        "price": 1299.99,
+        "discount": 0.2,
+        "category": "Furniture",
+        "owner": "Pottery Barn",
+        "reviews": []
+    },
+    {
+        "name": "iPhone XR",
+        "description": "Latest Apple smartphone with a large LCD display, A12 Bionic chip, and advanced camera system.",
+        "ratings": [
+            60,
+            141,
+            44,
+            180,
+            206
+        ],
+        "price": 599.99,
+        "discount": 0.1,
+        "category": "Electronics",
+        "owner": "Apple Inc",
+        "reviews": []
+    },
+    {
+        "name": "Denim Jacket",
+        "description": "Classic Levi's denim jacket with signature stitching and a timeless design.",
+        "ratings": [
+            229,
+            158,
+            220,
+            20,
+            229
+        ],
+        "price": 99.99,
+        "discount": 0.0,
+        "category": "Clothes",
+        "owner": "Levi's Strauss & Co",
+        "reviews": []
+    },
+    {
+        "name": "Wireless Charging Pad",
+        "description": "Convenient and sleek charging solution for your Qi-enabled devices.",
+        "ratings": [
+            203,
+            231,
+            34,
+            234,
+            115
+        ],
+        "price": 29.99,
+        "discount": 0.1,
+        "category": "Accessories",
+        "owner": "Anker Innovations",
+        "reviews": []
+    },
+    {
+        "name": "Modern Coffee Table",
+        "description": "Stylish and functional coffee table crafted from reclaimed wood with sleek metal legs.",
+        "ratings": [
+            237,
+            20,
+            133,
+            217,
+            199
+        ],
+        "price": 129.99,
+        "discount": 0.05,
+        "category": "Furniture",
+        "owner": "IKEA",
+        "reviews": []
+    },
+    {
+        "name": "Cotton Long Sleeve T-Shirt",
+        "description": "High-quality cotton long sleeve t-shirt, perfect for a casual look. Available in various sizes.",
+        "ratings": [
+            36,
+            2,
+            32,
+            214,
+            178
+        ],
+        "price": 19.99,
+        "discount": 0.25,
+        "category": "Clothes",
+        "owner": "John Doe",
+        "reviews": []
+    },
+    {
+        "name": "Modern Metal Lamp",
+        "description": "A sleek, contemporary floor lamp for any modern living space.",
+        "ratings": [
+            9,
+            215,
+            160,
+            47,
+            187
+        ],
+        "price": 89.99,
+        "discount": 0.0,
+        "category": "Furniture",
+        "owner": "DesignCraft LLC",
+        "reviews": []
+    },
+    {
+        "name": "Premium Leather Wallet",
+        "description": "A luxurious, hand-stitched leather wallet for everyday use.",
+        "ratings": [
+            59,
+            127,
+            92,
+            155,
+            244
+        ],
+        "price": 59.99,
+        "discount": 0.1,
+        "category": "Accessories",
+        "owner": "Elite Accessories Inc.",
+        "reviews": []
+    },
+    {
+        "name": "Samsung Galaxy S22",
+        "description": "Premium Android smartphone with a Dynamic AMOLED 2X display, 8GB RAM, and 128GB storage. Features triple rear cameras and an IP68 dust/water resistance.",
+        "ratings": [
+            236,
+            13,
+            111,
+            34,
+            156
+        ],
+        "price": 799.0,
+        "discount": 0.15,
+        "category": "Electronics",
+        "owner": "Samsung Electronics",
+        "reviews": []
+    },
+    {
+        "name": "Classic White T-Shirt",
+        "description": "A timeless white t-shirt made of high-quality cotton. Perfect for any casual occasion.",
+        "ratings": [
+            19,
+            72,
+            31,
+            235,
+            82
+        ],
+        "price": 15.99,
+        "discount": 0.2,
+        "category": "Clothes",
+        "owner": "FasionCo",
+        "reviews": []
+    },
+    {
+        "name": "Logitech M510 Wireless Computer Mouse",
+        "description": "Ergonomically designed wireless mouse with 2 side buttons and a scroll wheel. Compatible with Windows and Mac operating systems.",
+        "ratings": [
+            228,
+            172,
+            29,
+            75,
+            133
+        ],
+        "price": 30.0,
+        "discount": 0.0,
+        "category": "Electronics",
+        "owner": "Logitech Inc",
+        "reviews": []
+    },
+    {
+        "name": "Vintage Grand Piano",
+        "description": "A beautifully crafted antique grand piano with a rich and resonant sound, perfect for any music enthusiast.",
+        "ratings": [
+            238,
+            14,
+            32,
+            140,
+            246
+        ],
+        "price": 2500.0,
+        "discount": 0.1,
+        "category": "Furniture",
+        "owner": "John Doe",
+        "reviews": []
+    },
+    {
+        "name": "Sleek LED TV",
+        "description": "A high-definition, energy-efficient LED television with smart features.",
+        "ratings": [
+            165,
+            77,
+            151,
+            56,
+            151
+        ],
+        "price": 1099.99,
+        "discount": 0.1,
+        "category": "Electronics",
+        "owner": "BrandTech Co.",
+        "reviews": []
+    },
+    {
+        "name": "Vintage Washed Straight Leg Chinos",
+        "description": "Authentic vintage-washed straight leg chinos with a worn, distressed look.",
+        "ratings": [
+            4,
+            43,
+            88,
+            24,
+            7
+        ],
+        "price": 59.99,
+        "discount": 0.15,
+        "category": "Clothes",
+        "owner": "FasionCo",
+        "reviews": []
+    },
+    {
+        "name": "Smartwatch X300",
+        "description": "The ultimate smartwatch combining fitness tracking, smart notifications and stylish design.",
+        "ratings": [
+            212,
+            14,
+            71,
+            146,
+            129
+        ],
+        "price": 279.99,
+        "discount": 0.05,
+        "category": "Accessories",
+        "owner": "GadgetCo",
+        "reviews": []
+    },
+    {
+        "name": "8-Ball Pool Table",
+        "description": "A high-quality 8-foot billiards table perfect for any game room or man cave.",
+        "ratings": [
+            211,
+            222,
+            247,
+            182,
+            81
+        ],
+        "price": 1500.0,
+        "discount": 0.1,
+        "category": "Furniture",
+        "owner": "John Doe",
+        "reviews": []
+    },
+    {
+        "name": "Leather Messenger Bag",
+        "description": "Handcrafted leather messenger bag with multiple pockets and adjustable shoulder strap. Perfect for everyday use.",
+        "ratings": [
+            66,
+            230,
+            83,
+            146,
+            69
+        ],
+        "price": 99.99,
+        "discount": 0.2,
+        "category": "Accessories",
+        "owner": "Jane Smith",
+        "reviews": []
+    },
+    {
+        "name": "Cotton Polo Shirt",
+        "description": "A comfortable and stylish cotton polo shirt with a classic fit and short sleeves.",
+        "ratings": [
+            15,
+            166,
+            102,
+            161,
+            125
+        ],
+        "price": 29.99,
+        "discount": 0.15,
+        "category": "Clothes",
+        "owner": "John Doe",
+        "reviews": []
+    },
+    {
+        "name": "Apple MacBook Air",
+        "description": "Powerful and lightweight laptop featuring Apple's M1 chip, Retina display, and long battery life.",
+        "ratings": [
+            25,
+            209,
+            140,
+            244,
+            111
+        ],
+        "price": 999.0,
+        "discount": 0.05,
+        "category": "Electronics",
+        "owner": "Apple Inc",
+        "reviews": []
+    },
+    {
+        "name": "Razer Iskur Gaming Chair",
+        "description": "A high-performance ergonomic gaming chair designed for long hours of comfort and support.",
+        "ratings": [
+            206,
+            36,
+            92,
+            230,
+            150
+        ],
+        "price": 399.99,
+        "discount": 0.1,
+        "category": "Furniture",
+        "owner": "Razer Inc",
+        "reviews": []
+    },
+    {
+        "name": "Steel Water Bottle",
+        "description": "Durable water bottle made of high-quality steel, perfect for outdoor activities.",
+        "ratings": [
+            114,
+            173,
+            204,
+            86,
+            49
+        ],
+        "price": 24.99,
+        "discount": 0.1,
+        "category": "Accessories",
+        "owner": "Yeti Coolers",
+        "reviews": []
+    },
+    {
+        "name": "Ultra HD LED Smart Monitor",
+        "description": "A high-resolution, energy-efficient smart monitor with built-in apps and voice control capabilities.",
+        "ratings": [
+            225,
+            34,
+            131,
+            97,
+            47
+        ],
+        "price": 399.99,
+        "discount": 0.1,
+        "category": "Electronics",
+        "owner": "BrandTech Inc.",
+        "reviews": []
+    },
+    {
+        "name": "Cotton T-Shirt",
+        "description": "High-quality cotton t-shirt with a classic fit and long sleeves.",
+        "ratings": [
+            216,
+            7,
+            110,
+            155,
+            168
+        ],
+        "price": 25.99,
+        "discount": 0.1,
+        "category": "Clothes",
+        "owner": "John Doe",
+        "reviews": []
+    },
+    {
+        "name": "Modern Minimalist Desk",
+        "description": "Transform your workspace with our Modern Minimalist Desk, crafted from sustainably-sourced wood and designed to meet the needs of today's professional.",
+        "ratings": [
+            108,
+            228,
+            55,
+            4,
+            183
+        ],
+        "price": 249.99,
+        "discount": 0.0,
+        "category": "Furniture",
+        "owner": "GreenOffice Ltd.",
+        "reviews": []
+    },
+    {
+        "name": "Premium Leather Watch",
+        "description": "Elevate your style with our Premium Leather Watch, a timeless accessory crafted from high-quality leather and featuring a sleek design.",
+        "ratings": [
+            77,
+            242,
+            186,
+            55,
+            235
+        ],
+        "price": 299.99,
+        "discount": 0.15,
+        "category": "Accessories",
+        "owner": "TimeKeepers Unlimited",
+        "reviews": []
+    }
+]
