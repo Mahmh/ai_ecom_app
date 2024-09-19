@@ -3,19 +3,23 @@
 CREATE TABLE users(
     username     VARCHAR(255) NOT NULL PRIMARY KEY,
     password     VARCHAR(255) NOT NULL,
-    bio          TEXT,
-    cart         JSONB,
-    ratings      JSONB
+    bio          TEXT
 );
 
 CREATE TABLE products(
     id           SERIAL NOT NULL PRIMARY KEY,
     name         VARCHAR(511) NOT NULL,
     description  TEXT,
-    ratings      INT[],
     price        FLOAT,
     discount     FLOAT,
     category     VARCHAR(255),
-    owner        VARCHAR(255) REFERENCES users(username),
-    reviews      JSONB
+    owner        VARCHAR(255) REFERENCES users(username)
 );
+
+CREATE TABLE interactions(
+    username     VARCHAR(255) NOT NULL PRIMARY KEY REFERENCES users(username),
+    product_id   VARCHAR(255) NOT NULL PRIMARY KEY REFERENCES products(id),
+    rating       INT,
+    reviews      TEXT[], -- The same user can have multiple reviews on the same product
+    in_cart      BOOLEAN
+)
