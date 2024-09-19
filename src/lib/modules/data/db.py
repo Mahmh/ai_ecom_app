@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, VARCHAR, A
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import JSONB
-from src.lib.modules.constants import USER, PASSWORD, HOST, PORT, DB
+from src.lib.modules.data.constants import USER, PASSWORD, HOST, PORT, DB
 
 # Connection
 class DBConn:

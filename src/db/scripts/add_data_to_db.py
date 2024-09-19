@@ -1,8 +1,8 @@
 """Supply the DB with synthetic data"""
 import os, json, random, string, pandas as pd
-from src.lib.modules.db import DBConn, User, Product
-from src.lib.modules.logger import log
-from src.lib.modules.constants import CURRENT_DIR, CREATIVE_LLM
+from src.lib.modules.data.db import DBConn, User, Product
+from src.lib.modules.utils.logger import log
+from src.lib.modules.data.constants import CURRENT_DIR, CREATIVE_LLM
 
 if __name__ == '__main__':
     # Loading

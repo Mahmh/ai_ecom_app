@@ -1,5 +1,5 @@
 import logging, os
-from src.lib.modules.constants import ENABLE_LOGGING
+from src.lib.modules.data.constants import ENABLE_LOGGING
 
 def log(msg: str, filename: str, level: int = logging.INFO) -> logging.Logger:
     """

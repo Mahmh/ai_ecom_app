@@ -2,7 +2,7 @@
 from langchain_chroma import Chroma
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from src.lib.modules.constants import CHUNK_SIZE, CHUNK_OVERLAP, EMBEDDER, VECSTORE_PERSIST_DIR
+from src.lib.modules.data.constants import CHUNK_SIZE, CHUNK_OVERLAP, EMBEDDER, VECSTORE_PERSIST_DIR
 
 if __name__ == '__main__':
     with open('../data/company_docs.txt') as file:

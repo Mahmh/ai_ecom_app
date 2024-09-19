@@ -3,15 +3,21 @@ from langchain_community.llms.ollama import Ollama
 from langchain_community.chat_models.ollama import ChatOllama
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain.schema import SystemMessage
-import os, multiprocessing
+import os
+
+# Net
+WEB_SERVER_URL = os.getenv('WEB_SERVER_URL', 'http://localhost:3000')
+API_SERVER_HOST = os.getenv('API_SERVER_HOST', '0.0.0.0')
+API_SERVER_PORT = int(os.getenv('API_SERVER_PORT', 4000))
 
 # LLM
 EMBEDDER_LLM_NAME = os.getenv('EMBEDDER_LLM')
 CHAT_LLM_NAME = os.getenv('CHAT_LLM')
 BASE_URL = os.getenv('BASE_URL')
 TEMPERATURE = float(os.environ['TEMPERATURE'])
+MAX_CORES = max(os.cpu_count() - 2, 1)
 
-MAIN_CONFIG = dict(base_url=BASE_URL, num_thread=multiprocessing.cpu_count() - 2, num_gpu=1)
+MAIN_CONFIG = dict(base_url=BASE_URL, num_thread=MAX_CORES, num_gpu=1)
 CREATIVE_LLM = Ollama(**MAIN_CONFIG, model=EMBEDDER_LLM_NAME, temperature=1)
 EMBEDDER = OllamaEmbeddings(**MAIN_CONFIG, model=EMBEDDER_LLM_NAME, temperature=TEMPERATURE)
 CHAT_LLM = ChatOllama(**MAIN_CONFIG, model=CHAT_LLM_NAME, temperature=TEMPERATURE)
@@ -34,3 +40,4 @@ PASSWORD = os.getenv('POSTGRES_PASSWORD')
 
 # Misc
 ENABLE_LOGGING = os.getenv('ENABLE_LOGGING', 'false')
+MLFLOW_TRACKING_URI = os.getenv('MLFLOW_TRACKING_URI', 'http://127.0.0.1:5000')

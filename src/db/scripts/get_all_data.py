@@ -1,5 +1,5 @@
 """Print the contents of the DB"""
-from src.lib.modules.db import DBConn, User, Product
+from src.lib.modules.data.db import DBConn, User, Product
 
 if __name__ == '__main__':
     with DBConn() as sess:

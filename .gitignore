@@ -1,14 +1,17 @@
 .env
-.venv/
+.venv*/
 .vscode/
 .pytest_cache/
-mlruns/
 tasks.txt
 
 *egg-info/
+**/mlruns/
+**/mlartifacts/
 **/__pycache__/
 **/prototyping.ipynb
 **/build/
+**/saved*/
+**/*losses.jpg
 
 src/lib/assets/images/
 src/server/logs/
