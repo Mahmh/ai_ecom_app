@@ -9,6 +9,7 @@ import os
 WEB_SERVER_URL = os.getenv('WEB_SERVER_URL', 'http://localhost:3000')
 API_SERVER_HOST = os.getenv('API_SERVER_HOST', '0.0.0.0')
 API_SERVER_PORT = int(os.getenv('API_SERVER_PORT', 4000))
+SERVER_URL = f'http://{API_SERVER_HOST}:{API_SERVER_PORT}'
 
 # LLM
 EMBEDDER_LLM_NAME = os.getenv('EMBEDDER_LLM')

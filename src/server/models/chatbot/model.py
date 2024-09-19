@@ -5,18 +5,18 @@ from src.lib.modules.utils.logger import err_log
 
 class Chatbot:
     """Chatbot assistant that answers end users' questions about products and information through RAG"""
-    def __init__(self):
+    def __init__(self) -> None:
         self.history = [BASE_SYS_MSG]
         self.llm = CHAT_LLM
-        self.template = 'Context: {docs}\n\nUse the above context (if relevant) to answer this question: "{question}". You must NOT synthesize information; you MUST use the context to answer the question. If you feel like you don\'t know the answer, say "I don\'t know"'
+        self.template = 'Context: {docs}\n\nUse the above context (if relevant) to answer any question. You must NOT synthesize information; you MUST use the context to answer the question ONLY if it is relevant. Otherwise, answer the question directly. Here is the question: "{question}"'
 
 
-    def reset_history(self):
+    def reset_history(self) -> None:
         """Resets the chatbot's conversation memory"""
         self.history = [BASE_SYS_MSG]
     
 
-    def parse_conversation(self, conversation: list):
+    def parse_conversation(self, conversation: list) -> None:
         """Loads the given conversation history from strings to chat schemas"""
         try:
             for lst in conversation:

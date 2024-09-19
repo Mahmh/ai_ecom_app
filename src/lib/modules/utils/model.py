@@ -4,19 +4,21 @@ from torch.utils.data import DataLoader
 import torch, os, mlflow, matplotlib.pyplot as plt, pandas as pd
 import torch.utils.data
 from src.lib.modules.data.constants import CURRENT_DIR
-from src.lib.modules.data.model import model_config, DFDataset, device
+from src.lib.modules.data.model import model_config, DFDataset
+
+_locate = lambda x: os.path.join(CURRENT_DIR, '../../../server/models/review_analyst/' + x)
 
 def _check_checkpoint_dirs(model_dirname: str, optimizer_dirname: str) -> bool|tuple:
     """Checks if saved checkpoint directories exist in the current working directory"""
     try:
-        return os.listdir(model_dirname), os.listdir(optimizer_dirname)
+        return os.listdir(_locate(model_dirname)), os.listdir(_locate(optimizer_dirname))
     except FileNotFoundError:
         return False
 
 
 def train_val_test_split(config: model_config.base) -> tuple[DataLoader]:
     """Returns `torch.utils.data.DataLoader`s for training, validation, and test datasets with the `config` provided"""
-    df = config.prep_ds(pd.read_csv(os.path.join(CURRENT_DIR, config.csv_file)))
+    df = config.prep_ds(pd.read_csv(_locate('../data' + config.csv_file)).head(8*12))
     size = len(df)
     train_rows = int(config.train_size*size)
     val_rows = train_rows + int(config.val_size*size)
@@ -35,33 +37,34 @@ def train_val_test_split(config: model_config.base) -> tuple[DataLoader]:
         
 
 
-def init_training(ModelClass: torch.nn.Module, config: model_config.base):
+def init_training(config: model_config.base):
     """Sets up the model & optimizer to start training from scratch"""
-    model = ModelClass(config).to(device)
+    model = config.model_cls(config).to(config.device)
     model = torch.compile(model)
     optimizer = config.optimizer(model.parameters(), lr=config.lr)
     return model, optimizer
 
 
-def load_checkpoint(ModelClass: torch.nn.Module, config: model_config.base) -> None|tuple[torch.nn.Module]:
-    """Loads the model & its optimizer from the latest checkpoint
-    
-    ---
-    :param ModelClass: The model class that inherits `torch.nn.Module` and was used to train the model.
-    :param model_config: Any configuration used by the model.
-    """
+def load_checkpoint(config: model_config.base) -> None|tuple[torch.nn.Module]:
+    """Loads the model & its optimizer from the latest checkpoint"""
     model_dirname, optimizer_dirname, nameformat = config.persist_model_dir_name, config.persist_optimizer_dir_name, config.persist_name_fmt
-    model_files, optimizer_files = _check_checkpoint_dirs(model_dirname, optimizer_dirname)
-    if (not model_files) or (not optimizer_files) or (len(model_files) == 0) or (len(optimizer_files) == 0):
-        raise FileNotFoundError('Please save a checkpoint first using `src.lib.modules.model_utils.save_checkpoint` function.')
 
-    assert len(os.listdir(model_dirname)) == len(os.listdir(optimizer_dirname)), \
+    # Check if the directories to save artifacts exist
+    result = _check_checkpoint_dirs(model_dirname, optimizer_dirname)
+    not_found_exc = FileNotFoundError('Please save a checkpoint first using `src.lib.modules.model_utils.save_checkpoint` function.')
+    if result is False:
+        raise not_found_exc
+    else:
+        if len(result[0]) == 0 or len(result[1]) == 0: 
+            raise not_found_exc
+
+    assert len(os.listdir(_locate(model_dirname))) == len(os.listdir(_locate(optimizer_dirname))), \
     "The saved model and the saved optimizer directories must have the same number of files."
 
     # Get the latest model using its file name
     checkpoints = [
         datetime.strptime(checkpoint, nameformat)
-        for checkpoint in os.listdir(model_dirname)
+        for checkpoint in os.listdir(_locate(model_dirname))
     ]
 
     if len(checkpoints) == 0: return
@@ -75,11 +78,12 @@ def load_checkpoint(ModelClass: torch.nn.Module, config: model_config.base) -> N
             new_state_dict[new_key] = v
         return new_state_dict
     
-    model_state_dict = _update_state_dict(torch.load(model_dirname + '/' + checkpoint_name, weights_only=True))
-    optimizer_state_dict = _update_state_dict(torch.load(optimizer_dirname + '/' + checkpoint_name, weights_only=False))
+    locate_checkpoint = lambda dirname: _locate(dirname + '/' + checkpoint_name)
+    model_state_dict = _update_state_dict(torch.load(locate_checkpoint(model_dirname), weights_only=True))
+    optimizer_state_dict = _update_state_dict(torch.load(locate_checkpoint(optimizer_dirname), weights_only=False))
 
     # Load the model
-    model = ModelClass(config).to(device)
+    model = config.model_cls(config).to(config.device) 
     model.load_state_dict(model_state_dict)
     model = torch.compile(model)
     optimizer = config.optimizer(model.parameters(), lr=config.lr)
@@ -87,32 +91,32 @@ def load_checkpoint(ModelClass: torch.nn.Module, config: model_config.base) -> N
     return model, optimizer
 
 
-def save_checkpoint(model: torch.nn.Module, optimizer: torch.nn.Module, train_loss: torch.tensor, config: model_config.base) -> None:
+def save_checkpoint(model: torch.nn.Module, optimizer: torch.nn.Module, avg_train_loss: float, config: model_config.base) -> None:
     """Saves the model and other information periodically
     
     ---
     :param model: The PyTorch model to save.
     :param optimizer: The optimizer of the model to save.
-    :param loss: The `torch.nn` loss of the model.
+    :param avg_train_loss: The Average training loss of the model.
     :param config: Any configuration used by the model.
     """
     model_dirname, optimizer_dirname = config.persist_model_dir_name, config.persist_optimizer_dir_name
     filename = datetime.now().strftime(config.persist_name_fmt)
-    pkgs_file = os.path.join(CURRENT_DIR, '../../../requirements.txt')
+    pkgs_file = os.path.join(CURRENT_DIR, '../../../../requirements.txt')
 
     if not _check_checkpoint_dirs(model_dirname, optimizer_dirname):
         os.mkdir(model_dirname)
         os.mkdir(optimizer_dirname)
     
     # Let Mlflow infer automatically the model's signature using a random example
-    example = torch.randn(1, config.n_inputs).to(device)
+    example = torch.randn(1, config.n_inputs).to(config.device)
     signature = mlflow.models.infer_signature(example.tolist(), model(example).tolist())
 
     # Save & log artifacts & metrics
     torch.save(model.state_dict(), model_dirname+f'/{filename}')
     torch.save(optimizer.state_dict(), optimizer_dirname+f'/{filename}')
 
-    mlflow.log_metric('train_loss', train_loss.item())
+    mlflow.log_metric('avg_train_loss', avg_train_loss)
     mlflow.pytorch.log_model(
         pytorch_model=model, 
         artifact_path=model_dirname, 

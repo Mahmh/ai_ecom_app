@@ -12,6 +12,7 @@ tasks.txt
 **/build/
 **/saved*/
 **/*losses.jpg
+**/vectorstore/
 
 src/lib/assets/images/
 src/server/logs/
@@ -19,4 +20,3 @@ src/client/node_modules/
 src/client/.next/
 src/client/out/
 src/client/scss/
-src/db/vectorstore/

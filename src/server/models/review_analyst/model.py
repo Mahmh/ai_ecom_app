@@ -1,9 +1,9 @@
 import torch, torch.nn as nn
-from src.lib.modules.data.model import model_config
 
 class ReviewAnalyst(nn.Module):
-    def __init__(self, config: model_config.base):
+    def __init__(self, config):
         super().__init__()
+        self.config = config
         self.neural_net = nn.Sequential()
 
         for i in range(len(config.layers)):
@@ -21,6 +21,8 @@ class ReviewAnalyst(nn.Module):
                 self.neural_net.add_module(f'sig{i+1}', nn.Sigmoid())
 
     def forward(self, input_batch: torch.tensor, targets: torch.tensor = None, training: bool = False) -> torch.tensor:
+        input_batch = torch.tensor(input_batch).to(self.config.device) if not isinstance(input_batch, torch.Tensor) else input_batch
+
         if training:
             self.neural_net.train()
         else:

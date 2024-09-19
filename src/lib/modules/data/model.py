@@ -2,8 +2,9 @@ from dataclasses import dataclass, field
 from torch.utils.data import Dataset
 import torch, numpy as np, pandas as pd, typing
 from src.lib.modules.data.constants import MAX_CORES, EMBEDDER
+from src.server.models.review_analyst.model import ReviewAnalyst
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+torch.set_float32_matmul_precision('high')
 
 # Hyperparameters for custom trained models
 class model_config:
@@ -19,6 +20,7 @@ class model_config:
         shuffle: bool = True
         drop_last: bool = True
         # Performance
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         num_workers: int = MAX_CORES
         prefetch_factor: int = 4  # number of prefetched batches for each worker
         # Saving
@@ -41,10 +43,11 @@ class model_config:
 
     @dataclass
     class review_analyst(base):
-        csv_file: str = '../../db/data/amazon_reviews.csv'  # relative path with respect to the `lib/modules/` directory
+        model_cls = ReviewAnalyst
+        csv_file: str = '../../../db/data/amazon_reviews.csv'  # relative path with respect to the `lib/data/modules/` directory
         n_inputs: int = 4097  # 4096 (embedding vector of "review_text") + 1 ("rating")
         n_outputs: int = 1    # 1 ("sentiment")
-        layers: list[int] = field(default_factory=list) # list of number of neurons in each layer
+        layers: list[int] = field(default_factory=lambda:[1, 1]) # list of number of neurons in each layer
 
         def prep_ds(*args) -> pd.DataFrame:
             df = args[1]
@@ -73,7 +76,7 @@ class DFDataset(Dataset):
         
     def __getitem__(self, i) -> torch.tensor:
         X, y = self.prep_sample(*self.df.iloc[i].tolist())
-        return torch.tensor(X).to(device).float(), torch.tensor(y).to(device).float()
+        return torch.tensor(X).to(model_config.base.device).float(), torch.tensor(y).to(model_config.base.device).float()
 
     def __len__(self) -> int:
         return len(self.df)

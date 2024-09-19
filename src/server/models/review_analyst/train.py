@@ -1,30 +1,27 @@
 from torch.multiprocessing import set_start_method; set_start_method('spawn', force=True)
-import torch, mlflow, datetime, time
+import mlflow, datetime, time
 from src.lib.modules.data.model import model_config
 from src.lib.modules.utils.model import train_val_test_split, init_training, load_checkpoint, save_checkpoint, plot, eval_model
 from src.lib.modules.data.constants import MLFLOW_TRACKING_URI
-from src.server.models.review_analyst.model import ReviewAnalyst
 
 if __name__ == '__main__':
-    torch.set_float32_matmul_precision('high')
-
     # Init experiment
     mlflow.set_experiment('Review Analyst Experiment')
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
     # Load the data, model, and optimizer
-    config = model_config.review_analyst(layers=[1, 1])
+    config = model_config.review_analyst()
     train_ds, val_ds, test_ds = train_val_test_split(config)
 
     if config.load_last_chkpt:
         try:
-            model, optimizer = load_checkpoint(ReviewAnalyst, config)
+            model, optimizer = load_checkpoint(config)
             print('--- Training using the last saved checkpoint ---')
         except FileNotFoundError:
             print('--- Failed loading the last saved checkpoint! Training from scratch ---')
-            model, optimizer = init_training(ReviewAnalyst, config)
+            model, optimizer = init_training(config)
     else:
-        model, optimizer = init_training(ReviewAnalyst, config)
+        model, optimizer = init_training(config)
     
     # Train
     with mlflow.start_run(run_name=f'Run {datetime.datetime.now().strftime(model_config.base.persist_name_fmt)}'):
@@ -46,10 +43,10 @@ if __name__ == '__main__':
             t2 = time.time()
 
             if epoch % config.epochs_before_saving == 0:
-                save_checkpoint(model, optimizer, train_loss, config)
-
                 avg_train_loss = sum(losses) / len(losses)
                 avg_train_losses.append(avg_train_loss)
+                save_checkpoint(model, optimizer, avg_train_loss, config)
+                
                 avg_val_loss = eval_model(model, val_ds, 'val_loss')
                 avg_val_losses.append(avg_val_loss)
 
