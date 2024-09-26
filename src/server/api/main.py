@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn, src.server.api.routers.model
+import uvicorn
+from src.server.api.routers.model import model_r
+from src.server.api.routers.db import account_r, product_r, interaction_r
 from src.lib.modules.data.constants import WEB_SERVER_URL, API_SERVER_HOST, API_SERVER_PORT
 
 # Init
@@ -14,11 +16,9 @@ app.add_middleware(
 )
 
 # Routers
-for module in dir(src.server.api.routers.model):
-    if module[-2:] == '_r':
-        exec(f'from src.server.api.routers.model import {module}')
-        app.include_router(eval(module))
+for r in (model_r, account_r, product_r, interaction_r):
+    app.include_router(r)
 
 # Start
-if __name__ == "__main__":
-    uvicorn.run(app, host=API_SERVER_HOST, port=API_SERVER_PORT, reload=True)
+if __name__ == '__main__':
+    uvicorn.run('main:app', host=API_SERVER_HOST, port=API_SERVER_PORT, reload=True)

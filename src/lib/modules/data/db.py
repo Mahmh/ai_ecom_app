@@ -1,64 +1,67 @@
-from sqlalchemy import create_engine, Column, Integer, Float, VARCHAR, Text, ARRAY, Boolean, ForeignKey
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from src.lib.modules.data.constants import USER, PASSWORD, HOST, PORT, DB
+from sqlalchemy import create_engine, Column, Integer, String, Float, Text, ARRAY, Boolean, ForeignKey
+from sqlalchemy.orm import sessionmaker, declarative_base
+from src.lib.modules.data.constants import ENGINE_URL
 
-# Connection
-class DBConn:
-    """Simple interface to connect to the app's PostgreSQL DB"""
-    def __enter__(self):
-        engine = create_engine(f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
-        self.session = sessionmaker(bind=engine)()
-        return self.session
-
-    def __exit__(self, *exc):
-        try: self.session.commit()
-        except Exception as e: self.session.rollback(); raise e
-        finally: self.session.close()
-
-# Tables
+# Init
+engine = create_engine(ENGINE_URL)
+Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
-class User(Base):
-    __tablename__ = 'users'
-    username = Column(VARCHAR(255), nullable=False, primary_key=True)
-    password = Column(VARCHAR(255), nullable=False)
-    bio = Column(Text())
+# Tables
+class UserData:
+    def __init__(self, username, password, bio=''):
+        self.username, self.password, self.bio = username, password, bio
 
-    def __init__(self, username=None, password=None, bio=None, cart=None):
-        self.username, self.password, self.bio, self.cart, self.ratings = username, password, bio, cart
-    
     def __repr__(self):
         return f"User('{self.username}')"
+    
+    def detach(self):
+        return UserData(self.username, self.password, self.bio)
+
+class User(Base, UserData):
+    __tablename__ = 'users'
+    username = Column(String(255), nullable=False, primary_key=True)
+    password = Column(String(255), nullable=False)
+    bio = Column(Text)
 
 
-class Product(Base):
+
+class ProductData:
+    def __init__(self, product_id, name, owner, description='', price=None, discount=None, category=None):
+        self.product_id, self.name, self.owner, self.description, self.price, self.discount, self.category = product_id, name, owner, description, price, discount, category
+    
+    def __repr__(self):
+        return f"Product({self.product_id}, '{self.name}')"
+    
+    def detach(self):
+        return ProductData(self.product_id, self.name, self.owner, self.description, self.price, self.discount, self.category)
+
+class Product(Base, ProductData):
     __tablename__ = 'products'
-    id = Column(Integer(), nullable=False, primary_key=True, autoincrement=True)
-    name = Column(VARCHAR(511), nullable=False)
-    description = Column(Text())
-    price = Column(Float())
-    discount = Column(Float())
-    category = Column(VARCHAR(255))
-    owner = Column(VARCHAR(255), ForeignKey('users.username'))
+    product_id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
+    name = Column(String(511), nullable=False)
+    description = Column(Text)
+    price = Column(Float)
+    discount = Column(Float)
+    category = Column(String(255))
+    owner = Column(String(255), ForeignKey('users.username'))
 
-    def __init__(self, id, name, description=None, price=None, discount=None, category=None, owner=None):
-        self.id, self.name, self.description, self.price, self.discount, self.category, self.owner = id, name, description, price, discount, category, owner
+
+
+class InteractionData:
+    def __init__(self, username, product_id, rating=0, reviews=[], in_cart=False):
+        self.username, self.product_id, self.rating, self.reviews, self.in_cart = username, product_id, rating, reviews, in_cart
     
     def __repr__(self):
-        return f"Product('{self.name}')"
+        return f"Interaction('{self.username}', {self.product_id})"
+    
+    def detach(self):
+        return InteractionData(self.username, self.product_id, self.rating, self.reviews, self.in_cart)
 
-
-class Interaction(Base):
+class Interaction(Base, InteractionData):
     __tablename__ = 'interactions'
-    username = Column(VARCHAR(255), ForeignKey('users.username'), nullable=False, primary_key=True)
-    product_id = Column(VARCHAR(255), ForeignKey('products.id'), nullable=False, primary_key=True)
-    rating = Column(Integer())
+    username = Column(String(255), ForeignKey('users.username'), nullable=False, primary_key=True)
+    product_id = Column(Integer, ForeignKey('products.product_id'), nullable=False, primary_key=True)
+    rating = Column(Integer)
     reviews = Column(ARRAY(Text))
-    in_cart = Column(Boolean())
-
-    def __init__(self, username, product_id, rating=None, review=None, in_cart=None):
-        self.username, self.product_id, self.rating, self.review, self.in_cart = id, username, product_id, rating, review, in_cart
-    
-    def __repr__(self):
-        return f"Interaction('{self.username}', '{self.product_id}')"
+    in_cart = Column(Boolean)
