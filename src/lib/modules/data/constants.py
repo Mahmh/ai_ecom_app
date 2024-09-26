@@ -16,7 +16,7 @@ CREATIVE_LLM_NAME = os.getenv('CREATIVE_LLM')
 EMBEDDER_LLM_NAME = os.getenv('EMBEDDER_LLM')
 CHAT_LLM_NAME = os.getenv('CHAT_LLM')
 BASE_URL = os.getenv('BASE_URL')
-TEMPERATURE = float(os.environ['TEMPERATURE'])
+TEMPERATURE = float(os.getenv('TEMPERATURE', .5))
 MAX_CORES = max(os.cpu_count() - 2, 1)
 
 MAIN_CONFIG = dict(base_url=BASE_URL, num_thread=MAX_CORES, num_gpu=1)

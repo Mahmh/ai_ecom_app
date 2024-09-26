@@ -4,34 +4,28 @@ stop_web_server() {
     PID=$(ps aux | grep "next" | grep -v 'grep' | awk '{print $2}')
     # Kill the process
     if [ -z "$PID" ]; then
-        echo "No web server is running."
+        echo "Next.js web server is not running."
     else
         kill -15 $PID
-        echo "Web server (PID $PID) has been shut down."
+        echo "Next.js web server (PID $PID) has been stopped."
     fi
 }
 
 stop_api_server() {
     local PORT=8000
 
-    # Check if the port number is provided
-    if [ -z "$PORT" ]; then
-        echo "Usage: stop_service_on_port <PORT_NUMBER>"
-        return 1
-    fi
-
     # Find the process ID (PID) using the port
     PID=$(sudo lsof -t -i :$PORT)
 
     # Check if a process is found
     if [ -z "$PID" ]; then
-        echo "No process found running on port $PORT."
+        echo "API server is not running on port $PORT."
         return 1
     fi
 
     # Kill the process
     sudo kill -15 $PID
-    echo "Process running on port $PORT has been stopped."
+    echo "API server running on port $PORT has been stopped."
 }
 
 stop_db_container() {
