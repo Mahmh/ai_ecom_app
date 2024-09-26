@@ -3,12 +3,13 @@ import torch.utils
 from torch.utils.data import DataLoader
 import torch, os, mlflow, matplotlib.pyplot as plt, pandas as pd
 import torch.utils.data
+from typing import List, Tuple, Union
 from src.lib.modules.data.constants import CURRENT_DIR
 from src.lib.modules.data.model import model_config, DFDataset
 
 _locate = lambda x: os.path.join(CURRENT_DIR, '../../../server/models/review_analyst/' + x)
 
-def _check_checkpoint_dirs(model_dirname: str, optimizer_dirname: str) -> bool|tuple:
+def _check_checkpoint_dirs(model_dirname: str, optimizer_dirname: str) -> Union[bool, Tuple]:
     """Checks if saved checkpoint directories exist in the current working directory"""
     try:
         return os.listdir(_locate(model_dirname)), os.listdir(_locate(optimizer_dirname))
@@ -16,7 +17,7 @@ def _check_checkpoint_dirs(model_dirname: str, optimizer_dirname: str) -> bool|t
         return False
 
 
-def train_val_test_split(config: model_config.base) -> tuple[DataLoader]:
+def train_val_test_split(config: model_config.base) -> Tuple[DataLoader]:
     """Returns `torch.utils.data.DataLoader`s for training, validation, and test datasets with the `config` provided"""
     df = config.prep_ds(pd.read_csv(_locate('../data' + config.csv_file)).head(8*12))
     size = len(df)
@@ -45,7 +46,7 @@ def init_training(config: model_config.base):
     return model, optimizer
 
 
-def load_checkpoint(config: model_config.base) -> None|tuple[torch.nn.Module]:
+def load_checkpoint(config: model_config.base) -> Union[Tuple[torch.nn.Module], None]:
     """Loads the model & its optimizer from the latest checkpoint"""
     model_dirname, optimizer_dirname, nameformat = config.persist_model_dir_name, config.persist_optimizer_dir_name, config.persist_name_fmt
 
@@ -125,7 +126,7 @@ def save_checkpoint(model: torch.nn.Module, optimizer: torch.nn.Module, avg_trai
     )
 
 
-def plot(losses: list[float], filename: str):
+def plot(losses: List[float], filename: str):
     """Plots the loss over epochs"""
     epochs = range(1, len(losses)+1)
     plt.clf()

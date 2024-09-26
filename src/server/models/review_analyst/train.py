@@ -1,6 +1,7 @@
 from torch.multiprocessing import set_start_method; set_start_method('spawn', force=True)
 import mlflow, datetime, time
 from src.lib.modules.data.model import model_config
+from src.lib.modules.utils.db import todict
 from src.lib.modules.utils.model import train_val_test_split, init_training, load_checkpoint, save_checkpoint, plot, eval_model
 from src.lib.modules.data.constants import MLFLOW_TRACKING_URI
 
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     
     # Train
     with mlflow.start_run(run_name=f'Run {datetime.datetime.now().strftime(model_config.base.persist_name_fmt)}'):
-        mlflow.log_params(config.todict())
+        mlflow.log_params(todict(config))
         avg_train_losses, avg_val_losses = [], []
 
         for epoch in range(1, config.epochs+1):

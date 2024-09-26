@@ -16,7 +16,7 @@ def log(msg: str, filename: str, level: int = logging.INFO) -> logging.Logger:
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     filename += '.log' if filename[-4:] != '.log' else ''
-    filename = current_dir + '/' + '../../server/logs/' + filename
+    filename = current_dir + '/../../../server/logs/' + filename
 
     logging.basicConfig(filename=filename, level=level, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
     logging.log(level, msg)

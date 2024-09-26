@@ -3,7 +3,7 @@ from textwrap import dedent
 import json, sys
 from src.lib.modules.data.constants import CREATIVE_LLM
 
-if __name__ == '__main__':
+def main():
     if len(sys.argv) < 1:
         print('Sorry, you missed a command line argument.')
         print('Usage: python3 generate_data.py <NUMBER_OF_ITERATIONS_IN_GENERATING_DATA>')
@@ -27,3 +27,6 @@ if __name__ == '__main__':
         with open('../data/products.json', 'w') as file:
             file_result.extend([result] if type(result) != list else result)
             file.write(json.dumps(file_result))
+
+if __name__ == '__main__':
+    main()

@@ -32,13 +32,14 @@ I got the data needed to train my AI models from the below sources:
     - Size: 1.6 MB
 
 # Tech Stack
-Here are all the tools that I used to create that project:
-- LLM:
-    - **Mistral** from Ollama (hosted locally)
-    - Size: 4.1 GB
+Here are all the tools that I used to create this project:
+- LLMs (hosted locally):
+    - **Llama 3** for accuracy in some tasks (4.7 GB).
+    - **Mistral** for accuracy in other tasks (4.1 GB).
+    - **Orca Mini** for creativity & speed (2.0 GB).
 - Frontend:
-    - **Next.js** (website programming)
-    - **SASS** (website styling)
+    - **Next.js** for website programming.
+    - **SASS** for website styling.
 - Backend:
-    - **Python** (functionality)
-    - **PostgreSQL** (database)
+    - **Python** for back-end functionality.
+    - **PostgreSQL** for database.

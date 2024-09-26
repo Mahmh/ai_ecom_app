@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from torch.utils.data import Dataset
-import torch, numpy as np, pandas as pd, typing
+import torch, numpy as np, pandas as pd
+from typing import List, Tuple, Callable
 from src.lib.modules.data.constants import MAX_CORES, EMBEDDER
 from src.server.models.review_analyst.model import ReviewAnalyst
 
@@ -30,16 +31,6 @@ class model_config:
         load_last_chkpt: bool = True
         epochs_before_saving: bool = 1
 
-        def todict(self):
-            """Converts the object into a dictionary for parameter tracking"""
-            result = {}
-            attrs = [obj for obj in dir(self) if obj[0] != '_']
-            for attr in attrs:
-                value = self.__getattribute__(attr)
-                if 'method' not in repr(value):
-                    result[attr] = value
-            return result
-
 
     @dataclass
     class review_analyst(base):
@@ -47,7 +38,7 @@ class model_config:
         csv_file: str = '../../../db/data/amazon_reviews.csv'  # relative path with respect to the `lib/data/modules/` directory
         n_inputs: int = 4097  # 4096 (embedding vector of "review_text") + 1 ("rating")
         n_outputs: int = 1    # 1 ("sentiment")
-        layers: list[int] = field(default_factory=lambda:[1, 1]) # list of number of neurons in each layer
+        layers: List[int] = field(default_factory=lambda:[1, 1]) # list of number of neurons in each layer
 
         def prep_ds(*args) -> pd.DataFrame:
             df = args[1]
@@ -57,7 +48,7 @@ class model_config:
             df.rename(columns={'overall': 'rating', 'reviewText': 'review_text'}, inplace=True)
             return df[['review_text', 'rating', 'sentiment']]
 
-        def prep_sample(*args) -> tuple:
+        def prep_sample(*args) -> Tuple:
             review_text, overall, sentiment = args[1:]
             return EMBEDDER.embed_query(review_text) + [overall], sentiment
     
@@ -70,7 +61,7 @@ class model_config:
 # Data batch loader for DataFrames
 class DFDataset(Dataset):
     """Dataset class for loading Pandas DataFrames"""
-    def __init__(self, df: pd.DataFrame, prep_sample: typing.Callable):
+    def __init__(self, df: pd.DataFrame, prep_sample: Callable[[List], Tuple]):
         assert len(df) > 0, 'empty DataFrame'
         self.df, self.prep_sample = df, prep_sample
         

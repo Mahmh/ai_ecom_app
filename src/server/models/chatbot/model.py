@@ -1,5 +1,6 @@
 from langchain_chroma import Chroma
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
+from typing import List
 from src.lib.modules.data.constants import CHAT_LLM, VECSTORE_PERSIST_DIR, TOP_K, EMBEDDER, BASE_SYS_MSG, ERR_RESPONSE
 from src.lib.modules.utils.logger import err_log
 
@@ -16,7 +17,7 @@ class Chatbot:
         self.history = [BASE_SYS_MSG]
     
 
-    def parse_conversation(self, conversation: list) -> None:
+    def parse_conversation(self, conversation: List) -> None:
         """Loads the given conversation history from strings to chat schemas"""
         try:
             for lst in conversation:

@@ -1,19 +1,13 @@
 """Print the contents of the DB"""
-from src.lib.modules.data.db import DBConn, User, Product
+from src.lib.modules.utils.db import get_all_users, get_all_products, get_all_interactions
+
+def main():
+    users = get_all_users()
+    products = get_all_products()
+    interactions = get_all_interactions()
+    print(users if users else 'NO USERS.', end='\n\n')
+    print(products if products else 'NO PRODUCTS.', end='\n\n')
+    print(interactions if interactions else 'NO INTERACTIONS.')
 
 if __name__ == '__main__':
-    with DBConn() as sess:
-        users = sess.query(User).all()
-        products = sess.query(Product).all()
-        
-        if users:
-            try: print(users)
-            except: print('NO RESULTS.')
-        else:
-            print('NO USERS.')
-        
-        if products:
-            try: print(products)
-            except: print('NO RESULTS.')
-        else:
-            print('NO PRODUCTS.')
+    main()
