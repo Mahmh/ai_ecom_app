@@ -1,6 +1,7 @@
 from src.lib.modules.utils.tests import DBTests, SAMPLE_CRED, SAMPLE_PRODUCT_ID
 from src.lib.modules.data.db import InteractionData
 from src.lib.modules.utils.db import (
+    is_product_in_cart,
     get_all_interactions, 
     rate_product, 
     get_reviews_of_product, 
@@ -8,7 +9,8 @@ from src.lib.modules.utils.db import (
     remove_product_review,
     update_product_review,
     add_product_to_cart,
-    remove_product_from_cart
+    remove_product_from_cart,
+    get_most_rated_products
 )
 
 class TestInteraction(DBTests):
@@ -32,11 +34,12 @@ class TestInteraction(DBTests):
         status2 = add_product_review(SAMPLE_CRED, SAMPLE_PRODUCT_ID, reviews_to_add[1])
 
         result = get_reviews_of_product(SAMPLE_PRODUCT_ID)
-        username, reviews = result[0]['username'], result[0]['reviews']
+        username = [tupl[0] for tupl in result][0]
+        reviews = [tupl[1] for tupl in result]
 
         assert status1 is True and status2 is True, 'Failed to add review'
         assert username == SAMPLE_CRED.username, 'Failed to get the username that made the product review'
-        assert len(result) == 1 and len(reviews) == 2, 'Failed to get product review'
+        assert len(result) == 2 and len(reviews) == 2, 'Failed to get product review'
         assert reviews[0] == reviews_to_add[0] and reviews[1] == reviews_to_add[1], 'Failed to add the correct reviews'
     
 
@@ -45,7 +48,8 @@ class TestInteraction(DBTests):
         add_product_review(SAMPLE_CRED, SAMPLE_PRODUCT_ID, 'Great')
         status = remove_product_review(SAMPLE_CRED, SAMPLE_PRODUCT_ID, 0)
         # Check
-        reviews = get_reviews_of_product(SAMPLE_PRODUCT_ID)[0]['reviews']
+        result = get_reviews_of_product(SAMPLE_PRODUCT_ID)
+        reviews = [tupl[1] for tupl in result]
         assert status is True and len(reviews) == 0, 'Failed to remove product review'
     
 
@@ -55,17 +59,24 @@ class TestInteraction(DBTests):
         new_msg = 'Wow'
         status = update_product_review(SAMPLE_CRED, SAMPLE_PRODUCT_ID, 0, new_msg)
         # Check
-        new_review = get_reviews_of_product(SAMPLE_PRODUCT_ID)[0]['reviews'][0]
+        result = get_reviews_of_product(SAMPLE_PRODUCT_ID)
+        new_review = [tupl[1] for tupl in result][-1]
         assert status is True and new_review == new_msg, 'Failed to update product review'
 
 
     def test_add_product_to_cart(self):
         status = add_product_to_cart(SAMPLE_CRED, SAMPLE_PRODUCT_ID)
-        in_cart = get_all_interactions(username=SAMPLE_CRED.username, product_id=SAMPLE_PRODUCT_ID)[0].in_cart
+        in_cart = is_product_in_cart(SAMPLE_CRED, SAMPLE_PRODUCT_ID)
         assert status is True and in_cart is True, 'Failed to add product to cart'
     
 
     def test_remove_product_from_cart(self):
+        add_product_to_cart(SAMPLE_CRED, SAMPLE_PRODUCT_ID)
         status = remove_product_from_cart(SAMPLE_CRED, SAMPLE_PRODUCT_ID)
-        in_cart = get_all_interactions(username=SAMPLE_CRED.username, product_id=SAMPLE_PRODUCT_ID)[0].in_cart
+        in_cart = is_product_in_cart(SAMPLE_CRED, SAMPLE_PRODUCT_ID)
         assert status is True and in_cart is False, 'Failed to remove product from cart'
+    
+
+    def test_get_most_rated_products(self):
+        products = get_most_rated_products()
+        assert type(products) is list and len(products) == 3, 'Failed to get most rated products'

@@ -2,7 +2,7 @@ import pytest
 from src.lib.modules.utils.tests import DBTests, SAMPLE_CRED
 from src.lib.modules.types.db import Credentials, WrongCredentials
 from src.lib.modules.data.db import UserData
-from src.lib.modules.utils.db import get_all_users, account_exists, log_in_account, create_account, delete_account
+from src.lib.modules.utils.db import get_all_users, account_exists, log_in_account, create_account, delete_account, edit_bio
 
 class TestUser(DBTests):
     def test_get_all_users(self):
@@ -28,7 +28,7 @@ class TestUser(DBTests):
 
 
     def test_create_account(self):
-        status = create_account(SAMPLE_CRED)  # Create
+        status = bool(create_account(SAMPLE_CRED))  # Create
         created = bool(account_exists(SAMPLE_CRED))  # Check
         assert status is True and created is True, 'Failed to create account'
     
@@ -37,3 +37,9 @@ class TestUser(DBTests):
         status = delete_account(SAMPLE_CRED)  # Delete
         deleted = not bool(account_exists(SAMPLE_CRED))  # Check
         assert status is True and deleted is True, 'Failed to delete account'
+    
+
+    def test_edit_bio(self):
+        new_bio = 'New Bio'
+        status = edit_bio(SAMPLE_CRED, new_bio)
+        assert status is True and log_in_account(SAMPLE_CRED).bio == new_bio, 'Failed to edit account\'s bio'

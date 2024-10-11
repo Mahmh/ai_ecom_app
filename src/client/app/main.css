@@ -205,6 +205,10 @@
   margin-bottom: 30px;
 }
 
+.price, .old-price {
+  font-size: 1.5rem;
+}
+
 .old-price {
   color: rgba(255, 0, 0, 0.7);
   text-decoration: line-through;
@@ -215,6 +219,24 @@
   color: rgba(0, 0, 0, 0.45);
   font-size: 2rem;
   padding: 100px;
+}
+
+.add-to-cart-btn {
+  background-color: #18948c;
+  width: 100%;
+  transition: background-color 250ms ease;
+}
+.add-to-cart-btn:hover {
+  background-color: rgb(12, 85, 80);
+}
+
+.remove-from-cart-btn {
+  background-color: rgba(0, 0, 0, 0.45);
+  width: 100%;
+  transition: background-color 250ms ease;
+}
+.remove-from-cart-btn:hover {
+  background-color: rgb(93, 93, 93);
 }
 
 .product-container {
@@ -258,22 +280,6 @@
   margin: auto;
   width: 250px;
   height: 250px;
-}
-.product-container .add-to-cart-btn {
-  background-color: #18948c;
-  width: 100%;
-  transition: background-color 250ms ease;
-}
-.product-container .add-to-cart-btn:hover {
-  background-color: rgb(12, 85, 80);
-}
-.product-container .remove-from-cart-btn {
-  background-color: rgba(0, 0, 0, 0.45);
-  width: 100%;
-  transition: background-color 250ms ease;
-}
-.product-container .remove-from-cart-btn:hover {
-  background-color: rgb(93, 93, 93);
 }
 
 #product-content {
@@ -327,14 +333,6 @@
   padding: 15px 20px;
   border-radius: 8px;
   width: 30%;
-}
-#product-catalog #product-search-tools select {
-  color: white;
-  background-color: #18948c;
-  font-size: 1.4rem;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
 }
 #product-catalog .product-container {
   padding: 100px;
@@ -468,6 +466,9 @@
   gap: 50px;
   font-size: 1.2rem;
 }
+#account-content button {
+  font-size: 1.2rem;
+}
 #account-content #account-details, #account-content #account-cart, #account-content #checkout-details {
   margin: 50px 0;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
@@ -475,23 +476,33 @@
   border-radius: 10px;
 }
 #account-content #account-details {
-  max-width: 40vw;
+  width: 40vw;
 }
 #account-content #account-details h1 {
   font-size: 2.3rem;
 }
-#account-content #account-details button {
-  font-size: 1.2rem;
+#account-content #account-details div {
+  display: flex;
+  gap: 20px;
 }
-#account-content #account-details #delete-account-btn {
-  background-color: rgba(255, 0, 0, 0.7);
-  margin-left: 20px;
-}
-#account-content #account-details #logout-btn {
+#account-content #account-details div #edit-bio-btn {
   background-color: rgba(0, 0, 0, 0.45);
 }
+#account-content #account-details div #logout-btn {
+  background-color: rgba(0, 0, 0, 0.45);
+}
+#account-content #account-details div #delete-account-btn {
+  background-color: rgba(255, 0, 0, 0.7);
+}
+#account-content #account-details #new-bio-input {
+  color: black;
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.2);
+  padding: 5px 10px;
+  font-size: 1.3rem;
+  border-radius: 10px;
+}
 #account-content #account-cart {
-  max-width: 40vw;
+  width: 40vw;
 }
 #account-content #account-cart #my-cart-div {
   display: flex;
@@ -516,6 +527,11 @@
   width: 96%;
   margin: 0 auto;
 }
+#account-content #account-cart .row-display .product-card a {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
 #account-content #account-cart .row-display .product-card div {
   display: flex;
   justify-content: flex-start;
@@ -534,9 +550,8 @@
 }
 #account-content #account-cart .row-display .product-card a {
   color: black;
-}
-#account-content #account-cart .row-display .product-card .add-to-cart-btn, #account-content #account-cart .row-display .product-card h3 {
-  display: none;
+  flex-direction: row;
+  justify-content: space-between;
 }
 #account-content #account-cart .row-display .product-card .remove-from-cart-btn {
   margin-top: 25px;
@@ -548,8 +563,7 @@
   color: rgb(12, 85, 80);
 }
 #account-content #checkout-details {
-  min-width: 10vw;
-  max-width: 10vw;
+  width: 15vw;
 }
 
 @font-face {

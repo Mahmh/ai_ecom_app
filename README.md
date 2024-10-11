@@ -38,7 +38,7 @@ Here are all the tools that I used to create this project:
     - **Mistral** for accuracy in other tasks (4.1 GB).
     - **Orca Mini** for creativity & speed (2.0 GB).
 - Frontend:
-    - **Next.js** for website programming.
+    - **Next.js & TypeScript** for website programming.
     - **SASS** for website styling.
 - Backend:
     - **Python** for back-end functionality.

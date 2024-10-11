@@ -19,3 +19,4 @@ src/client/node_modules/
 src/client/.next/
 src/client/out/
 src/client/scss/
+src/client/next-env.d.ts

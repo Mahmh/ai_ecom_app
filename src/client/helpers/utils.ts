@@ -1,14 +1,19 @@
-import { Account } from "@helpers/interfaces"
-
+import { Account, ProductObject } from '@/helpers/interfaces'
 /**
  * Rounds a given number to a given amount of decimal places
  * @param n The number
  * @param decimal_places How many decimal places to round the number to (default: rounds to the nearest integer)
- * @returns The rounded number
+ * @returns Rounded number
  */
 export const round = (n: number, decimal_places: number = 0): number => {
     decimal_places *= 10
     return decimal_places === 0 ? Math.round(n) : Math.round((n + Number.EPSILON) * decimal_places) / decimal_places
+}
+
+
+/** Calculates & returns the discounted price of a product */
+export const getDiscountedPrice = (price: number, discount: number): number => {
+    return round(price - (discount*price), 2)
 }
 
 
@@ -18,7 +23,38 @@ export const round = (n: number, decimal_places: number = 0): number => {
  * @returns A boolean indicating if a user is logged in
  */
 export const isLoggedIn = (account: Account): boolean => {
-    return account.username.length >= 3 && account.password.length >= 3
+    return account.username?.length >= 3 && account.password?.length >= 3
+}
+
+
+/** Returns the account's credentials as a payload object */
+export const getCredentials = (account: Account): { username: string, password: string } => {
+    return { username: account.username, password: account.password }
+}
+
+
+/** Returns a boolean indicating if the given product is in a user's cart */
+export const isProductInCart = (target_product_id: number, account: Account): boolean => {
+    return isLoggedIn(account) && account.cart?.length > 0 ? account.cart.filter(p => p.product_id === target_product_id).length === 1 : false
+}
+
+
+/** Adds this product to the logged-in user's cart */
+export const addToCart = async (product: ProductObject, account: Account): Promise<ProductObject[]> => {
+    const product_id = product.product_id
+    let new_cart = account.cart || []
+    if (!isProductInCart(product_id, account)) new_cart.push(product)
+    await new Request(`add_product_to_cart?product_id=${product_id}`, undefined, getCredentials(account)).patch()
+    return new_cart
+}
+
+
+export const removeFromCart = async (product: ProductObject, account: Account): Promise<ProductObject[]> => {
+    const product_id = product.product_id
+    let new_cart = account.cart || []
+    if (isProductInCart(product_id, account)) new_cart = new_cart.filter(p => p.product_id !== product_id)
+    await new Request(`remove_product_from_cart?product_id=${product_id}`, undefined, getCredentials(account)).delete()
+    return new_cart
 }
 
 
@@ -35,7 +71,7 @@ export class Request {
     private readonly data: object
     private readonly callbackFunc: (x:any)=>any
     
-    constructor(endpoint: string, callbackFunc:(x:any)=>any = x=>x, data: object = {}) {
+    constructor(endpoint: string, callbackFunc: (x:any)=>any = x=>x, data: object = {}) {
         this.url = `http://localhost:8000/${endpoint}`
         this.data = data
         this.callbackFunc = callbackFunc

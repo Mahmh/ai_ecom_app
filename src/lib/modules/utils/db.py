@@ -12,11 +12,11 @@ from src.lib.modules.utils.logger import log, err_log
 def exc_handler(func: Callable[..., Any]) -> Callable[..., Any]:
     """Captures DB exceptions and returns their messages to be transmitted from the API server"""
     @wraps(func)
-    def wrapper(*args, **kwargs) -> Union[Any, str]:
+    async def wrapper(*args, **kwargs) -> Union[Any, str]:
         try: 
-            return func(*args, **kwargs)
-        except (UsernameTaken, WrongCredentials, NotOwner, NonExistent) as e:
-            err_log(func.__name__, e, 'db')
+            return await func(*args, **kwargs)
+        except (UsernameTaken, WrongCredentials, NotOwner, NonExistent, AssertionError) as e:
+            err_log(func.__name__, e, 'api')
             return str(e)
     return wrapper
 
@@ -78,9 +78,8 @@ def _prep_reviews(review_list: List[dict[str, Union[str, List[str]]]]) -> List[T
     for entry in review_list:
         username = entry['username']
         reviews = entry['reviews']
-        result.extend([(username, review) for review in reviews])
+        if reviews: result.extend([(username, review) for review in reviews])
     return result
-
 
 
 # Tables
@@ -88,10 +87,10 @@ def _prep_reviews(review_list: List[dict[str, Union[str, List[str]]]]) -> List[T
 def _get_all_users(*, session: SessionType, **filter_kwargs) -> List[User]:
     return session.query(User).filter_by(**filter_kwargs).all()
 
-def get_all_users() -> List[UserData]:
+def get_all_users(**filter_kwargs) -> List[UserData]:
     """Returns all users"""
     session = Session()
-    result = _get_all_users(session=session)
+    result = _get_all_users(**filter_kwargs, session=session)
     result = _list_detach(result)
     end_session(session, commit=False)
     return result
@@ -133,19 +132,21 @@ def log_in_account(cred: Credentials) -> UserData:
 
 
 
-def _create_account(cred: Credentials, *, session: SessionType, **user_info) -> bool:
+def _create_account(cred: Credentials, *, session: SessionType, **user_info) -> Union[User, bool]:
     account = _account_exists(cred, session=session)
     if account:
         raise UsernameTaken(cred.username)
     else:
-        session.add(User(username=cred.username, password=cred.password, **user_info))
+        created_account = User(username=cred.username, password=cred.password, **user_info)
+        session.add(created_account)
         log(f'[_create_account] Added user "{cred.username}"', 'db')
-        return True
+        return created_account
 
-def create_account(cred: Credentials, **user_info) -> bool:
+def create_account(cred: Credentials, **user_info) -> Union[UserData, bool]:
     """Creates an account that is not already created"""
     session = Session()
     result = _create_account(cred, **user_info, session=session)
+    result = result.detach() if type(result) is User else result
     end_session(session)
     return result
 
@@ -172,14 +173,28 @@ def delete_account(cred: Credentials) -> bool:
 
 
 
+def _edit_bio(cred: Credentials, new_bio: str, *, session: SessionType) -> bool:
+    account = _log_in_account(cred, session=session)
+    account.bio = new_bio
+    return True
+
+def edit_bio(cred: Credentials, new_bio: str) -> bool:
+    """Modifies an account's bio"""
+    session = Session()
+    result = _edit_bio(cred, new_bio, session=session)
+    end_session(session)
+    return result
+
+
+
 ### Products ###
 def _get_all_products(*, session: SessionType, **filter_kwargs) -> List[Product]:
     return session.query(Product).filter_by(**filter_kwargs).all()
 
-def get_all_products() -> List[ProductData]:
+def get_all_products(**filter_kwargs) -> List[ProductData]:
     """Returns all products"""
     session = Session()
-    result = _get_all_products(session=session)
+    result = _get_all_products(**filter_kwargs, session=session)
     result = _list_detach(result)
     end_session(session, commit=False)
     return result
@@ -424,7 +439,23 @@ def update_product_review(cred: Credentials, product_id: int, review_index: int,
 
 
 
+def _is_product_in_cart(cred: Credentials, product_id: int, *, session: SessionType) -> bool:
+    in_cart = False
+    for product in _get_cart(cred, session=session):
+        if product.product_id == product_id: in_cart = True
+    return in_cart
+
+def is_product_in_cart(cred: Credentials, product_id: int):
+    """Checks if a product is in a user's cart"""
+    session = Session()
+    result = _is_product_in_cart(cred, product_id, session=session)
+    end_session(session)
+    return result
+
+
+
 def _add_product_to_cart(cred: Credentials, product_id: int, *, session: SessionType) -> bool:
+    assert not _is_product_in_cart(cred, product_id, session=session), 'Product is already in cart'
     return _update_interaction(cred, product_id, lambda interaction, _: setattr(interaction, 'in_cart', True), session=session)
 
 def add_product_to_cart(cred: Credentials, product_id: int) -> bool:
@@ -437,6 +468,7 @@ def add_product_to_cart(cred: Credentials, product_id: int) -> bool:
 
 
 def _remove_product_from_cart(cred: Credentials, product_id: int, *, session: SessionType) -> bool:
+    assert _is_product_in_cart(cred, product_id, session=session), 'Product is not in cart'
     return _update_interaction(cred, product_id, lambda interaction, _: setattr(interaction, 'in_cart', False), session=session)
 
 def remove_product_from_cart(cred: Credentials, product_id: int) -> bool:
@@ -462,4 +494,23 @@ def get_most_rated_products(k: int = 3) -> List[ProductData]:
     result = _get_most_rated_products(k, session=session)
     result = _list_detach(result)
     end_session(session)
+    return result
+
+
+
+def _get_cart(cred: Credentials, *, session: SessionType) -> List[Product]:
+    if log_in_account(cred):
+        interactions = _get_all_interactions(username=cred.username, session=session)
+        return [
+            _get_product_using_id(interaction.product_id, session=session) 
+            for interaction in interactions 
+            if interaction.in_cart
+        ]
+
+def get_cart(cred: Credentials) -> List[ProductData]:
+    """Returns the user's cart"""
+    session = Session()
+    result = _get_cart(cred, session=session)
+    result = _list_detach(result)
+    end_session(session, commit=False)
     return result

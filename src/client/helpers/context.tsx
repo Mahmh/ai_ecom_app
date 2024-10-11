@@ -1,9 +1,10 @@
 'use client'
 import { createContext, useState, useEffect } from 'react'
-import { ParentProps, ContextProps, ProductObject, Account } from '@helpers/interfaces'
-import { Request } from '@helpers/utils'
+import { ParentProps, ContextProps, ProductObject, Account } from '@/helpers/interfaces'
+import { Request } from '@/helpers/utils'
 
 export const nullAccount: Account = { username: '', password: '', bio: '', cart: [] }
+export const nullProduct: ProductObject = { product_id: 0, name: '', description: '', image_file: '', price: 0, discount: 0, owner: '', category: '' }
 export const AppContext = createContext<ContextProps>({
     account: nullAccount,
     setAccount: () => {},

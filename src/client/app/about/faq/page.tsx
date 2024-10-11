@@ -1,5 +1,5 @@
 'use client'
-import { Page } from '@helpers/components'
+import { Page } from '@/helpers/components'
 import FAQ from '@data/faq.json'
 
 export default function About() {

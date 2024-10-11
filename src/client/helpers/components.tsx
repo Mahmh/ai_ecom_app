@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useContext, MouseEvent } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { NavLinkProps, PageProps, ProductObject, DropdownProps, PaginationControlsProps, Account } from '@helpers/interfaces'
-import { isLoggedIn, Request, round } from '@helpers/utils'
-import { AppContext } from '@helpers/context'
+import { NavLinkProps, PageProps, ProductObject, DropdownProps, PaginationControlsProps, Account } from '@/helpers/interfaces'
+import { Request, addToCart, removeFromCart, getDiscountedPrice, isLoggedIn, isProductInCart, round } from '@/helpers/utils'
+import { AppContext } from '@/helpers/context'
 import Image from 'next/image'
-import Header from '@components/Header'
-import Footer from '@components/Footer'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import Link from 'next/link'
 
 
@@ -26,26 +26,23 @@ export const Page = ({ children, id, constHeaderBgcolor=true }: PageProps) => (
 )
 
 
-export const ProductCard = ({ product }: { product: ProductObject }) => {
+export const CartButton = ({ product }: { product: ProductObject }) => {
     const [inCart, setInCart] = useState(false)
-    const { product_id, name, description, image_file, discount } = product
     const { account, setAccount } = useContext(AppContext)
-    const price = round(product.price, 2)
-    const discounted_price = round(price - (discount*price), 2)
+    const { product_id } = product
     const router = useRouter()
 
-    /** Adds this product to the logged-in user's cart */
-    const addToCart = (e: MouseEvent<HTMLButtonElement>) => {
+    const handleCart = async (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
         if (isLoggedIn(account)) {
-            let new_cart = account.cart || []
-            if (inCart) {
-                new_cart = new_cart.filter(product => product.product_id !== product_id)
+            let new_cart: ProductObject[]
+            if (isProductInCart(product_id, account)) {
+                new_cart = await removeFromCart(product, account)
                 setInCart(false)
             } else {
-                new_cart.push(product)
+                new_cart = await addToCart(product, account)
                 setInCart(true)
-            }
+            } 
             setAccount({ ...account, cart: new_cart })
         } else {
             router.push('/account/login')
@@ -53,8 +50,19 @@ export const ProductCard = ({ product }: { product: ProductObject }) => {
     }
 
     useEffect(() => {
-        if (account.cart) setInCart(account.cart.filter(product => product.product_id === product_id).length === 1)
-    }, [inCart])
+        setInCart(isProductInCart(product_id, account))
+    }, [inCart, account.cart, product])
+
+    return (
+        <button className={inCart ? 'remove-from-cart-btn' : 'add-to-cart-btn'} onClick={handleCart}>
+            {inCart ? 'Remove from cart' : 'Add to Cart'}
+        </button>
+    )
+}
+
+
+export const ProductCard = ({ product }: { product: ProductObject }) => {
+    const { product_id, name, description, image_file, price, discount } = product
     
     return (
         <div className='product-card'>
@@ -71,15 +79,13 @@ export const ProductCard = ({ product }: { product: ProductObject }) => {
                         {discount ?
                             <>
                                 <span className='old-price'>${price}</span>
-                                <span>${discounted_price}</span>
-                            </>  : <span>${price}</span>
+                                <span className='price'>${getDiscountedPrice(price, discount)}</span>
+                            </>  : <span className='price'>${price}</span>
                         }
                     </h3>
                 </div>
             </Link>
-            <button className={inCart ? 'remove-from-cart-btn' : 'add-to-cart-btn'} onClick={addToCart}>
-                {inCart ? 'Remove from cart' : 'Add to Cart'}
-            </button>
+            <CartButton product={product}/>
         </div>
     )
 }
@@ -147,7 +153,7 @@ export const PaginationControls = ({ items, setShownItems, reloadFactors }: Pagi
 }
 
 
-export const AccountSignedOutPage = ({ section }: { section: 'Log in' | 'Sign up' }) => {
+export const LoggedOutPage = ({ section }: { section: 'Log in' | 'Sign up' }) => {
     const is_login = section === 'Log in'
     const short_section = is_login ? 'login' : 'signup'
     const inverse_section = is_login ? 'Sign up' : 'Log in'
@@ -158,25 +164,28 @@ export const AccountSignedOutPage = ({ section }: { section: 'Log in' | 'Sign up
     const { setAccount } = useContext(AppContext)
     const router = useRouter()
 
-    const checkCredentials = (account: Account) => {
-        if (typeof account !== 'string') {
-            console.log('account', account)
-            setAccount({ ...account, username: inputUsername, password: inputPassword })
+    const getInputCredentials = () => ({ username: inputUsername, password: inputPassword })
+
+    const checkCredentials = async (response: Account|string) => {
+        if (typeof response !== 'string') {
+            await new Request('get_cart', (cart: ProductObject[]) =>  { 
+                setAccount({ username: inputUsername, password: inputPassword, bio: response.bio, cart: cart })
+            }, getInputCredentials()).post()
             router.push('/account')
         } else {
-            setErrMsg(is_login ? 
-                'Either your inputted credentials are incorrect or the account does not exist.' : 
-                'This username is already taken. Please use another one.'
+            setErrMsg(
+                is_login
+                ? 'Either your inputted credentials are incorrect or the account does not exist.' 
+                : 'This username is already taken. Please use another one.'
             )
         }
     }
 
-    const handleClick = async () => {
+    const submit = async () => {
         if (inputUsername.length < 3) { setErrMsg('Username must contain at least 3 characters.'); return }
         if (inputPassword.length < 3) { setErrMsg('Password must contain at least 3 characters.'); return }
         const endpoint = is_login ? 'log_in_account' : 'create_account'
-        const data = { username: inputUsername, password: inputPassword }
-        await new Request(endpoint, checkCredentials, data).post()
+        await new Request(endpoint, checkCredentials, getInputCredentials()).post()
     }
 
     return (
@@ -186,7 +195,7 @@ export const AccountSignedOutPage = ({ section }: { section: 'Log in' | 'Sign up
                 <div>
                     <input placeholder='Username' onChange={e => setInputUsername(e.target.value)}/>
                     <input placeholder='Password' onChange={e => setInputPassword(e.target.value)} type='password'/>
-                    <button onClick={handleClick}>{section}</button>
+                    <button onClick={submit}>{section}</button>
                     <label id='err-msg'>{errMsg}</label>
                 </div>
             </section>

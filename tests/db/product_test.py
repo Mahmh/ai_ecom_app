@@ -2,7 +2,7 @@ import pytest
 from src.lib.modules.utils.tests import DBTests, SAMPLE_CRED, SAMPLE_PRODUCT_ID
 from src.lib.modules.types.db import NonExistent, NotOwner
 from src.lib.modules.data.db import ProductData
-from src.lib.modules.utils.db import get_all_products, get_product_using_id, is_owner_of_product, create_product, delete_product, update_product
+from src.lib.modules.utils.db import get_all_products, get_product_using_id, is_owner_of_product, create_product, delete_product, update_product, search_products
 
 class TestProduct(DBTests):
     def test_get_all_products(self):
@@ -62,3 +62,13 @@ class TestProduct(DBTests):
         # Check
         for prop in update_kwargs.keys():
             assert getattr(product, prop) == update_kwargs[prop], f"Failed to update product's {prop}"
+    
+
+    def test_search_products(self):
+        search_query = 'Samsung Galaxy'
+        most_relevant_products = search_products(search_query)
+        found = False
+        for product in most_relevant_products:
+            if search_query in product.name: 
+                found = True
+        assert found is True, 'Failed to search for product'

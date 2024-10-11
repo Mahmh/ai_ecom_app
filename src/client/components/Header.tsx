@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useContext, ReactNode, ChangeEvent, KeyboardEvent } from 'react'
-import { NavLink } from '@helpers/components'
-import { CategoryLinks, AboutLinks } from '@components/Footer'
+import { NavLink } from '@/helpers/components'
+import { CategoryLinks, AboutLinks } from '@/components/Footer'
 import { AppContext } from '@/helpers/context'
 import { HeaderNavLinkProps, TooltipProps } from '@/helpers/interfaces'
 

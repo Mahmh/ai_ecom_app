@@ -7,6 +7,9 @@ class Credentials(BaseModel):
     username: str
     password: str
 
+class UpdateBioInfo(Credentials):
+    new_bio: str
+
 
 # Exceptions
 class UsernameTaken(Exception):
