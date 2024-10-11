@@ -1,12 +1,863 @@
 @font-face {
-  font-family: "GeistVF";
-  src: url("../../lib/assets/fonts/GeistVF.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
+  font-family: "Poppins-Regular";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Regular.ttf");
 }
 @font-face {
-  font-family: "GeistMonoVF";
-  src: url("../../lib/assets/fonts/GeistMonoVF.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
+  font-family: "Poppins-Medium";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Medium.ttf");
+}
+@font-face {
+  font-family: "Poppins-SemiBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Bold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Light";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Light.ttf");
+}
+@font-face {
+  font-family: "Poppins-Thin";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Thin.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Black";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Black.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraLight";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraLight.ttf");
+}
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Regular.ttf");
+}
+@font-face {
+  font-family: "Poppins-Medium";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Medium.ttf");
+}
+@font-face {
+  font-family: "Poppins-SemiBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Bold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Light";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Light.ttf");
+}
+@font-face {
+  font-family: "Poppins-Thin";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Thin.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Black";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Black.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraLight";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraLight.ttf");
+}
+#banner {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(36deg, #18948c, #4ce1e1);
+  color: white;
+  padding: 10px;
+  height: 700px;
+  justify-content: center;
+}
+#banner #slogan {
+  line-height: 1;
+  text-align: center;
+  margin: 0 auto;
+}
+#banner #slogan h1 {
+  font-size: 4rem;
+}
+#banner #slogan p {
+  font-size: 1.5rem;
+}
+
+#top-rated-products-sec, #discover-products-sec {
+  padding: 50px;
+  width: 80%;
+  margin: 0 auto;
+}
+#top-rated-products-sec h1, #discover-products-sec h1 {
+  font-size: 3rem;
+  text-align: center;
+}
+
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Regular.ttf");
+}
+@font-face {
+  font-family: "Poppins-Medium";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Medium.ttf");
+}
+@font-face {
+  font-family: "Poppins-SemiBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Bold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Light";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Light.ttf");
+}
+@font-face {
+  font-family: "Poppins-Thin";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Thin.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Black";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Black.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraLight";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraLight.ttf");
+}
+#about-content {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.3rem;
+  color: black;
+  width: 80%;
+  margin: 0 auto;
+  position: relative;
+  top: 140px;
+}
+
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Regular.ttf");
+}
+@font-face {
+  font-family: "Poppins-Medium";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Medium.ttf");
+}
+@font-face {
+  font-family: "Poppins-SemiBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Bold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Light";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Light.ttf");
+}
+@font-face {
+  font-family: "Poppins-Thin";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Thin.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Black";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Black.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraLight";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraLight.ttf");
+}
+#product-content, #product-catalog {
+  position: relative;
+  top: 170px;
+}
+
+.product-name {
+  font-weight: bolder;
+  font-size: 2rem !important;
+  color: black;
+}
+
+.product-description {
+  font-size: 1.1rem;
+}
+
+.product-owner {
+  font-family: "Poppins-Light";
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.old-price {
+  color: rgba(255, 0, 0, 0.7);
+  text-decoration: line-through;
+  margin-right: 10px;
+}
+
+.no-results-msg {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 2rem;
+  padding: 100px;
+}
+
+.product-container {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 50px;
+}
+.product-container .product-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 350px;
+  flex: 0;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 130ms ease;
+  cursor: pointer;
+}
+.product-container .product-card:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.45);
+}
+.product-container .product-card .product-name {
+  text-align: center;
+}
+.product-container .product-card a {
+  display: inherit;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.product-container .product-card a label {
+  cursor: pointer;
+  color: black;
+}
+.product-container .product-card a h3 {
+  color: black;
+}
+.product-container .product-card a img {
+  display: block;
+  margin: auto;
+  width: 250px;
+  height: 250px;
+}
+.product-container .add-to-cart-btn {
+  background-color: #18948c;
+  width: 100%;
+  transition: background-color 250ms ease;
+}
+.product-container .add-to-cart-btn:hover {
+  background-color: rgb(12, 85, 80);
+}
+.product-container .remove-from-cart-btn {
+  background-color: rgba(0, 0, 0, 0.45);
+  width: 100%;
+  transition: background-color 250ms ease;
+}
+.product-container .remove-from-cart-btn:hover {
+  background-color: rgb(93, 93, 93);
+}
+
+#product-content {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 250px;
+  margin: 0 auto;
+}
+#product-content #product {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  width: 80%;
+  margin: 0 auto;
+}
+#product-content #product #price {
+  font-size: 1.4rem;
+}
+#product-content #product .product-name {
+  font-size: 2.3rem;
+  margin-bottom: 0;
+}
+#product-content #product .product-description {
+  max-width: 35vw;
+}
+#product-content #product img {
+  max-width: 50vw;
+}
+#product-content .horizontal-sep {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  width: 80%;
+  margin: 70px auto;
+  margin-bottom: 0;
+}
+#product-content #reviews {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  margin: 0 auto;
+}
+
+#product-catalog #product-search-tools {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+#product-catalog #product-search-tools input {
+  font-size: 1.4rem;
+  color: black;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  padding: 15px 20px;
+  border-radius: 8px;
+  width: 30%;
+}
+#product-catalog #product-search-tools select {
+  color: white;
+  background-color: #18948c;
+  font-size: 1.4rem;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+#product-catalog .product-container {
+  padding: 100px;
+  margin: 0 auto;
+  width: 85%;
+}
+
+#pagination-controls {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  font-size: 1.3rem;
+}
+#pagination-controls div button {
+  background-color: black;
+  margin-left: 20px;
+}
+#pagination-controls div .active-page-btn {
+  background-color: rgb(12, 85, 80);
+}
+
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Regular.ttf");
+}
+@font-face {
+  font-family: "Poppins-Medium";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Medium.ttf");
+}
+@font-face {
+  font-family: "Poppins-SemiBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Bold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Light";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Light.ttf");
+}
+@font-face {
+  font-family: "Poppins-Thin";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Thin.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Black";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Black.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraLight";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraLight.ttf");
+}
+#login-content, #signup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  top: 190px;
+  font-size: 1.3rem;
+  width: 35vw;
+  margin: 0 auto;
+  margin-bottom: 330px;
+}
+#login-content p, #signup-content p {
+  width: 100%;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  padding: 10px 0;
+  border-radius: 10px;
+  text-align: center;
+}
+#login-content p a, #signup-content p a {
+  color: #18948c;
+}
+#login-content p a:hover, #signup-content p a:hover {
+  color: rgb(12, 85, 80);
+}
+#login-content section, #signup-content section {
+  width: 100%;
+  display: flex;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+#login-content section #credentials-banner, #signup-content section #credentials-banner {
+  padding: 80px 50px;
+  width: 3vw;
+  border-radius: 10px 0 0 10px;
+  background-color: #18948c;
+}
+#login-content section div, #signup-content section div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 40vw;
+  height: 200px;
+  padding: 80px;
+  gap: 20px;
+}
+#login-content section div input, #login-content section div button, #signup-content section div input, #signup-content section div button {
+  font-size: 1.3rem;
+}
+#login-content section div #err-msg, #signup-content section div #err-msg {
+  color: rgba(255, 0, 0, 0.7);
+}
+#login-content section div input, #signup-content section div input {
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.2);
+  color: black;
+  border-radius: 10px;
+  padding: 10px 15px;
+}
+#login-content section div button, #signup-content section div button {
+  background-color: #18948c;
+  transition: background-color 0.2s ease;
+}
+#login-content section div button:hover, #signup-content section div button:hover {
+  background-color: rgb(18, 118, 112);
+}
+
+#account-content {
+  display: flex;
+  position: relative;
+  top: 140px;
+  width: 80%;
+  margin: 0 auto;
+  justify-content: center;
+  gap: 50px;
+  font-size: 1.2rem;
+}
+#account-content #account-details, #account-content #account-cart, #account-content #checkout-details {
+  margin: 50px 0;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  padding: 20px 30px;
+  border-radius: 10px;
+}
+#account-content #account-details {
+  max-width: 40vw;
+}
+#account-content #account-details h1 {
+  font-size: 2.3rem;
+}
+#account-content #account-details button {
+  font-size: 1.2rem;
+}
+#account-content #account-details #delete-account-btn {
+  background-color: rgba(255, 0, 0, 0.7);
+  margin-left: 20px;
+}
+#account-content #account-details #logout-btn {
+  background-color: rgba(0, 0, 0, 0.45);
+}
+#account-content #account-cart {
+  max-width: 40vw;
+}
+#account-content #account-cart #my-cart-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#account-content #account-cart #my-cart-div button {
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s ease;
+  margin-right: 10px;
+}
+#account-content #account-cart #my-cart-div .active-display {
+  background-color: rgba(0, 0, 0, 0.45);
+}
+#account-content #account-cart .row-display {
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+#account-content #account-cart .row-display .product-card {
+  align-items: flex-start;
+  width: 96%;
+  margin: 0 auto;
+}
+#account-content #account-cart .row-display .product-card div {
+  display: flex;
+  justify-content: flex-start;
+}
+#account-content #account-cart .row-display .product-card div .product-name {
+  text-align: left;
+}
+#account-content #account-cart .row-display .product-card div article {
+  display: flex;
+  flex-direction: column;
+}
+#account-content #account-cart .row-display .product-card div img {
+  width: 200px;
+  height: 200px;
+  margin-right: 20px;
+}
+#account-content #account-cart .row-display .product-card a {
+  color: black;
+}
+#account-content #account-cart .row-display .product-card .add-to-cart-btn, #account-content #account-cart .row-display .product-card h3 {
+  display: none;
+}
+#account-content #account-cart .row-display .product-card .remove-from-cart-btn {
+  margin-top: 25px;
+}
+#account-content #account-cart #shopping-link {
+  color: #18948c;
+}
+#account-content #account-cart #shopping-link:hover {
+  color: rgb(12, 85, 80);
+}
+#account-content #checkout-details {
+  min-width: 10vw;
+  max-width: 10vw;
+}
+
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Regular.ttf");
+}
+@font-face {
+  font-family: "Poppins-Medium";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Medium.ttf");
+}
+@font-face {
+  font-family: "Poppins-SemiBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Bold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Light";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Light.ttf");
+}
+@font-face {
+  font-family: "Poppins-Thin";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Thin.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Black";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Black.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraLight";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraLight.ttf");
+}
+.scrolled {
+  background-color: rgb(12, 85, 80) !important;
+  color: white !important;
+}
+.scrolled a {
+  color: white !important;
+}
+
+header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: transparent;
+  transition: background-color 250ms ease;
+  z-index: 3;
+  width: 100%;
+  padding: 10px 30px;
+  position: fixed;
+}
+header .active {
+  text-decoration: underline;
+  text-underline-offset: 8px;
+}
+header nav {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+header nav a {
+  margin-right: 40px;
+  font-size: 1.3rem;
+}
+header nav input {
+  margin-right: 20px;
+  background-color: rgba(24, 148, 140, 0.5);
+  border-radius: 50px;
+  font-size: 1.1rem;
+  padding: 10px 23px;
+}
+header nav input::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+header nav input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+header nav #login-btn {
+  font-family: Poppins-Medium;
+  margin-left: 20px;
+  background-color: #18948c;
+  font-size: 1.1rem;
+  min-width: 120px;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  transition: background-color 0.2s ease;
+}
+header nav #login-btn:hover {
+  background-color: rgb(18, 118, 112);
+}
+
+.tooltip-container {
+  background-color: white;
+  color: black;
+  padding-bottom: 10px;
+  position: fixed;
+  width: 55%;
+  height: 42%;
+  left: 0;
+  right: 0;
+  top: 140px;
+  margin: 0 auto;
+  z-index: 10;
+  border-radius: 20px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 250ms ease;
+}
+.tooltip-container #products-tooltip, .tooltip-container #about-tooltip {
+  display: flex;
+  justify-content: space-around;
+  height: 100%;
+  width: 100%;
+}
+.tooltip-container #products-tooltip section, .tooltip-container #about-tooltip section {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  gap: 15px;
+}
+.tooltip-container #products-tooltip section h1, .tooltip-container #about-tooltip section h1 {
+  font-size: 2rem;
+  margin-bottom: 0;
+}
+.tooltip-container #products-tooltip section .category-links, .tooltip-container #products-tooltip section .about-links, .tooltip-container #about-tooltip section .category-links, .tooltip-container #about-tooltip section .about-links {
+  flex-wrap: wrap;
+  height: 165px;
+  width: 300px;
+}
+.tooltip-container #products-tooltip section a, .tooltip-container #about-tooltip section a {
+  color: black;
+  padding: 15px 20px;
+  font-size: 1.4rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  width: 100%;
+  transition: all 250ms ease;
+}
+.tooltip-container #products-tooltip section a:hover, .tooltip-container #about-tooltip section a:hover {
+  background-color: rgba(0, 0, 0, 0.45);
+}
+.tooltip-container #products-tooltip section a p, .tooltip-container #about-tooltip section a p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.tooltip-container #about-tooltip {
+  width: 100%;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.tooltip-container #about-tooltip h1 {
+  margin-bottom: 0;
+}
+.tooltip-container #about-tooltip section a {
+  flex: 1;
+  width: 100%;
+}
+
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Regular.ttf");
+}
+@font-face {
+  font-family: "Poppins-Medium";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Medium.ttf");
+}
+@font-face {
+  font-family: "Poppins-SemiBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Bold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Light";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Light.ttf");
+}
+@font-face {
+  font-family: "Poppins-Thin";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Thin.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Black";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Black.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraLight";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraLight.ttf");
+}
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+.dropdown .dropdown-toggle {
+  font-size: 1.2rem;
+  min-width: 140px;
+  padding: 10px;
+  background-color: #18948c;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.dropdown .dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  margin: 0;
+  background-color: white;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  gap: 5px;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  list-style: none;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  transition: opacity 250ms ease, transform 250ms ease, visibility 250ms ease;
+}
+.dropdown .dropdown-menu.open {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+.dropdown .dropdown-menu .dropdown-item {
+  padding: 10px;
+  border-radius: 10px;
+  transition: background-color 150ms ease;
+  cursor: pointer;
+}
+.dropdown .dropdown-menu .dropdown-item:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.dropdown .dropdown-menu .selected-dropdown-item {
+  background-color: #18948c !important;
+  color: white;
+}
+
+body {
+  font-family: "Poppins-Regular";
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+img {
+  border-radius: 10px;
+}
+
+input {
+  font-family: "Poppins-Regular";
+  font-size: 1rem;
+  outline: none;
+  border: none;
+  color: white;
+}
+input::-moz-placeholder {
+  color: rgba(0, 0, 0, 0.45);
+}
+input::placeholder {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+button {
+  font-family: "Poppins-Regular";
+  font-size: 1rem;
+  outline: none;
+  border: none;
+  color: white;
+  padding: 10px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+footer {
+  display: flex;
+  color: white;
+  background-color: black;
+  justify-content: space-evenly;
+  margin-top: 200px;
+  padding: 30px;
+}
+footer section {
+  display: flex;
+  flex-direction: column;
+}
+footer section a:hover {
+  text-decoration: underline;
 }
