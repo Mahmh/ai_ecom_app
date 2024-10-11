@@ -6,7 +6,7 @@ stop_web_server() {
     if [ -z "$PID" ]; then
         echo "Next.js web server is not running."
     else
-        kill -15 $PID
+        sudo kill -15 $PID
         echo "Next.js web server (PID $PID) has been stopped."
     fi
 }

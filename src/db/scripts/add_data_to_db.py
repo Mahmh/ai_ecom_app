@@ -1,8 +1,8 @@
 """Supply the DB with synthetic data"""
 import os, json, random, string, pandas as pd, time, multiprocessing as mp
-from typing import Tuple
+from typing import Tuple, Any
 from src.lib.modules.data.db import Session, User, Product, Interaction
-from src.lib.modules.utils.db import end_session
+from src.lib.modules.utils.db import end_session, get_hashed_img_filename
 from src.lib.modules.utils.logger import log
 from src.lib.modules.data.constants import CURRENT_DIR, CREATIVE_LLM
 
@@ -15,11 +15,11 @@ def load_data() -> Tuple[pd.DataFrame]:
     return products_df, owners
 
 
-def add_user(owner: str, lock: mp.Lock, *, session) -> None:
+def add_user(owner: str, lock: Any, *, session) -> None:
     user_data = dict(
         username=owner,
         password=''.join([random.choice(string.ascii_letters + string.digits) for _ in range(5)]),
-        bio=CREATIVE_LLM.invoke(f'Write a bio for username "{owner}". Your response must only be the bio and nothing else.')
+        # bio=CREATIVE_LLM.invoke(f'Write a bio for username "{owner}". Your response must only be the bio and nothing else.')
     )
     with lock:
         session.add(User(**user_data))
@@ -39,7 +39,11 @@ def add_users(owners: pd.DataFrame, *, session) -> None:
 
 def add_products(products_df: pd.DataFrame, *, session) -> None:
     for row in products_df.iterrows():
-        session.add(Product(product_id=row[0], **row[1]))
+        session.add(Product(
+            product_id=row[0], 
+            **row[1],
+            image_file=get_hashed_img_filename(row[1]['name'], row[0]) + '.webp'
+        ))
         log(f'[add_data_to_db.py] Added product "{row[1]["name"]}"', 'db')
     session.commit()
     

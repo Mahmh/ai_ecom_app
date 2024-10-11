@@ -13,7 +13,7 @@ class UserData:
         self.username, self.password, self.bio = username, password, bio
 
     def __repr__(self):
-        return f"User('{self.username}')"
+        return f"User('{self.username}', '{self.password}')"
     
     def detach(self):
         return UserData(self.username, self.password, self.bio)
@@ -27,20 +27,21 @@ class User(Base, UserData):
 
 
 class ProductData:
-    def __init__(self, product_id, name, owner, description='', price=None, discount=None, category=None):
-        self.product_id, self.name, self.owner, self.description, self.price, self.discount, self.category = product_id, name, owner, description, price, discount, category
+    def __init__(self, product_id, name, owner, description='', price=None, discount=None, category=None, image_file=None):
+        self.product_id, self.name, self.owner, self.description, self.price, self.discount, self.category, self.image_file = product_id, name, owner, description, price, discount, category, image_file
     
     def __repr__(self):
         return f"Product({self.product_id}, '{self.name}')"
     
     def detach(self):
-        return ProductData(self.product_id, self.name, self.owner, self.description, self.price, self.discount, self.category)
+        return ProductData(self.product_id, self.name, self.owner, self.description, self.price, self.discount, self.category, self.image_file)
 
 class Product(Base, ProductData):
     __tablename__ = 'products'
     product_id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
     name = Column(String(511), nullable=False)
     description = Column(Text)
+    image_file = Column(String(255))
     price = Column(Float)
     discount = Column(Float)
     category = Column(String(255))

@@ -10,11 +10,10 @@ tasks.txt
 **/__pycache__/
 **/prototyping.ipynb
 **/build/
-**/saved*/
 **/*losses.jpg
 **/vectorstore/
 
-src/lib/assets/images/
+src/lib/assets/images/products/
 src/server/logs/
 src/client/node_modules/
 src/client/.next/

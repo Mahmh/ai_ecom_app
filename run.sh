@@ -7,7 +7,7 @@ serve_web() {
         # run in production mode
         if mkdir out/; then
             rm -r out/
-            echo 'Please run `npm run build` before running the production server`'
+            echo 'Please add `output: 'export'` in `next.config.mjs` and execute `npm run build` before running the production server.'
         else
             npx serve@latest out
         fi
@@ -19,7 +19,7 @@ serve_web() {
 }
 
 serve_db() {
-    sudo docker-compose up & sleep 7 && cd db/scripts && python3 add_data_to_db.py && echo 'Added data to DB'
+    sudo docker-compose up & sleep 10 && cd db/scripts && python3 add_data_to_db.py && echo 'Added data to DB.'
     cd ../..
 }
 

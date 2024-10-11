@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 from src.server.api.routers.model import model_r
 from src.server.api.routers.db import account_r, product_r, interaction_r
@@ -14,6 +15,8 @@ app.add_middleware(
     allow_methods=['GET', 'POST', 'PATCH', 'DELETE'],
     allow_headers=['*'],
 )
+app.mount('/product_images', StaticFiles(directory='../../lib/assets/images/hashed_products'), name='product_images')
+app.mount('/user_images', StaticFiles(directory='../../lib/assets/images/users'), name='user_images')
 
 # Routers
 for r in (model_r, account_r, product_r, interaction_r):

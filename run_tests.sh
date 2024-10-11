@@ -1,6 +1,6 @@
 #!/bin/bash
 SLEEP_DURATION=65
-MAX_TRIALS=5
+MAX_TRIALS=3
 trial_count=0
 
 sh run.sh & sleep $SLEEP_DURATION &&

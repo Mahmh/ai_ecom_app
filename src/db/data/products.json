@@ -84,7 +84,7 @@
         "description": "Wireless keyboard for Apple devices with a sleek and compact design.",
         "price": 129.0,
         "discount": 0.05,
-        "category": "Accessories",
+        "category": "Electronics",
         "owner": "Apple Inc."
     },
     {
@@ -116,8 +116,8 @@
         "description": "Immerse yourself in high-quality audio and stay one step ahead of the competition with our wireless gaming headset, featuring noise canceling technology and RGB lighting.",
         "price": 199.99,
         "discount": 0.1,
-        "category": "Accessories",
-        "owner": "Razer Inc."
+        "category": "Electronics",
+        "owner": "The Gaming Land"
     },
     {
         "name": "Modern Leather Sofa Set",
@@ -133,7 +133,7 @@
         "price": 599.99,
         "discount": 0.1,
         "category": "Electronics",
-        "owner": "Apple Inc"
+        "owner": "Apple Inc."
     },
     {
         "name": "Denim Jacket",
@@ -205,7 +205,7 @@
         "price": 30.0,
         "discount": 0.0,
         "category": "Electronics",
-        "owner": "Logitech Inc"
+        "owner": "Logitech Inc."
     },
     {
         "name": "Vintage Grand Piano",
@@ -269,7 +269,7 @@
         "price": 999.0,
         "discount": 0.05,
         "category": "Electronics",
-        "owner": "Apple Inc"
+        "owner": "Apple Inc."
     },
     {
         "name": "Razer Iskur Gaming Chair",
@@ -277,7 +277,7 @@
         "price": 399.99,
         "discount": 0.1,
         "category": "Furniture",
-        "owner": "Razer Inc"
+        "owner": "Razer Inc."
     },
     {
         "name": "Steel Water Bottle",

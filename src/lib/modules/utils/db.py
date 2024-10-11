@@ -1,7 +1,9 @@
-from sqlalchemy import func
-from functools import wraps
+from sqlalchemy import func, select, desc
 from sqlalchemy.orm import Session as SessionType
-from typing import Callable, Any, List, Union
+from typing import Callable, Any, List, Union, Tuple
+from functools import wraps
+from difflib import SequenceMatcher
+from hashlib import sha256
 from src.lib.modules.data.db import Session, UserData, User, ProductData, Product, InteractionData, Interaction
 from src.lib.modules.types.db import Credentials, UsernameTaken, WrongCredentials, NotOwner, NonExistent
 from src.lib.modules.utils.logger import log, err_log
@@ -32,7 +34,7 @@ def end_session(session: SessionType, commit: bool = True) -> None:
         session.close()
 
 
-def todict(obj: object) -> dict:
+def todict(obj: object) -> Union[dict[str, Any], List[Tuple]]:
     """Converts the object into a dictionary for either tracking hyperparameters or returning API responses"""
     result = {}
     attrs = [obj for obj in dir(obj) if obj[0] != '_']
@@ -43,22 +45,48 @@ def todict(obj: object) -> dict:
     return result
 
 
+def get_hashed_img_filename(product_name: str, product_id: int) -> str:
+    """Returns the product's unique image filename"""
+    product_name = product_name.lower().replace(' ', '-').replace("'", '')
+    encoded = f'{product_name}{product_id}'.encode()
+    return sha256(encoded).hexdigest()
+
+
 def _check_review_index(review_index: int, reviews: List[str]) -> None:
     """Checks if the inputted review index & review list are valid"""
     if len(reviews) == 0:
         raise Exception('Attempted to manipulate an empty review list')
     assert review_index < len(reviews), 'The index of the review you want to remove is out of the range of the review list'
 
+
 def _list_detach(lst: List[Union[User, Product, Interaction]]) -> List[Union[UserData, ProductData, InteractionData]]:
     """Converts DB entities into a type that doesn't require a session"""
     return [item.detach() for item in lst]
 
 
+def _prep_reviews(review_list: List[dict[str, Union[str, List[str]]]]) -> List[Tuple[str, str]]:
+    """Converts
+    ```
+    [{'username': 'user1', 'reviews': ['review1', 'review2', 'review3']}, {'username': 'user2', 'reviews': ['review1', 'review2']}]
+    ```
+    to 
+    ```
+    [('user1', 'review1'), ('user1', 'review2'), ('user1', 'review3'), ('user2', 'review1'), ('user2', 'review2')]
+    ```
+    """
+    result = []
+    for entry in review_list:
+        username = entry['username']
+        reviews = entry['reviews']
+        result.extend([(username, review) for review in reviews])
+    return result
+
+
 
 # Tables
 ### Users ###
-def _get_all_users(*, session: SessionType) -> List[User]:
-    return session.query(User).all()
+def _get_all_users(*, session: SessionType, **filter_kwargs) -> List[User]:
+    return session.query(User).filter_by(**filter_kwargs).all()
 
 def get_all_users() -> List[UserData]:
     """Returns all users"""
@@ -145,8 +173,8 @@ def delete_account(cred: Credentials) -> bool:
 
 
 ### Products ###
-def _get_all_products(*, session: SessionType) -> List[Product]:
-    return session.query(Product).all()
+def _get_all_products(*, session: SessionType, **filter_kwargs) -> List[Product]:
+    return session.query(Product).filter_by(**filter_kwargs).all()
 
 def get_all_products() -> List[ProductData]:
     """Returns all products"""
@@ -254,6 +282,29 @@ def update_product(cred: Credentials, product_id: int, **update_kwargs) -> bool:
 
 
 
+def _search_products(search_query: str, similarity_threshold: int = 0.6, *, session: SessionType) -> List[Product]:
+    similarity = lambda product_name: SequenceMatcher(None, product_name, search_query).ratio()  # Algorithm for computing similarity scores
+
+    # Compare the name of each product with the `search_query` to compute similarity
+    matches = []
+    for product in _get_all_products(session=session):
+        match_score = similarity(product.name)
+        if match_score >= similarity_threshold:
+            matches.append((product, match_score))
+    
+    matches.sort(key=lambda x: x[1], reverse=True)  # Sort matches by score in descending order
+    return [match[0] for match in matches]  # Return only the elements, not the scores
+
+def search_products(search_query: str, similarity_threshold: float = 0.6) -> List[ProductData]:
+    """Returns the most relevant products with respect to the `search_query` by computing their similarity scores and returning the products with scores >= `similarity_threshold`"""
+    session = Session()
+    result = _search_products(search_query, similarity_threshold, session=session)
+    result = _list_detach(result)
+    end_session(session)
+    return result
+
+
+
 ### User-product interactions ###
 def _get_all_interactions(*, session: SessionType, **filter_kwargs) -> List[Interaction]:
     return session.query(Interaction).filter_by(**filter_kwargs).all()
@@ -314,10 +365,11 @@ def _get_reviews_of_product(product_id: int, *, session: SessionType) -> List[di
         for interaction in interactions
     ]
 
-def get_reviews_of_product(product_id: int) -> List[dict[str, Union[str, List]]]:
+def get_reviews_of_product(product_id: int) -> List[Tuple[str, str]]:
     """Returns all the reviews on a product"""
     session = Session()
     result = _get_reviews_of_product(product_id, session=session)
+    result = _prep_reviews(result)
     end_session(session)
     return result
 
@@ -391,5 +443,23 @@ def remove_product_from_cart(cred: Credentials, product_id: int) -> bool:
     """Removes a product from a user's cart"""
     session = Session()
     result = _remove_product_from_cart(cred, product_id, session=session)
+    end_session(session)
+    return result
+
+
+
+def _get_most_rated_products(k: int = 3, *, session: SessionType) -> List[Product]:
+    stmt = select(Interaction).order_by(desc(Interaction.rating)).limit(k)
+    interactions = session.execute(stmt).scalars().all()
+    return [
+        session.query(Product).filter_by(product_id=interaction.product_id)[0]
+        for interaction in interactions
+    ]
+
+def get_most_rated_products(k: int = 3) -> List[ProductData]:
+    """Returns the top `k` most rated products"""
+    session = Session()
+    result = _get_most_rated_products(k, session=session)
+    result = _list_detach(result)
     end_session(session)
     return result
