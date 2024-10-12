@@ -1,22 +1,29 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Page, ProductCard, Dropdown, PaginationControls, CartButton } from '@/helpers/components'
 import { getDiscountedPrice, Request } from '@/helpers/utils'
-import { ProductObject, ProductSearchParams } from '@/helpers/interfaces'
+import { ProductObject, ProductSearchParams, Review } from '@/helpers/interfaces'
 import { nullProduct } from '@/helpers/context'
+import NotFound from '../not-found'
 
 const Product = ({ product_id }: { product_id: number }) => {
     const [product, setProduct] = useState<ProductObject>(nullProduct)
-    const [reviews, setReviews] = useState([])
+    const [found, setFound] = useState(true)
+    const [reviews, setReviews] = useState<Review[]>([])
+
+    const getProductInfo = (product: ProductObject) => {
+        if (typeof product !== 'string') setProduct(product); else setFound(false)
+    }
     
     useEffect(() => {
         if (typeof window !== 'undefined') window.scrollTo({ top: 0 });
-        (async () => await new Request(`get_product_using_id?product_id=${product_id}`, setProduct).get())();
+        (async () => await new Request(`get_product_using_id?product_id=${product_id}`, getProductInfo).get())();
         (async () => await new Request(`get_reviews_of_product?product_id=${product_id}`, setReviews).get())();
     }, [product_id])
 
-    return (
+    return found ? (
         <Page id='product-content'>
             <section id='product'>
                 {
@@ -29,7 +36,7 @@ const Product = ({ product_id }: { product_id: number }) => {
                 }
                 <div id='product-properties'>
                     <h1 className='product-name'>{product.name}</h1>
-                    <p className='product-owner'>{product.owner}</p>
+                    <Link href={`/users?username=${product.owner}`} className='product-owner'>{product.owner}</Link>
                     <p className='product-description'>{product.description}</p>
                     <h3 id='price'>
                         {product.discount ?
@@ -44,23 +51,21 @@ const Product = ({ product_id }: { product_id: number }) => {
             </section>
             <div className='horizontal-sep'></div>
             <section id='reviews'>
-                {reviews.map((review, i) => (
+                {reviews.map((review: Review, i: number) => (
                     <div key={i}>
-                        <h3>{review[0]}</h3>
-                        <p>{review[1]}</p>
+                        <Link href={`/users?username=${review.username}`}>{review.username}</Link>
+                        <p>{review.review}</p>
                     </div>
                 ))}
             </section>
         </Page>
-    )
+    ) : <NotFound/>
 }
-
-
-
 
 
 const Catalog = (searchParams: ProductSearchParams) => {
     const [products, setProducts] = useState<ProductObject[]>([])
+    const [isLoading, setIsLoading] = useState(true)
     const categories = ['All', 'Electronics', 'Clothes', 'Accessories', 'Furniture']
     const [category, setCategory] = useState(categories[0])
     const [searchQuery, setSearchQuery] = useState('')
@@ -90,7 +95,7 @@ const Catalog = (searchParams: ProductSearchParams) => {
     useEffect(() => { if (typeof window !== 'undefined') window.scrollTo({ top: 0 }) }, [])
     useEffect(() => { if (searchParams.search_query) setSearchQuery(searchParams.search_query) }, [searchParams.search_query])
     useEffect(() => { if (searchParams.category && categories.includes(searchParams.category)) setCategory(searchParams.category) }, [searchParams.category])
-    useEffect(() => { getProducts() }, [searchParams.category, searchParams.search_query, category, searchQuery])
+    useEffect(() => { setIsLoading(true); getProducts(); setIsLoading(false) }, [searchParams.category, searchParams.search_query, category, searchQuery])
 
     return (
         <Page id='product-catalog'>
@@ -104,12 +109,14 @@ const Catalog = (searchParams: ProductSearchParams) => {
             </section>
             <section className='product-container'>
                 {
-                    shownProducts.length > 0 
-                    ? shownProducts.map(product => <ProductCard key={product.product_id} product={product}/>) 
-                    : <p className='no-results-msg'>No results.</p>
+                    isLoading 
+                    ? Array.from({ length: 5 }, (_, i) => <ProductCard key={i} isLoading={isLoading}/>)
+                    : shownProducts.length > 0 
+                       ? shownProducts.map(product => <ProductCard key={product.product_id} product={product}/>) 
+                       : <p className='no-results-msg'>No results.</p>
                 }
             </section>
-            <PaginationControls items={products} setShownItems={setShownProducts} reloadFactors={[category, searchQuery]}/>
+            {!isLoading && <PaginationControls items={products} setShownItems={setShownProducts} reloadFactors={[category, searchQuery]}/>}
         </Page>
     )
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useContext, MouseEvent } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { NavLinkProps, PageProps, ProductObject, DropdownProps, PaginationControlsProps, Account } from '@/helpers/interfaces'
+import { NavLinkProps, PageProps, ProductObject, DropdownProps, PaginationControlsProps, Account, UserObject } from '@/helpers/interfaces'
 import { Request, addToCart, removeFromCart, getDiscountedPrice, isLoggedIn, isProductInCart, round } from '@/helpers/utils'
 import { AppContext } from '@/helpers/context'
 import Image from 'next/image'
@@ -61,31 +61,71 @@ export const CartButton = ({ product }: { product: ProductObject }) => {
 }
 
 
-export const ProductCard = ({ product }: { product: ProductObject }) => {
-    const { product_id, name, description, image_file, price, discount } = product
-    
-    return (
-        <div className='product-card'>
-            <Link href={`/products?product_id=${product_id}`}>
-                <div>
-                    <Image src={`http://localhost:8000/product_images/${image_file}`} alt={name ? name : 'product'} width={250} height={250} priority={true}/>
-                    <article>
-                        <h1 className='product-name'>{name}</h1>
-                        <label className='product-description'>{description}</label>
-                    </article>
-                </div>
-                <div>
-                    <h3>
-                        {discount ?
-                            <>
-                                <span className='old-price'>${price}</span>
-                                <span className='price'>${getDiscountedPrice(price, discount)}</span>
-                            </>  : <span className='price'>${price}</span>
-                        }
-                    </h3>
-                </div>
+export const ProductCard = ({ product, isLoading }: { product?: ProductObject, isLoading?: boolean }) => {
+    if (isLoading || !product) {
+        return (
+            <div className='product-card loading-product-card'>
+                <a>
+                    <div>
+                        <div className='loading-img'></div>
+                        <article>
+                            <h1 className='product-name'></h1>
+                            <label className='product-description'></label>
+                        </article>
+                    </div>
+                    <div>
+                        <h3>
+                            <span className='price'>$xxx</span>
+                        </h3>
+                    </div>
+                </a>
+                <button></button>
+            </div>
+        )
+    } else {
+        const { product_id, name, description, image_file, price, discount } = product
+        return (
+            <div className='product-card'>
+                <Link href={`/products?product_id=${product_id}`}>
+                    <div>
+                        <Image src={`http://localhost:8000/product_images/${image_file}`} alt={name ? name : 'product'} width={250} height={250} priority={true}/>
+                        <article>
+                            <h1 className='product-name'>{name}</h1>
+                            <label className='product-description'>{description}</label>
+                        </article>
+                    </div>
+                    <div>
+                        <h3>
+                            {discount ?
+                                <>
+                                    <span className='old-price'>${price}</span>
+                                    <span className='price'>${getDiscountedPrice(price, discount)}</span>
+                                </>  : <span className='price'>${price}</span>
+                            }
+                        </h3>
+                    </div>
+                </Link>
+                <CartButton product={product}/>
+            </div>
+        )
+    }
+}
+
+
+export const UserCard = ({ user, isLoading }: { user?: UserObject, isLoading?: boolean }) => {
+    return isLoading || !user ? (
+        <div className='user-card loading-user-card'>
+            <a>
+                <h1></h1>
+                <p></p>
+            </a>
+        </div>
+    ) : (
+        <div className='user-card'>
+            <Link href={`/users?username=${user.username}`}>
+                <h1>{user.username}</h1>
+                <p>{user.bio ? user.bio : <i>[No bio provided]</i>}</p>
             </Link>
-            <CartButton product={product}/>
         </div>
     )
 }

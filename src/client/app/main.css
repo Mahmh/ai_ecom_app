@@ -196,6 +196,13 @@
 }
 
 .product-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
+  height: auto;
   font-size: 1.1rem;
 }
 
@@ -281,6 +288,28 @@
   width: 250px;
   height: 250px;
 }
+.product-container .loading-product-card {
+  display: flex;
+  cursor: default;
+}
+.product-container .loading-product-card:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+.product-container .loading-product-card a {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.product-container .loading-product-card a h1, .product-container .loading-product-card a p {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 10px;
+}
+.product-container .loading-product-card .loading-img {
+  background-color: rgba(0, 0, 0, 0.45);
+  padding: 100px 10px;
+  border-radius: 10px;
+}
 
 #product-content {
   display: flex;
@@ -295,18 +324,24 @@
   width: 80%;
   margin: 0 auto;
 }
-#product-content #product #price {
+#product-content #product #product-properties #price {
   font-size: 1.4rem;
 }
-#product-content #product .product-name {
+#product-content #product #product-properties .product-name {
   font-size: 2.3rem;
   margin-bottom: 0;
 }
-#product-content #product .product-description {
+#product-content #product #product-properties .product-description {
   max-width: 35vw;
 }
-#product-content #product img {
+#product-content #product #product-properties img {
   max-width: 50vw;
+}
+#product-content #product #product-properties a {
+  color: black;
+}
+#product-content #product #product-properties a:hover {
+  text-decoration: underline;
 }
 #product-content .horizontal-sep {
   border: 2px solid rgba(0, 0, 0, 0.2);
@@ -319,6 +354,14 @@
   flex-direction: column;
   width: 80%;
   margin: 0 auto;
+}
+#product-content #reviews a {
+  color: black;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+#product-content #reviews a:hover {
+  text-decoration: underline;
 }
 
 #product-catalog #product-search-tools {
@@ -602,6 +645,133 @@
   font-family: "Poppins-ExtraLight";
   src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraLight.ttf");
 }
+#user-content, #user-catalog {
+  position: relative;
+  top: 170px;
+}
+#user-content h1, #user-catalog h1 {
+  font-size: 2rem;
+}
+
+#user-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 80%;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+#user-content section {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  padding: 20px 30px;
+  border-radius: 10px;
+}
+
+#user-catalog #user-search-tools {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+#user-catalog #user-search-tools input {
+  font-size: 1.4rem;
+  color: black;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  padding: 15px 20px;
+  border-radius: 8px;
+  width: 30%;
+}
+#user-catalog .user-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 80%;
+  margin: 50px auto;
+}
+#user-catalog .user-container .user-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 350px;
+  flex: 0;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 130ms ease;
+  cursor: pointer;
+}
+#user-catalog .user-container .user-card:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.45);
+}
+#user-catalog .user-container .user-card h1, #user-catalog .user-container .user-card p {
+  color: black;
+}
+#user-catalog .user-container .user-card p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
+  height: auto;
+}
+#user-catalog .user-container .loading-user-card {
+  display: flex;
+  cursor: default;
+}
+#user-catalog .user-container .loading-user-card:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+#user-catalog .user-container .loading-user-card a {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#user-catalog .user-container .loading-user-card a h1, #user-catalog .user-container .loading-user-card a p {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 10px;
+}
+#user-catalog .user-container .loading-user-card .loading-img {
+  background-color: rgba(0, 0, 0, 0.45);
+  padding: 100px 10px;
+  border-radius: 10px;
+}
+
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Regular.ttf");
+}
+@font-face {
+  font-family: "Poppins-Medium";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Medium.ttf");
+}
+@font-face {
+  font-family: "Poppins-SemiBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Bold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Light";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Light.ttf");
+}
+@font-face {
+  font-family: "Poppins-Thin";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Thin.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraBold";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "Poppins-Black";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-Black.ttf");
+}
+@font-face {
+  font-family: "Poppins-ExtraLight";
+  src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraLight.ttf");
+}
 .scrolled {
   background-color: rgb(12, 85, 80) !important;
   color: white !important;
@@ -714,6 +884,13 @@ header nav #login-btn:hover {
   background-color: rgba(0, 0, 0, 0.45);
 }
 .tooltip-container #products-tooltip section a p, .tooltip-container #about-tooltip section a p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
+  height: auto;
   font-size: 1rem;
   line-height: 1.5;
 }
@@ -874,4 +1051,22 @@ footer section {
 }
 footer section a:hover {
   text-decoration: underline;
+}
+
+#not-found-content {
+  position: relative;
+  top: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#not-found-content #not-found-sec {
+  text-align: center;
+  font-size: 1.4rem;
+}
+#not-found-content #top-rated-products-sec h1 {
+  display: none;
+}
+#not-found-content #top-rated-products-sec .product-container h1 {
+  display: block;
 }

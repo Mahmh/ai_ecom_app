@@ -14,7 +14,7 @@ const Search = () => {
         if (e.key === 'Enter') { e.preventDefault(); router.push(`/products?search_query=${searchInput}`) }
     }
     const handleInput = (e: ChangeEvent<HTMLInputElement>) => { e.preventDefault(); setSearchInput(e.target.value) }
-    return <input placeholder='Search' maxLength={30} onChange={handleInput} onKeyDown={handleEnter}/>
+    return <input placeholder='Search products' maxLength={30} onChange={handleInput} onKeyDown={handleEnter}/>
 }
 
 
@@ -35,9 +35,9 @@ const Tooltip = ({ constHeaderBgcolor, hovered, setHovered, lastHovered, content
         onMouseOut={() => setHovered('')}
     >
         <div className={`tooltip-arrow ${constHeaderBgcolor ? 'scrolled-arrow' : ''}`}></div>
-        {contents.map((content, i) => (lastHovered === content_names[i] ?
+        { contents.map((content, i) => (lastHovered === content_names[i] &&
             <div key={i} id={`${content_names[i].toLowerCase()}-tooltip`}>{content}</div> 
-        : null))}
+        ))}
     </div>
 )
 
@@ -64,7 +64,6 @@ const ProductTooltip = () => {
     )
 }
 
-
 const AboutTooltip = () => (
     <>
         <h1>Sections</h1>
@@ -78,7 +77,7 @@ export default function Header({ constHeaderBgcolor=false }) {
     const [scrolled, setScrolled] = useState(false)
     const [hovered, setHovered] = useState<string|ReactNode>('')
     const [lastHovered, setLastHovered] = useState<string|ReactNode>('')
-    const headerNavLinks = ['Products', 'About']
+    const headerNavLinks = ['Products', 'Users', 'About']
     const { account } = useContext(AppContext)
 
     useEffect(() => {
@@ -95,7 +94,8 @@ export default function Header({ constHeaderBgcolor=false }) {
                 <h1><Link href='/'>EcomGo</Link></h1>
                 <nav>
                     <HeaderNavLink href='/products' setHovered={setHovered} setLastHovered={setLastHovered}>{headerNavLinks[0]}</HeaderNavLink>
-                    <HeaderNavLink href='/about/faq' setHovered={setHovered} setLastHovered={setLastHovered}>{headerNavLinks[1]}</HeaderNavLink>
+                    <Link href='/users'>{headerNavLinks[1]}</Link>
+                    <HeaderNavLink href='/about/faq' setHovered={setHovered} setLastHovered={setLastHovered}>{headerNavLinks[2]}</HeaderNavLink>
                     <Search/>
                     {
                         account.username 
@@ -110,7 +110,7 @@ export default function Header({ constHeaderBgcolor=false }) {
                 setHovered={setHovered}
                 lastHovered={lastHovered}
                 content_names={headerNavLinks}
-                contents={[<ProductTooltip/>, <AboutTooltip/>]}
+                contents={[<ProductTooltip/>, <></>, <AboutTooltip/>]}
             />
         </>
     )

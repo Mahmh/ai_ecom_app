@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Page, ProductCard } from '@/helpers/components'
 import { AppContext } from '@/helpers/context'
 import { isLoggedIn, Request } from '@/helpers/utils'
-import { ContextProps, ProductObject } from '@/helpers/interfaces'
+import { ProductObject } from '@/helpers/interfaces'
 
 // Related
 const Banner = () => (
@@ -16,13 +16,17 @@ const Banner = () => (
 )
 
 
-const TopRatedProducts = () => {
-    const { topRated } = useContext(AppContext)
+export const TopRatedProducts = () => {
+    const { topRated, isTopRatedLoading } = useContext(AppContext)
     return (
         <section id='top-rated-products-sec'>
             <h1>Top Rated</h1>
             <div className='product-container'>
-                {topRated && topRated.map((product: ProductObject, i: number) => <ProductCard key={i} product={product}/>)}
+                {
+                    isTopRatedLoading 
+                    ? Array.from({ length: 5 }, (_, i) => <ProductCard key={i} isLoading={isTopRatedLoading}/>)
+                    : topRated && topRated.map((product: ProductObject, i: number) => <ProductCard key={i} product={product}/>)
+                }
             </div>
         </section>
     )
@@ -30,19 +34,27 @@ const TopRatedProducts = () => {
 
 const DiscoverProducts = () => {
     const [products, setProducts] = useState<ProductObject[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+
+    const getProducts = (all_products: ProductObject[]) => {
+        setProducts(all_products.slice(10, 20))
+        setIsLoading(false)
+    }
 
     useEffect(() => {
-        const handleProducts = (all_products: ProductObject[]) => {
-            setProducts(all_products.slice(10, 20))
-        }
-        (async () => await new Request(`get_all_products`, handleProducts).get())();
+        setIsLoading(true);
+        (async () => await new Request('get_all_products', getProducts).get())()
     }, [])
 
     return (
         <section id='discover-products-sec'>
             <h1>Discover</h1>
             <div className='product-container'>
-                {products && products.map((product, i) => <ProductCard key={i} product={product}/>)}
+                {
+                    isLoading 
+                    ? Array.from({ length: 5 }, (_, i) => <ProductCard key={i} isLoading={isLoading}/>)
+                    : products && products.map((product, i) => <ProductCard key={i} product={product} isLoading={isLoading}/>)
+                }
             </div>
         </section>
     )

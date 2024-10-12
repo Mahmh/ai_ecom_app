@@ -36,6 +36,7 @@ export interface ContextProps {
     setAccount: SetState<Account>
     topRated: ProductObject[],
     setTopRated: SetState<ProductObject[]>
+    isTopRatedLoading: boolean
 }
 
 
@@ -87,9 +88,25 @@ export interface PaginationControlsProps {
     readonly reloadFactors: any[]
 }
 
+export interface Review {
+    readonly username: string
+    readonly review: string
+}
+
 export interface Account {
     username: string
     password: string
     bio: string
     cart: ProductObject[]
+}
+
+export interface UserObject {
+    username: string
+    bio: string
+    owned_products: ProductObject[]
+}
+
+export interface UserSearchParams {
+    readonly username?: string
+    readonly search_query: string
 }

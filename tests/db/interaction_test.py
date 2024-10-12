@@ -34,8 +34,8 @@ class TestInteraction(DBTests):
         status2 = add_product_review(SAMPLE_CRED, SAMPLE_PRODUCT_ID, reviews_to_add[1])
 
         result = get_reviews_of_product(SAMPLE_PRODUCT_ID)
-        username = [tupl[0] for tupl in result][0]
-        reviews = [tupl[1] for tupl in result]
+        username = result[0]['username']
+        reviews = [review['review'] for review in result]
 
         assert status1 is True and status2 is True, 'Failed to add review'
         assert username == SAMPLE_CRED.username, 'Failed to get the username that made the product review'
@@ -60,7 +60,7 @@ class TestInteraction(DBTests):
         status = update_product_review(SAMPLE_CRED, SAMPLE_PRODUCT_ID, 0, new_msg)
         # Check
         result = get_reviews_of_product(SAMPLE_PRODUCT_ID)
-        new_review = [tupl[1] for tupl in result][-1]
+        new_review = result[-1]['review']
         assert status is True and new_review == new_msg, 'Failed to update product review'
 
 

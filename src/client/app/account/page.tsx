@@ -1,11 +1,11 @@
 'use client'
-import { AppContext, nullAccount } from "@/helpers/context"
+import { AppContext, nullAccount } from '@/helpers/context'
 import { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Page, ProductCard } from "@/helpers/components"
-import { ProductObject } from "@/helpers/interfaces"
+import { Page, ProductCard } from '@/helpers/components'
+import { ProductObject } from '@/helpers/interfaces'
 import { Request, getDiscountedPrice, isLoggedIn, getCredentials } from '@/helpers/utils'
-import Link from "next/link"
+import Link from 'next/link'
 
 export default function Account() {
     const [total, setTotal] = useState(0)

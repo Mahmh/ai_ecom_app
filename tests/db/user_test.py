@@ -2,7 +2,7 @@ import pytest
 from src.lib.modules.utils.tests import DBTests, SAMPLE_CRED
 from src.lib.modules.types.db import Credentials, WrongCredentials
 from src.lib.modules.data.db import UserData
-from src.lib.modules.utils.db import get_all_users, account_exists, log_in_account, create_account, delete_account, edit_bio
+from src.lib.modules.utils.db import get_all_users, account_exists, log_in_account, create_account, delete_account, edit_bio, get_user_info
 
 class TestUser(DBTests):
     def test_get_all_users(self):
@@ -43,3 +43,9 @@ class TestUser(DBTests):
         new_bio = 'New Bio'
         status = edit_bio(SAMPLE_CRED, new_bio)
         assert status is True and log_in_account(SAMPLE_CRED).bio == new_bio, 'Failed to edit account\'s bio'
+    
+
+    def test_get_user_info(self):
+        username = SAMPLE_CRED.username
+        user_info = get_user_info(username)
+        assert (user_info['username'] == username) and (user_info['bio'] is None) and (len(user_info['owned_products']) == 1), 'Failed to get user info'

@@ -5,7 +5,7 @@
         "price": 1199.99,
         "discount": 0.15,
         "category": "Electronics",
-        "owner": "Samsung Electronics Co., Ltd."
+        "owner": "Samsung Electronics"
     },
     {
         "name": "Zara Graphic T-Shirt",
@@ -88,12 +88,12 @@
         "owner": "Apple Inc."
     },
     {
-        "name": "Ikea Malm 6-Drawer Chest",
+        "name": "IKEA Malm 6-Drawer Chest",
         "description": "Practical and stylish furniture piece with six drawers for ample storage space.",
         "price": 109.99,
         "discount": 0.15,
         "category": "Furniture",
-        "owner": "Ikea"
+        "owner": "IKEA"
     },
     {
         "name": "iPhone 13 Pro Max",

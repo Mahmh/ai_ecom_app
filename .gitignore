@@ -10,7 +10,6 @@ tasks.txt
 **/__pycache__/
 **/prototyping.ipynb
 **/build/
-**/*losses.jpg
 **/vectorstore/
 
 src/lib/assets/images/products/
