@@ -1,8 +1,8 @@
 from typing import Any, Callable, Tuple, List, Dict
 import requests, json, pytest
-from src.lib.modules.types.db import Credentials
-from src.lib.modules.data.constants import SERVER_URL
-from src.lib.modules.utils.db import create_account, create_product, delete_account, delete_product
+from src.lib.types.db import Credentials
+from src.lib.data.constants import SERVER_URL
+from src.lib.utils.db import create_account, create_product, delete_account, delete_product
 
 # Check if API server is running
 try: requests.get(SERVER_URL)

@@ -1,14 +1,17 @@
 from fastapi import APIRouter, Query
 from typing import Union, List, Tuple, Dict
 import json
-from src.lib.modules.types.db import Credentials, UpdateBioInfo
-from src.lib.modules.utils.db import (
+from src.lib.types.db import Credentials, UpdateBioInfo
+from src.lib.utils.db import (
     exc_handler,
     todict,
+    get_all_users,
     log_in_account,
     create_account,
     delete_account,
     edit_bio,
+    get_user_info,
+    search_users,
     get_all_products,
     get_product_using_id,
     create_product,
@@ -33,6 +36,12 @@ interaction_r = APIRouter()
 
 # Endpoints
 ### Users ###
+@account_r.get('/get_all_users')
+@exc_handler
+async def get_all_users_() -> Union[List[Dict], str]:
+    return [todict(u) for u in get_all_users()]
+
+
 @account_r.post('/log_in_account')
 @exc_handler
 async def log_in_account_(cred: Credentials) -> Union[dict, str]:
@@ -56,6 +65,20 @@ async def delete_account_(cred: Credentials) -> Union[bool, str]:
 async def edit_bio_(info: UpdateBioInfo) -> Union[bool, str]:
     cred, new_bio = Credentials(username=info.username, password=info.password), info.new_bio
     return edit_bio(cred, new_bio)
+
+
+@account_r.get('/get_user_info')
+@exc_handler
+async def get_user_info_(username: str = Query()):
+    print(username.replace('%20', ' ').replace('%27', '\'').replace('[amps]', '&'))
+    return get_user_info(username.replace('%20', ' ').replace('%27', '\'').replace('[amps]', '&'))
+
+
+@account_r.get('/search_users')
+@exc_handler
+async def search_users_(search_query: str = Query(), similarity_threshold: float = Query(0.6)) -> Union[List[Dict], str]:
+    return [todict(u) for u in search_users(search_query, similarity_threshold)]
+
 
 
 ### Products ###
@@ -105,7 +128,7 @@ async def rate_product_(cred: Credentials, product_id: int, rating: int) -> Unio
 
 @interaction_r.get('/get_reviews_of_product')
 @exc_handler
-async def get_reviews_of_product_(product_id: int = Query()) -> Union[List[Tuple[str, str]], str]:
+async def get_reviews_of_product_(product_id: int = Query()) -> Union[List[Dict[str, str]], str]:
     return get_reviews_of_product(product_id)
 
 
@@ -148,5 +171,5 @@ async def remove_product_from_cart_(k: int = Query(3)) -> Union[List[Dict], str]
 
 @interaction_r.post('/get_cart')
 @exc_handler
-async def get_cart_(cred: Credentials) -> Union[List[dict], str]:
+async def get_cart_(cred: Credentials) -> Union[List[Dict], str]:
     return [todict(p) for p in get_cart(cred)]

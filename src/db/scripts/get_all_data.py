@@ -1,5 +1,5 @@
 """Print the contents of the DB"""
-from src.lib.modules.utils.db import get_all_users, get_all_products, get_all_interactions
+from src.lib.utils.db import get_all_users, get_all_products, get_all_interactions
 
 def main():
     users = get_all_users()

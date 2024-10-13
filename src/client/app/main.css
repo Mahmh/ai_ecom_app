@@ -137,7 +137,7 @@
   font-family: "Poppins-ExtraLight";
   src: url("../../lib/assets/fonts/Poppins/Poppins-ExtraLight.ttf");
 }
-#about-content {
+#faq-content, #contact-us-content {
   display: flex;
   flex-direction: column;
   font-size: 1.3rem;
@@ -146,6 +146,7 @@
   margin: 0 auto;
   position: relative;
   top: 140px;
+  padding-bottom: 100px;
 }
 
 @font-face {

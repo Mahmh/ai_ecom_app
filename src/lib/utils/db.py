@@ -1,12 +1,12 @@
 from sqlalchemy import func, select, desc
 from sqlalchemy.orm import Session as SessionType
-from typing import Callable, Any, List, Union, Tuple
+from typing import Callable, Any, List, Union, Tuple, Dict
 from functools import wraps
 from difflib import SequenceMatcher
 from hashlib import sha256
-from src.lib.modules.data.db import Session, UserData, User, ProductData, Product, InteractionData, Interaction
-from src.lib.modules.types.db import Credentials, UsernameTaken, WrongCredentials, NotOwner, NonExistent
-from src.lib.modules.utils.logger import log, err_log
+from src.lib.data.db import Session, UserData, User, ProductData, Product, InteractionData, Interaction
+from src.lib.types.db import Credentials, UsernameTaken, WrongCredentials, NotOwner, NonExistent
+from src.lib.utils.logger import log, err_log
 
 # Helpers
 def exc_handler(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -34,7 +34,7 @@ def end_session(session: SessionType, commit: bool = True) -> None:
         session.close()
 
 
-def todict(obj: object) -> Union[dict[str, Any], List[Tuple]]:
+def todict(obj: object) -> Union[Dict[str, Any], List[Tuple]]:
     """Converts the object into a dictionary for either tracking hyperparameters or returning API responses"""
     result = {}
     attrs = [obj for obj in dir(obj) if obj[0] != '_']
@@ -64,21 +64,21 @@ def _list_detach(lst: List[Union[User, Product, Interaction]]) -> List[Union[Use
     return [item.detach() for item in lst]
 
 
-def _prep_reviews(review_list: List[dict[str, Union[str, List[str]]]]) -> List[Tuple[str, str]]:
+def _prep_reviews(review_list: List[Dict[str, Union[str, List[str]]]]) -> List[Dict[str, str]]:
     """Converts
     ```
     [{'username': 'user1', 'reviews': ['review1', 'review2', 'review3']}, {'username': 'user2', 'reviews': ['review1', 'review2']}]
     ```
     to 
     ```
-    [('user1', 'review1'), ('user1', 'review2'), ('user1', 'review3'), ('user2', 'review1'), ('user2', 'review2')]
+    [{'user1': 'review1'}, {'user1': 'review2'}, {'user1': 'review3'}, {'user2': 'review1'}, {'user2': 'review2'}]
     ```
     """
     result = []
     for entry in review_list:
         username = entry['username']
         reviews = entry['reviews']
-        if reviews: result.extend([(username, review) for review in reviews])
+        if reviews: result.extend([{'username': username, 'review': review} for review in reviews])
     return result
 
 
@@ -182,6 +182,46 @@ def edit_bio(cred: Credentials, new_bio: str) -> bool:
     """Modifies an account's bio"""
     session = Session()
     result = _edit_bio(cred, new_bio, session=session)
+    end_session(session)
+    return result
+
+
+
+def _get_user_info(username: str, *, session: SessionType) -> Dict[str, Union[str, List[Product]]]:
+    if _account_exists(Credentials(username=username, password=''), session=session):
+        user = _get_all_users(username=username, session=session)[0]
+        products = _get_all_products(owner=username, session=session)
+        return { 'username': user.username, 'bio': user.bio, 'owned_products': products }
+    else:
+        raise NonExistent('user', username)
+
+def get_user_info(username: str) -> Dict[str, Union[str, List[ProductData]]]:
+    session = Session()
+    result = _get_user_info(username, session=session)
+    result['owned_products'] = _list_detach(result['owned_products'])
+    end_session(session)
+    return result
+
+
+
+def _search_users(search_query: str, similarity_threshold: int = 0.6, *, session: SessionType) -> List[User]:
+    similarity = lambda username: SequenceMatcher(None, username, search_query).ratio()  # Algorithm for computing similarity scores
+
+    # Compare the name of each user with the `search_query` to compute similarity
+    matches = []
+    for user in _get_all_users(session=session):
+        match_score = similarity(user.username)
+        if match_score >= similarity_threshold:
+            matches.append((user, match_score))
+    
+    matches.sort(key=lambda x: x[1], reverse=True)  # Sort matches by score in descending order
+    return [match[0] for match in matches]  # Return only the elements, not the scores
+
+def search_users(search_query: str, similarity_threshold: float = 0.6) -> List[UserData]:
+    """Returns the most relevant users with respect to the `search_query` by computing their similarity scores and returning the products with scores >= `similarity_threshold`"""
+    session = Session()
+    result = _search_users(search_query, similarity_threshold, session=session)
+    result = _list_detach(result)
     end_session(session)
     return result
 
@@ -298,17 +338,16 @@ def update_product(cred: Credentials, product_id: int, **update_kwargs) -> bool:
 
 
 def _search_products(search_query: str, similarity_threshold: int = 0.6, *, session: SessionType) -> List[Product]:
-    similarity = lambda product_name: SequenceMatcher(None, product_name, search_query).ratio()  # Algorithm for computing similarity scores
+    similarity = lambda product_name: SequenceMatcher(None, product_name, search_query).ratio() 
 
-    # Compare the name of each product with the `search_query` to compute similarity
     matches = []
     for product in _get_all_products(session=session):
         match_score = similarity(product.name)
         if match_score >= similarity_threshold:
             matches.append((product, match_score))
     
-    matches.sort(key=lambda x: x[1], reverse=True)  # Sort matches by score in descending order
-    return [match[0] for match in matches]  # Return only the elements, not the scores
+    matches.sort(key=lambda x: x[1], reverse=True) 
+    return [match[0] for match in matches]
 
 def search_products(search_query: str, similarity_threshold: float = 0.6) -> List[ProductData]:
     """Returns the most relevant products with respect to the `search_query` by computing their similarity scores and returning the products with scores >= `similarity_threshold`"""
@@ -334,7 +373,7 @@ def get_all_interactions(**filter_kwargs) -> List[InteractionData]:
 
 
 
-def _update_interaction(cred: Credentials, product_id: int, updater: Callable[[Interaction, dict], None], *, session: SessionType) -> bool:
+def _update_interaction(cred: Credentials, product_id: int, updater: Callable[[Interaction, Dict], None], *, session: SessionType) -> bool:
     account = _log_in_account(cred, session=session)
     _get_product_using_id(product_id, session=session)
     interactions = _get_all_interactions(username=account.username, product_id=product_id, session=session)
@@ -350,7 +389,7 @@ def _update_interaction(cred: Credentials, product_id: int, updater: Callable[[I
     updater(interaction, attrs_values)
     return True
 
-def update_interaction(cred: Credentials, product_id: int, updater: Callable[[Interaction, dict], None]) -> bool:
+def update_interaction(cred: Credentials, product_id: int, updater: Callable[[Interaction, Dict], None]) -> bool:
     """Updates a specified interaction's attributes using a callback function that takes in an interaction along with its attribute-value dictionary and updates it using `setattr()`"""
     session = Session()
     result = _update_interaction(cred, product_id, updater, session=session)
@@ -372,26 +411,25 @@ def rate_product(cred: Credentials, product_id: int, rating: int) -> bool:
 
 
 
-def _get_reviews_of_product(product_id: int, *, session: SessionType) -> List[dict[str, Union[str, List]]]:
+def _get_reviews_of_product(product_id: int, *, session: SessionType) -> List[Dict[str, str]]:
     _get_product_using_id(product_id, session=session)
     interactions = _get_all_interactions(session=session, product_id=product_id)
-    return [
+    return _prep_reviews([
         {'username': interaction.username, 'reviews': interaction.reviews}
         for interaction in interactions
-    ]
+    ])
 
-def get_reviews_of_product(product_id: int) -> List[Tuple[str, str]]:
-    """Returns all the reviews on a product"""
+def get_reviews_of_product(product_id: int) -> List[Dict[str, str]]:
+    """Returns all the reviews made on a product"""
     session = Session()
     result = _get_reviews_of_product(product_id, session=session)
-    result = _prep_reviews(result)
     end_session(session)
     return result
 
 
 
 def _add_product_review(cred: Credentials, product_id: int, review: str, *, session: SessionType) -> bool:
-    def _add_review(interaction: Interaction, attrs_values: dict) -> None:
+    def _add_review(interaction: Interaction, attrs_values: Dict) -> None:
         new = attrs_values['reviews'] + [review] if attrs_values['reviews'] else [review]
         setattr(interaction, 'reviews', new)
     return _update_interaction(cred, product_id, _add_review, session=session)
@@ -406,7 +444,7 @@ def add_product_review(cred: Credentials, product_id: int, review: str) -> bool:
 
 
 def _remove_product_review(cred: Credentials, product_id: int, review_index: int, *, session: SessionType) -> bool:
-    def _remove_review(interaction: Interaction, attrs_values: dict) -> None:
+    def _remove_review(interaction: Interaction, attrs_values: Dict) -> None:
         reviews = attrs_values['reviews'].copy()
         _check_review_index(review_index, reviews)
         del reviews[review_index]
@@ -423,7 +461,7 @@ def remove_product_review(cred: Credentials, product_id: int, review_index: int)
 
 
 def _update_product_review(cred: Credentials, product_id: int, review_index: int, new_review: str, *, session: SessionType) -> bool:
-    def _update_review(interaction: Interaction, attrs_values: dict) -> None:
+    def _update_review(interaction: Interaction, attrs_values: Dict) -> None:
         reviews = attrs_values['reviews'].copy()
         _check_review_index(review_index, reviews)
         reviews[review_index] = new_review

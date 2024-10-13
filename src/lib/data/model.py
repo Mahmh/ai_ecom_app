@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from torch.utils.data import Dataset
 import torch, numpy as np, pandas as pd
 from typing import List, Tuple, Callable
-from src.lib.modules.data.constants import MAX_CORES, EMBEDDER
+from src.lib.data.constants import MAX_CORES, EMBEDDER
 from src.server.models.review_analyst.model import ReviewAnalyst
 
 torch.set_float32_matmul_precision('high')
@@ -25,8 +25,8 @@ class model_config:
         num_workers: int = MAX_CORES
         prefetch_factor: int = 4  # number of prefetched batches for each worker
         # Saving
-        persist_model_dir_name: str = 'saved_models'
-        persist_optimizer_dir_name: str = 'saved_optimizers'
+        persist_model_dir_name: str = 'artifacts/saved_models'
+        persist_optimizer_dir_name: str = 'artifacts/saved_optimizers'
         persist_name_fmt: str = "%Y-%m-%d_%H-%M-%S.pt"
         load_last_chkpt: bool = True
         epochs_before_saving: bool = 1
@@ -35,7 +35,7 @@ class model_config:
     @dataclass
     class review_analyst(base):
         model_cls = ReviewAnalyst
-        csv_file: str = '../../../db/data/amazon_reviews.csv'  # relative path with respect to the `lib/data/modules/` directory
+        csv_file: str = '../../../db/data/amazon_reviews.csv'  # relative path with respect to the `lib/data/` directory
         n_inputs: int = 4097  # 4096 (embedding vector of "review_text") + 1 ("rating")
         n_outputs: int = 1    # 1 ("sentiment")
         layers: List[int] = field(default_factory=lambda:[1, 1]) # list of number of neurons in each layer
@@ -62,8 +62,8 @@ class model_config:
 class DFDataset(Dataset):
     """Dataset class for loading Pandas DataFrames"""
     def __init__(self, df: pd.DataFrame, prep_sample: Callable[[List], Tuple]):
-        assert len(df) > 0, 'empty DataFrame'
-        self.df, self.prep_sample = df, prep_sample
+        assert len(df) > 0, 'expected a non-empty `pd.DataFrame`'
+        self.df, self.prep_sample = df.head(16), prep_sample
         
     def __getitem__(self, i) -> torch.tensor:
         X, y = self.prep_sample(*self.df.iloc[i].tolist())

@@ -115,14 +115,11 @@ export const ProductCard = ({ product, isLoading }: { product?: ProductObject, i
 export const UserCard = ({ user, isLoading }: { user?: UserObject, isLoading?: boolean }) => {
     return isLoading || !user ? (
         <div className='user-card loading-user-card'>
-            <a>
-                <h1></h1>
-                <p></p>
-            </a>
+            <a><h1></h1><p></p></a>
         </div>
     ) : (
         <div className='user-card'>
-            <Link href={`/users?username=${user.username}`}>
+            <Link href={`/users?username=${user.username.replace('&', '[amps]')}`}>
                 <h1>{user.username}</h1>
                 <p>{user.bio ? user.bio : <i>[No bio provided]</i>}</p>
             </Link>

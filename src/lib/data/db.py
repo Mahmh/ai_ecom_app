@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, Text, ARRAY, Boolean, ForeignKey
 from sqlalchemy.orm import sessionmaker, declarative_base
-from src.lib.modules.data.constants import ENGINE_URL
+from src.lib.data.constants import ENGINE_URL
 
 # Init
 engine = create_engine(ENGINE_URL)
@@ -13,7 +13,7 @@ class UserData:
         self.username, self.password, self.bio = username, password, bio
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.password}')"
+        return f"User('{self.username}')"
     
     def detach(self):
         return UserData(self.username, self.password, self.bio)

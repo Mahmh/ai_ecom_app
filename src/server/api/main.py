@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import uvicorn
+import uvicorn, os
 from src.server.api.routers.model import model_r
 from src.server.api.routers.db import account_r, product_r, interaction_r
-from src.lib.modules.data.constants import WEB_SERVER_URL, API_SERVER_HOST, API_SERVER_PORT
+from src.lib.data.constants import WEB_SERVER_URL, API_SERVER_HOST, API_SERVER_PORT, CURRENT_DIR
 
 # Init
 app = FastAPI()
@@ -24,4 +24,10 @@ for r in (model_r, account_r, product_r, interaction_r):
 
 # Start
 if __name__ == '__main__':
-    uvicorn.run('main:app', host=API_SERVER_HOST, port=API_SERVER_PORT, reload=True)
+    uvicorn.run(
+        'main:app', 
+        host=API_SERVER_HOST, 
+        port=API_SERVER_PORT,
+        reload=True,
+        reload_dirs=[os.path.join(CURRENT_DIR, '../')]
+    )

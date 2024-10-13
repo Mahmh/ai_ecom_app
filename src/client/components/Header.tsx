@@ -18,13 +18,13 @@ const Search = () => {
 }
 
 
-const HeaderNavLink = ({ children, href, setHovered, setLastHovered }: HeaderNavLinkProps) => (
+const HeaderNavLink = ({ children, href, setHovered, setLastHovered }: HeaderNavLinkProps) => setHovered && setLastHovered ? (
     <NavLink 
         href={href.toLowerCase()} 
         onMouseOver={() => { setHovered(children); setLastHovered(children) }} 
         onMouseOut={() => setHovered('')}
     >{children}</NavLink>
-)
+) : <NavLink href={href.toLowerCase()}>{children}</NavLink>
 
 
 const Tooltip = ({ constHeaderBgcolor, hovered, setHovered, lastHovered, contents, content_names }: TooltipProps) => (
@@ -94,7 +94,7 @@ export default function Header({ constHeaderBgcolor=false }) {
                 <h1><Link href='/'>EcomGo</Link></h1>
                 <nav>
                     <HeaderNavLink href='/products' setHovered={setHovered} setLastHovered={setLastHovered}>{headerNavLinks[0]}</HeaderNavLink>
-                    <Link href='/users'>{headerNavLinks[1]}</Link>
+                    <HeaderNavLink href='/users'>{headerNavLinks[1]}</HeaderNavLink>
                     <HeaderNavLink href='/about/faq' setHovered={setHovered} setLastHovered={setLastHovered}>{headerNavLinks[2]}</HeaderNavLink>
                     <Search/>
                     {

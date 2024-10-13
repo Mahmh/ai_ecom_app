@@ -26,8 +26,8 @@ CHAT_LLM = ChatOllama(**MAIN_CONFIG, model=CHAT_LLM_NAME, temperature=TEMPERATUR
 
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 200
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-VECSTORE_PERSIST_DIR=os.path.join(CURRENT_DIR, '../../../db/vectorstore')
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))  # path with respect to this file
+VECSTORE_PERSIST_DIR=os.path.join(CURRENT_DIR, '../../db/vectorstore')
 TOP_K = 9
 
 BASE_SYS_MSG = SystemMessage('You are a helpful assistant that uses EcomGo\'s (our e-commerce company) documents to answer customer questions.')

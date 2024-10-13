@@ -1,5 +1,5 @@
-from src.lib.modules.data.constants import NOT_OK_MSG
-from src.lib.modules.utils.tests import post_req
+from src.lib.data.constants import NOT_OK_MSG
+from src.lib.utils.tests import post_req
 
 def test_chatbot_response() -> None:
     request = post_req('chatbot', prompt='hi', history=[])

@@ -1,9 +1,9 @@
 from torch.multiprocessing import set_start_method; set_start_method('spawn', force=True)
 import mlflow, datetime, time
-from src.lib.modules.data.model import model_config
-from src.lib.modules.utils.db import todict
-from src.lib.modules.utils.model import train_val_test_split, init_training, load_checkpoint, save_checkpoint, plot, eval_model
-from src.lib.modules.data.constants import MLFLOW_TRACKING_URI
+from src.lib.data.model import model_config
+from src.lib.utils.db import todict
+from src.lib.utils.model import train_val_test_split, init_training, load_checkpoint, save_checkpoint, plot, eval_model
+from src.lib.data.constants import MLFLOW_TRACKING_URI
 
 if __name__ == '__main__':
     # Init experiment
@@ -51,8 +51,8 @@ if __name__ == '__main__':
                 avg_val_loss = eval_model(model, val_ds, 'val_loss')
                 avg_val_losses.append(avg_val_loss)
 
-                plot(avg_train_losses, 'avg_train_losses.jpg')
-                plot(avg_val_losses, 'avg_val_losses.jpg')
+                plot(avg_train_losses, 'artifacts/avg_train_losses.jpg')
+                plot(avg_val_losses, 'artifacts/avg_val_losses.jpg')
 
                 print('\r', end='', flush=True)
                 print(f'Epoch {epoch}/{config.epochs}    Average train loss: {avg_train_loss:.4f}    Average val loss: {avg_val_loss:.4f}    Time elapsed: {(t2-t1):.2f}s')

@@ -1,8 +1,8 @@
 import pytest
-from src.lib.modules.utils.tests import DBTests, SAMPLE_CRED
-from src.lib.modules.types.db import Credentials, WrongCredentials
-from src.lib.modules.data.db import UserData
-from src.lib.modules.utils.db import get_all_users, account_exists, log_in_account, create_account, delete_account, edit_bio, get_user_info
+from src.lib.utils.tests import DBTests, SAMPLE_CRED
+from src.lib.types.db import Credentials, WrongCredentials
+from src.lib.data.db import UserData
+from src.lib.utils.db import get_all_users, account_exists, log_in_account, create_account, delete_account, edit_bio, get_user_info
 
 class TestUser(DBTests):
     def test_get_all_users(self):

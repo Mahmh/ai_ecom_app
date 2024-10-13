@@ -1,13 +1,13 @@
 """Supply the DB with synthetic data"""
 import os, json, random, string, pandas as pd, time, multiprocessing as mp
 from typing import Tuple, Any
-from src.lib.modules.data.db import Session, User, Product, Interaction
-from src.lib.modules.utils.db import end_session, get_hashed_img_filename
-from src.lib.modules.utils.logger import log
-from src.lib.modules.data.constants import CURRENT_DIR, CREATIVE_LLM
+from src.lib.data.db import Session, User, Product, Interaction
+from src.lib.utils.db import end_session, get_hashed_img_filename
+from src.lib.utils.logger import log
+from src.lib.data.constants import CURRENT_DIR, CREATIVE_LLM
 
 def load_data() -> Tuple[pd.DataFrame]:
-    products_json = os.path.join(CURRENT_DIR, '../../../db/data/products.json')
+    products_json = os.path.join(CURRENT_DIR, '../../db/data/products.json')
 
     with open(products_json) as file:
         products_df = pd.DataFrame(json.load(file))

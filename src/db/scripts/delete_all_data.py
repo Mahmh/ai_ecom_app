@@ -1,6 +1,6 @@
 """Make DB empty"""
-from src.lib.modules.data.db import Session, User, Product, Interaction
-from src.lib.modules.utils.db import end_session
+from src.lib.data.db import Session, User, Product, Interaction
+from src.lib.utils.db import end_session
 
 def main():
     session = Session()

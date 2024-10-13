@@ -4,10 +4,10 @@ from torch.utils.data import DataLoader
 import torch, os, mlflow, matplotlib.pyplot as plt, pandas as pd
 import torch.utils.data
 from typing import List, Tuple, Union
-from src.lib.modules.data.constants import CURRENT_DIR
-from src.lib.modules.data.model import model_config, DFDataset
+from src.lib.data.constants import CURRENT_DIR
+from src.lib.data.model import model_config, DFDataset
 
-_locate = lambda x: os.path.join(CURRENT_DIR, '../../../server/models/review_analyst/' + x)
+_locate = lambda x: os.path.join(CURRENT_DIR, '../../server/models/review_analyst/' + x)
 
 def _check_checkpoint_dirs(model_dirname: str, optimizer_dirname: str) -> Union[bool, Tuple]:
     """Checks if saved checkpoint directories exist in the current working directory"""
@@ -19,7 +19,7 @@ def _check_checkpoint_dirs(model_dirname: str, optimizer_dirname: str) -> Union[
 
 def train_val_test_split(config: model_config.base) -> Tuple[DataLoader]:
     """Returns `torch.utils.data.DataLoader`s for training, validation, and test datasets with the `config` provided"""
-    df = config.prep_ds(pd.read_csv(_locate('../data' + config.csv_file)).head(8*12))
+    df = config.prep_ds(pd.read_csv(_locate(config.csv_file)).head(8*12))
     size = len(df)
     train_rows = int(config.train_size*size)
     val_rows = train_rows + int(config.val_size*size)
@@ -52,12 +52,8 @@ def load_checkpoint(config: model_config.base) -> Union[Tuple[torch.nn.Module], 
 
     # Check if the directories to save artifacts exist
     result = _check_checkpoint_dirs(model_dirname, optimizer_dirname)
-    not_found_exc = FileNotFoundError('Please save a checkpoint first using `src.lib.modules.model_utils.save_checkpoint` function.')
-    if result is False:
-        raise not_found_exc
-    else:
-        if len(result[0]) == 0 or len(result[1]) == 0: 
-            raise not_found_exc
+    if (result is False) or (len(result[0]) == 0 or len(result[1]) == 0):
+        raise FileNotFoundError('Please save a checkpoint first using `src.lib.utils.model.save_checkpoint` function.')
 
     assert len(os.listdir(_locate(model_dirname))) == len(os.listdir(_locate(optimizer_dirname))), \
     "The saved model and the saved optimizer directories must have the same number of files."
@@ -103,9 +99,10 @@ def save_checkpoint(model: torch.nn.Module, optimizer: torch.nn.Module, avg_trai
     """
     model_dirname, optimizer_dirname = config.persist_model_dir_name, config.persist_optimizer_dir_name
     filename = datetime.now().strftime(config.persist_name_fmt)
-    pkgs_file = os.path.join(CURRENT_DIR, '../../../../requirements.txt')
+    pkgs_file = os.path.join(CURRENT_DIR, '../../../requirements.txt')
 
     if not _check_checkpoint_dirs(model_dirname, optimizer_dirname):
+        if '/' in model_dirname: os.mkdir(model_dirname.split('/')[0])
         os.mkdir(model_dirname)
         os.mkdir(optimizer_dirname)
     

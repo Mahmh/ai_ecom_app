@@ -1,8 +1,8 @@
 from langchain_chroma import Chroma
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from typing import List
-from src.lib.modules.data.constants import CHAT_LLM, VECSTORE_PERSIST_DIR, TOP_K, EMBEDDER, BASE_SYS_MSG, ERR_RESPONSE
-from src.lib.modules.utils.logger import err_log
+from src.lib.data.constants import CHAT_LLM, VECSTORE_PERSIST_DIR, TOP_K, EMBEDDER, BASE_SYS_MSG, ERR_RESPONSE
+from src.lib.utils.logger import err_log
 
 class Chatbot:
     """Chatbot assistant that answers end users' questions about products and information through RAG"""

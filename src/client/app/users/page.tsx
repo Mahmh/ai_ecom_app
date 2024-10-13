@@ -17,7 +17,7 @@ const User = ({ username }: { username: string }) => {
     
     useEffect(() => {
         if (typeof window !== 'undefined') window.scrollTo({ top: 0 });
-        (async () => await new Request(`get_user_info?username=${username}`, getUserInfo).get())();
+        (async () => await new Request(`get_user_info?username=${username}`, getUserInfo).get())()
     }, [username])
 
     return found ? (
@@ -29,9 +29,11 @@ const User = ({ username }: { username: string }) => {
             <section>
                 <h1>Owned Products</h1>
                 <div className='product-container'>
-                    {user.owned_products?.length > 0 ? user.owned_products.map(p => (
-                        <ProductCard product={p}/>
-                    )) : <p className='no-results-msg'>No results.</p>}
+                    {
+                        user.owned_products?.length > 0 
+                        ? user.owned_products.map(p => <ProductCard key={p.product_id} product={p}/>) 
+                        : <p className='no-results-msg'>No results.</p>
+                    }
                 </div>
             </section>
         </Page>

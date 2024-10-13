@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from src.lib.modules.data.model import model_config
-from src.lib.modules.utils.model import load_checkpoint
-from src.lib.modules.data.constants import EMBEDDER
-from src.lib.modules.types.model import ReviewAnalystInput, ChatbotInput
+from src.lib.data.model import model_config
+from src.lib.utils.model import load_checkpoint
+from src.lib.data.constants import EMBEDDER
+from src.lib.types.model import ReviewAnalystInput, ChatbotInput
 from src.server.models.chatbot.model import Chatbot
 
 # Init & Router

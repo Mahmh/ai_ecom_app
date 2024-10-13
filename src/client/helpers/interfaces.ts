@@ -49,8 +49,8 @@ export interface AboutLinkProps extends ParentProps {
 // Header
 export interface HeaderNavLinkProps extends ParentProps  {
     href: string
-    setHovered: SetState<string|ReactNode>
-    setLastHovered: SetState<string|ReactNode>
+    setHovered?: SetState<string|ReactNode>
+    setLastHovered?: SetState<string|ReactNode>
 }
 
 export interface TooltipProps {

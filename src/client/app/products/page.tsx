@@ -20,7 +20,7 @@ const Product = ({ product_id }: { product_id: number }) => {
     useEffect(() => {
         if (typeof window !== 'undefined') window.scrollTo({ top: 0 });
         (async () => await new Request(`get_product_using_id?product_id=${product_id}`, getProductInfo).get())();
-        (async () => await new Request(`get_reviews_of_product?product_id=${product_id}`, setReviews).get())();
+        (async () => await new Request(`get_reviews_of_product?product_id=${product_id}`, setReviews).get())()
     }, [product_id])
 
     return found ? (

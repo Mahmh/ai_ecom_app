@@ -1,7 +1,7 @@
 """Generate synthetic product data using an LLM"""
 from textwrap import dedent
 import json, sys
-from src.lib.modules.data.constants import CREATIVE_LLM
+from src.lib.data.constants import CREATIVE_LLM
 
 def main():
     if len(sys.argv) < 1:

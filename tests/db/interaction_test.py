@@ -1,6 +1,6 @@
-from src.lib.modules.utils.tests import DBTests, SAMPLE_CRED, SAMPLE_PRODUCT_ID
-from src.lib.modules.data.db import InteractionData
-from src.lib.modules.utils.db import (
+from src.lib.utils.tests import DBTests, SAMPLE_CRED, SAMPLE_PRODUCT_ID
+from src.lib.data.db import InteractionData
+from src.lib.utils.db import (
     is_product_in_cart,
     get_all_interactions, 
     rate_product, 
