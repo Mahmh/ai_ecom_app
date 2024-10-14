@@ -1,9 +1,10 @@
 """Supply the DB with synthetic data"""
 import os, json, random, string, pandas as pd, time, multiprocessing as mp
 from typing import Tuple, Any
-from src.lib.data.db import Session, User, Product, Interaction
-from src.lib.utils.db import end_session, get_hashed_img_filename
+from src.lib.data.db import Session, Product, Interaction
+from src.lib.utils.db import end_session, get_hashed_img_filename, create_account
 from src.lib.utils.logger import log
+from src.lib.types.db import Credentials
 from src.lib.data.constants import CURRENT_DIR, CREATIVE_LLM
 
 def load_data() -> Tuple[pd.DataFrame]:
@@ -16,13 +17,14 @@ def load_data() -> Tuple[pd.DataFrame]:
 
 
 def add_user(owner: str, lock: Any, *, session) -> None:
-    user_data = dict(
+    user_cred = Credentials(
         username=owner,
         password=''.join([random.choice(string.ascii_letters + string.digits) for _ in range(5)]),
-        # bio=CREATIVE_LLM.invoke(f'Write a bio for username "{owner}". Your response must only be the bio and nothing else.')
     )
+    #user_bio = CREATIVE_LLM.invoke(f'Write a bio for username "{owner}". Your response must only be the bio and nothing else.')
     with lock:
-        session.add(User(**user_data))
+        # create_account(user_cred, bio=user_bio)
+        create_account(user_cred)
         session.commit()
         log(f'[add_data_to_db.py] Added user "{owner}"', 'db')
 

@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, Text, ARRAY, Boolean, ForeignKey
+from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.orm import sessionmaker, declarative_base
 from src.lib.data.constants import ENGINE_URL
 
@@ -9,19 +10,20 @@ Base = declarative_base()
 
 # Tables
 class UserData:
-    def __init__(self, username, password, bio=''):
-        self.username, self.password, self.bio = username, password, bio
+    def __init__(self, username, password_hash, salt, bio=''):
+        self.username, self.password_hash, self.salt, self.bio = username, password_hash, salt, bio
 
     def __repr__(self):
         return f"User('{self.username}')"
     
     def detach(self):
-        return UserData(self.username, self.password, self.bio)
+        return UserData(self.username, self.password_hash, self.salt, self.bio)
 
 class User(Base, UserData):
     __tablename__ = 'users'
     username = Column(String(255), nullable=False, primary_key=True)
-    password = Column(String(255), nullable=False)
+    password_hash = Column(BYTEA, nullable=False)
+    salt = Column(BYTEA, nullable=False)
     bio = Column(Text)
 
 

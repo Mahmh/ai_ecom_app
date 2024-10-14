@@ -29,5 +29,9 @@ if __name__ == '__main__':
         host=API_SERVER_HOST, 
         port=API_SERVER_PORT,
         reload=True,
-        reload_dirs=[os.path.join(CURRENT_DIR, '../')]
+        reload_dirs=[
+            os.path.join(CURRENT_DIR, '../'), 
+            os.path.join(CURRENT_DIR, '../../server/api/'),
+            os.path.join(CURRENT_DIR, '../../server/models/')
+        ]
     )

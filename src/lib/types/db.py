@@ -3,11 +3,20 @@ from typing import Any, Union
 
 # Models
 class Credentials(BaseModel):
-    """Model for accepting a username & a password"""
+    """Accepts a username & password"""
     username: str
     password: str
 
+
+class SecuredCredentials(BaseModel):
+    """Makes the username & password able to be stored securely in the DB"""
+    username: str
+    password_hash: bytes
+    salt: bytes
+
+
 class UpdateBioInfo(Credentials):
+    """Information to update a user's bio"""
     new_bio: str
 
 

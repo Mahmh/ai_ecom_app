@@ -1,8 +1,8 @@
 from typing import Any, Callable, Tuple, List, Dict
 import requests, json, pytest
 from src.lib.types.db import Credentials
-from src.lib.data.constants import SERVER_URL
-from src.lib.utils.db import create_account, create_product, delete_account, delete_product
+from src.lib.data.constants import SERVER_URL, NOT_OK_MSG
+from src.lib.utils.db import create_account, create_product, delete_account
 
 # Check if API server is running
 try: requests.get(SERVER_URL)
@@ -11,10 +11,20 @@ except: pytest.exit(reason='Server is not running')
 SAMPLE_CRED = Credentials(username='Test User', password='abc')
 SAMPLE_PRODUCT_ID = 40
 endpoint = lambda x: f'{SERVER_URL}/{x}'
-post_req = lambda endpoint_name, **data: requests.post(
-    endpoint(endpoint_name), 
-    data=json.dumps(data)
-)
+
+
+def request(endpoint_name: str, req_type: str, **data) -> requests.Response:
+    """Sends an API request & returns its response"""
+    match req_type.lower():
+        case 'post': req_func = requests.post
+        case 'delete': req_func = requests.delete
+    return req_func(endpoint(endpoint_name), data=json.dumps(data))
+
+
+def check_status(res: requests.Response):
+    """Checks if the response status code is OK"""
+    assert res.status_code == 200, NOT_OK_MSG
+
 
 class Tasks:
     """Used for chaining outputs of independent sequential tasks.
@@ -52,13 +62,15 @@ class DBTests:
     """Base class for performing instructions before and after tests"""
     def setup_method(self, method):
         # Excluding these methods to test account creation itself
-        if 'test_create_account' not in repr(method): 
+        test_name = repr(method)
+        if 'test_create_account' not in test_name:
             create_account(SAMPLE_CRED)
-            if 'test_create_product' not in repr(method): 
+            if 'test_create_product' not in test_name: 
                 create_product(SAMPLE_CRED, name='Test Product')
         
 
     def teardown_method(self, method):
         # Same for that one
-        if 'test_delete_account' not in repr(method): 
+        test_name = repr(method)
+        if 'test_delete_account' not in test_name: 
             delete_account(SAMPLE_CRED)

@@ -70,7 +70,6 @@ async def edit_bio_(info: UpdateBioInfo) -> Union[bool, str]:
 @account_r.get('/get_user_info')
 @exc_handler
 async def get_user_info_(username: str = Query()):
-    print(username.replace('%20', ' ').replace('%27', '\'').replace('[amps]', '&'))
     return get_user_info(username.replace('%20', ' ').replace('%27', '\'').replace('[amps]', '&'))
 
 

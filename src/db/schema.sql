@@ -1,9 +1,10 @@
 \c ai_ecom_db;
 
 CREATE TABLE users(
-    username     VARCHAR(255) NOT NULL PRIMARY KEY,
-    password     VARCHAR(255) NOT NULL,
-    bio          TEXT
+    username          VARCHAR(255) NOT NULL PRIMARY KEY,
+    password_hash     BYTEA NOT NULL,
+    salt              BYTEA NOT NULL,
+    bio               TEXT
 );
 
 CREATE TABLE products(

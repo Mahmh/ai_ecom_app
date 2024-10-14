@@ -42,6 +42,7 @@ PSQL_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 ENGINE_URL = f'postgresql+psycopg2://{PSQL_USER}:{PSQL_PASSWORD}@{PSQL_HOST}:{PSQL_PORT}/{PSQL_DB}'
 
 # Misc
+HASHING_ALGORITHM = os.getenv('HASHING_ALGORITHM', 'sha256')
 ENABLE_LOGGING = os.getenv('ENABLE_LOGGING', 'false')
 MLFLOW_TRACKING_URI = os.getenv('MLFLOW_TRACKING_URI', 'http://127.0.0.1:5000')
-NOT_OK_MSG = "Status code not OK"
+NOT_OK_MSG = 'Status code not OK'

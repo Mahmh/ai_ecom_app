@@ -4,8 +4,9 @@ from typing import Callable, Any, List, Union, Tuple, Dict
 from functools import wraps
 from difflib import SequenceMatcher
 from hashlib import sha256
+import bcrypt, re
 from src.lib.data.db import Session, UserData, User, ProductData, Product, InteractionData, Interaction
-from src.lib.types.db import Credentials, UsernameTaken, WrongCredentials, NotOwner, NonExistent
+from src.lib.types.db import Credentials, SecuredCredentials, UsernameTaken, WrongCredentials, NotOwner, NonExistent
 from src.lib.utils.logger import log, err_log
 
 # Helpers
@@ -82,6 +83,30 @@ def _prep_reviews(review_list: List[Dict[str, Union[str, List[str]]]]) -> List[D
     return result
 
 
+def _sanitize(data: Union[str, Credentials]) -> Union[str, Credentials]:
+    """Sanitizes data and credentials"""
+    if type(data) is str:
+        return re.sub(r'[!\?;\'"]', '', data)
+    elif type(data) is Credentials:
+        return Credentials(username=_sanitize(data.username), password=_sanitize(data.password))
+    else:
+        raise TypeError('`sanitize` function supports only 2 types: `str` & `Credentials`')
+
+
+def _prep_cred(cred: Credentials) -> SecuredCredentials:
+    """Prepares the given credentials to be stored in the DB"""
+    cred = _sanitize(cred)  # Sanitize
+    salt = bcrypt.gensalt()  # Generate a salt
+    password_hash = bcrypt.hashpw(cred.password.encode('utf-8'), salt)  # Hash the password with the generated salt
+    return SecuredCredentials(username=cred.username, password_hash=password_hash, salt=salt)
+
+
+def _check_password(input_cred: Credentials, account: Union[User, SecuredCredentials]) -> bool:
+    """Checks if a given password matches the stored password in the DB for authentication"""
+    hashed_password = bcrypt.hashpw(input_cred.password.encode('utf-8'), account.salt)  # Hash the provided password with the stored salt
+    return hashed_password == account.password_hash  # Compare the hashed password with the stored password hash
+
+
 # Tables
 ### Users ###
 def _get_all_users(*, session: SessionType, **filter_kwargs) -> List[User]:
@@ -100,8 +125,7 @@ def get_all_users(**filter_kwargs) -> List[UserData]:
 def _account_exists(cred: Credentials, *, session: SessionType) -> Union[User, bool]:
     users = _get_all_users(session=session)
     for user in users:
-        if cred.username == user.username:
-            return user
+        if cred.username == user.username: return user
     return False
 
 def account_exists(cred: Credentials) -> Union[UserData, bool]:
@@ -109,7 +133,7 @@ def account_exists(cred: Credentials) -> Union[UserData, bool]:
     session = Session()
     result = _account_exists(cred, session=session)
     result = result.detach() if type(result) is User else result
-    end_session(session)
+    end_session(session, commit=False)
     return result
 
 
@@ -117,7 +141,7 @@ def account_exists(cred: Credentials) -> Union[UserData, bool]:
 def _log_in_account(cred: Credentials, *, session: SessionType) -> User:
     account = _account_exists(cred, session=session)
     if account:
-        if cred.password == account.password: return account
+        if _check_password(cred, account): return account
         else: raise WrongCredentials(cred.username, cred.password)
     else:
         raise NonExistent('user', cred.username)
@@ -127,7 +151,7 @@ def log_in_account(cred: Credentials) -> UserData:
     session = Session()
     result = _log_in_account(cred, session=session)
     result = result.detach()
-    end_session(session)
+    end_session(session, commit=False)
     return result
 
 
@@ -137,7 +161,8 @@ def _create_account(cred: Credentials, *, session: SessionType, **user_info) -> 
     if account:
         raise UsernameTaken(cred.username)
     else:
-        created_account = User(username=cred.username, password=cred.password, **user_info)
+        secured_cred = _prep_cred(cred)
+        created_account = User(username=secured_cred.username, password_hash=secured_cred.password_hash, salt=secured_cred.salt, **user_info)
         session.add(created_account)
         log(f'[_create_account] Added user "{cred.username}"', 'db')
         return created_account
@@ -156,7 +181,7 @@ def _delete_account(cred: Credentials, *, session: SessionType) -> bool:
     account = _log_in_account(cred, session=session)
 
     for product in session.query(Product).filter_by(owner=account.username).all():
-        _delete_product(account, product.product_id, session=session)
+        _delete_product(cred, product.product_id, session=session)
     
     for interaction in session.query(Interaction).filter_by(username=account.username).all():
         session.delete(interaction)
@@ -265,7 +290,7 @@ def _is_owner_of_product(cred: Credentials, product_id: int, *, session: Session
         raise NonExistent('product', product_id)
     else:
         owner = session.query(User).filter_by(username=product.owner).first()
-        return (cred.username == owner.username) and (cred.password == owner.password)
+        return (cred.username == owner.username) and _check_password(cred, owner)
 
 def is_owner_of_product(cred: Credentials, product_id: int) -> bool:
     """Checks if the given credentials are the product's owner's"""
@@ -295,9 +320,9 @@ def create_product(cred: Credentials, **product_info) -> bool:
 
 
 def _delete_product(cred: Credentials, product_id: int, *, session: SessionType) -> bool:
-    account = _log_in_account(cred, session=session)
+    _log_in_account(cred, session=session)
     product = _get_product_using_id(product_id, session=session)
-    is_owner = _is_owner_of_product(account, product_id, session=session)
+    is_owner = _is_owner_of_product(cred, product_id, session=session)
 
     if is_owner:
         product_interactions = _get_all_interactions(product_id=product_id, session=session)
@@ -318,15 +343,15 @@ def delete_product(cred: Credentials, product_id: int) -> bool:
 
 
 def _update_product(cred: Credentials, product_id: int, *, session: SessionType, **update_kwargs) -> bool:
-    account = _log_in_account(cred, session=session)
+    _log_in_account(cred, session=session)
     product = _get_product_using_id(product_id, session=session)
-    is_owner = _is_owner_of_product(account, product.product_id, session=session)
+    is_owner = _is_owner_of_product(cred, product.product_id, session=session)
     if is_owner:
         for attr, new_value in update_kwargs.items():
             setattr(product, attr, new_value)
         return True
     else:
-        raise NotOwner(account.username, product.product_id)
+        raise NotOwner(cred.username, product.product_id)
 
 def update_product(cred: Credentials, product_id: int, **update_kwargs) -> bool:
     """Updates an existing product only with its owner's correct credentials"""
