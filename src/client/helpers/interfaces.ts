@@ -1,6 +1,7 @@
 import { ReactNode, SetStateAction, Dispatch } from 'react'
 
 type SetState<T> = Dispatch<SetStateAction<T>>
+export enum Status { Success, Failure, Pending }
 
 export interface Metadata {
     readonly title: string
@@ -37,12 +38,6 @@ export interface ContextProps {
     topRated: ProductObject[],
     setTopRated: SetState<ProductObject[]>
     isTopRatedLoading: boolean
-}
-
-
-// Footer
-export interface AboutLinkProps extends ParentProps {
-    readonly section: string
 }
 
 
@@ -109,4 +104,15 @@ export interface UserObject {
 export interface UserSearchParams {
     readonly username?: string
     readonly search_query: string
+}
+
+
+// Misc
+export interface AboutLinkProps extends ParentProps {
+    readonly section: string
+}
+
+export interface SubmitMessage {
+    msg: string,
+    status: Status
 }

@@ -36,7 +36,7 @@ const Product = ({ product_id }: { product_id: number }) => {
                 }
                 <div id='product-properties'>
                     <h1 className='product-name'>{product.name}</h1>
-                    <Link href={`/users?username=${product.owner}`} className='product-owner'>{product.owner}</Link>
+                    <Link href={`/users?username=${product.owner.replace('&', '[amps]')}`} className='product-owner'>{product.owner}</Link>
                     <p className='product-description'>{product.description}</p>
                     <h3 id='price'>
                         {product.discount ?
