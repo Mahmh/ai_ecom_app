@@ -83,19 +83,19 @@ def _prep_reviews(review_list: List[Dict[str, Union[str, List[str]]]]) -> List[D
     return result
 
 
-def _sanitize(data: Union[str, Credentials]) -> Union[str, Credentials]:
+def sanitize(data: Union[str, Credentials]) -> Union[str, Credentials]:
     """Sanitizes data and credentials"""
     if type(data) is str:
         return re.sub(r'[!\?;\'"]', '', data)
     elif type(data) is Credentials:
-        return Credentials(username=_sanitize(data.username), password=_sanitize(data.password))
+        return Credentials(username=sanitize(data.username), password=sanitize(data.password))
     else:
         raise TypeError('`sanitize` function supports only 2 types: `str` & `Credentials`')
 
 
 def _prep_cred(cred: Credentials) -> SecuredCredentials:
     """Prepares the given credentials to be stored in the DB"""
-    cred = _sanitize(cred)  # Sanitize
+    cred = sanitize(cred)  # Sanitize
     salt = bcrypt.gensalt()  # Generate a salt
     password_hash = bcrypt.hashpw(cred.password.encode('utf-8'), salt)  # Hash the password with the generated salt
     return SecuredCredentials(username=cred.username, password_hash=password_hash, salt=salt)

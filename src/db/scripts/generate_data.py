@@ -1,10 +1,19 @@
-"""Generate synthetic product data using an LLM"""
+"""Generate synthetic user & product data using an LLM"""
 from textwrap import dedent
-import json, sys
+from typing import List, Dict, Any
+import json, sys, time, random, string, multiprocessing as mp, pandas as pd
 from src.lib.data.constants import CREATIVE_LLM
 
-def main():
-    if len(sys.argv) < 1:
+PRODUCTS_JSON = '../data/products.json'
+ACCOUNTS_JSON = '../data/accounts.json'
+
+def get_file_content(file: Any) -> List[Dict]:
+    try: content = json.loads(file.read())
+    except: content = []
+    return content
+
+def gen_products():
+    if len(sys.argv) < 2:
         print('Sorry, you missed a command line argument.')
         print('Usage: python3 generate_data.py <NUMBER_OF_ITERATIONS_IN_GENERATING_DATA>')
         exit()
@@ -18,15 +27,41 @@ def main():
         '''))
         result = json.loads(result.replace('```json', '').replace('```', ''))
 
-        with open('../data/products.json') as file:
-            try:
-                file_result = json.loads(file.read())
-            except json.decoder.JSONDecodeError:
-                file_result = []
-        
-        with open('../data/products.json', 'w') as file:
-            file_result.extend([result] if type(result) != list else result)
-            file.write(json.dumps(file_result))
+        with open(PRODUCTS_JSON, 'w') as file:
+            content = get_file_content(file)
+            content.extend([result] if type(result) != list else result)
+            file.write(json.dumps(content))
+
+
+def gen_user(owner: str, lock: Any):
+    user_data = {
+        'username': owner.strip(),
+        'password': ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(5)]),
+        'bio': CREATIVE_LLM.invoke(f'Write a synthetic bio for a fake account named "{owner}". It must be between 3-6 sentences. Your response must only be the bio and nothing else.')
+    }
+    with lock:
+        with open(ACCOUNTS_JSON, 'r+') as file:
+            content = get_file_content(file)
+            content.append(user_data)
+            file.seek(0)
+            file.write(json.dumps(content))
+            file.truncate()
+
+
+def gen_users():
+    owners = pd.read_json(PRODUCTS_JSON)['owner'].unique()
+    processes = []
+    lock = mp.Lock()
+    for owner in owners:
+        p = mp.Process(target=gen_user, args=(owner, lock))
+        processes.append(p)
+        p.start()
+    for p in processes: p.join()
+
 
 if __name__ == '__main__':
-    main()
+    t1 = time.time()
+    gen_products()
+    gen_users()
+    t2 = time.time()
+    print(f'Took {(t2-t1):.2f} seconds.')

@@ -2,7 +2,7 @@
 from src.lib.data.db import Session, User, Product, Interaction
 from src.lib.utils.db import end_session
 
-def main():
+if __name__ == '__main__':
     session = Session()
     users = session.query(User).all()
     products = session.query(Product).all()
@@ -11,6 +11,3 @@ def main():
     for p in products: session.delete(p)
     for i in interactions: session.delete(i)
     end_session(session)
-
-if __name__ == '__main__':
-    main()

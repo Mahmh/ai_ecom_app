@@ -1,6 +1,6 @@
 from src.lib.utils.tests import request, check_status
 
-def test_sanitize_and_delete_account():
+def test_sanitize_credentials_and_delete_account():
     username, password = ';abcd?', '!!"a'
     sanitized_username, sanitized_password = 'abcd', 'a'
     res1 = request('create_account', 'post', username=username, password=password)
