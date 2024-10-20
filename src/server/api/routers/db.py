@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query
 from typing import Union, List, Tuple, Dict
 import json
-from src.lib.types.db import Credentials, UpdateBioInfo
+from src.lib.data.db import Credentials, UpdateBioInfo
 from src.lib.utils.db import (
     exc_handler,
     todict,

@@ -6,7 +6,7 @@ from difflib import SequenceMatcher
 from hashlib import sha256
 import bcrypt, re
 from src.lib.data.db import Session, UserData, User, ProductData, Product, InteractionData, Interaction
-from src.lib.types.db import Credentials, SecuredCredentials, UsernameTaken, WrongCredentials, NotOwner, NonExistent
+from src.lib.data.db import Credentials, SecuredCredentials, UsernameTaken, WrongCredentials, NotOwner, NonExistent
 from src.lib.utils.logger import log, err_log
 
 # Helpers

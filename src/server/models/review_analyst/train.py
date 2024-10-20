@@ -1,58 +1,61 @@
 from torch.multiprocessing import set_start_method; set_start_method('spawn', force=True)
-import mlflow, datetime, time
-from src.lib.data.model import model_config
+import mlflow, time
+from src.server.models.review_analyst.model import ReviewAnalyst
+from src.lib.data.models import ReviewAnalystConfig as config
 from src.lib.utils.db import todict
-from src.lib.utils.model import train_val_test_split, init_training, load_checkpoint, save_checkpoint, plot, eval_model
-from src.lib.data.constants import MLFLOW_TRACKING_URI
+from src.lib.utils.models import (
+    init_mlflow,
+    new_run_name,
+    print_epoch_result,
+    train_val_test_split,
+    load_latest_for_training,
+    save_checkpoint,
+    plot_avg_losses,
+    log_bin_clf_metrics
+)
 
 if __name__ == '__main__':
-    # Init experiment
-    mlflow.set_experiment('Review Analyst Experiment')
-    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    init_mlflow('Review Analyst Experiment')
 
     # Load the data, model, and optimizer
-    config = model_config.review_analyst()
-    train_ds, val_ds, test_ds = train_val_test_split(config)
+    # train_dl, val_dl, _ = train_val_test_split(config)
 
-    if config.load_last_chkpt:
-        try:
-            model, optimizer = load_checkpoint(config)
-            print('--- Training using the last saved checkpoint ---')
-        except FileNotFoundError:
-            print('--- Failed loading the last saved checkpoint! Training from scratch ---')
-            model, optimizer = init_training(config)
-    else:
-        model, optimizer = init_training(config)
+    try:
+        model, optimizer, run_name = load_latest_for_training(ReviewAnalyst, config)
+    except:
+        model, optimizer = load_latest_for_training(ReviewAnalyst, config)
+        run_name = new_run_name(config)
     
-    # Train
-    with mlflow.start_run(run_name=f'Run {datetime.datetime.now().strftime(model_config.base.persist_name_fmt)}'):
-        mlflow.log_params(todict(config))
-        avg_train_losses, avg_val_losses = [], []
+    test_df = train_val_test_split(config, return_loaders=False)[2]
+    print(log_bin_clf_metrics(model, .5, test_df, 'sentiment', config))
+    
+    # # Train
+    # with mlflow.start_run(run_name=run_name):
+    #     mlflow.log_params(todict(config))
+    #     avg_train_losses, avg_val_losses, saved_epochs = [], [], []
 
-        for epoch in range(1, config.epochs+1):
-            losses = []
+    #     print('Epoch\t│ Avg train loss │ Avg val loss\t│ Time elapsed')
+    #     print('────────┼────────────────┼──────────────┼─────────────')
+    #     for epoch in range(1, config.epochs+1):
+    #         train_losses = []
 
-            t1 = time.time()
-            for batch_i, (X, y) in enumerate(train_ds):
-                train_loss = model(X, y, training=True)
-                optimizer.zero_grad()
-                train_loss.backward()
-                optimizer.step()
-                
-                losses.append(train_loss.item())
-                print(f'\rFinished Batch {batch_i+1}', end='', flush=True)
-            t2 = time.time()
+    #         t1 = time.time()
+    #         for batch_i, (X, y) in enumerate(train_dl, 1):
+    #             train_loss = model(X, y, training=True)
+    #             optimizer.zero_grad()
+    #             train_loss.backward()
+    #             optimizer.step()
+    #             train_losses.append(train_loss.item())
+    #             print(f'\rFinished Batch {batch_i}/{len(train_dl)}', end='', flush=True)
+    #         t2 = time.time()
 
-            if epoch % config.epochs_before_saving == 0:
-                avg_train_loss = sum(losses) / len(losses)
-                avg_train_losses.append(avg_train_loss)
-                save_checkpoint(model, optimizer, avg_train_loss, config)
-                
-                avg_val_loss = eval_model(model, val_ds, 'val_loss')
-                avg_val_losses.append(avg_val_loss)
+    #         if (epoch % config.epochs_before_saving == 0) or (epoch == config.epochs):
+    #             saved_epochs.append(epoch)
+    #             avg_train_loss, avg_val_loss = print_epoch_result(model, train_losses, val_dl, epoch, t1, t2, config)
+    #             avg_train_losses.append(avg_train_loss)
+    #             avg_val_losses.append(avg_val_loss)
 
-                plot(avg_train_losses, 'artifacts/avg_train_losses.jpg')
-                plot(avg_val_losses, 'artifacts/avg_val_losses.jpg')
-
-                print('\r', end='', flush=True)
-                print(f'Epoch {epoch}/{config.epochs}    Average train loss: {avg_train_loss:.4f}    Average val loss: {avg_val_loss:.4f}    Time elapsed: {(t2-t1):.2f}s')
+    #             save_checkpoint(model, optimizer, avg_train_loss, epoch, run_name, config)
+    #             plot_avg_losses(saved_epochs, avg_train_losses, avg_val_losses, config)
+    #         elif (epoch % config.epochs_before_printing == 0):
+    #             print_epoch_result(model, train_losses, val_dl, epoch, t1, t2, config)

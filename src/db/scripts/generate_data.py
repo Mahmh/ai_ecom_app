@@ -16,7 +16,7 @@ def gen_products():
     if len(sys.argv) < 2:
         print('Sorry, you missed a command line argument.')
         print('Usage: python3 generate_data.py <NUMBER_OF_ITERATIONS_IN_GENERATING_DATA>')
-        exit()
+        exit(1)
 
     # Generating subsequently
     for _ in range(int(sys.argv[1])):

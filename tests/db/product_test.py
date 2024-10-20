@@ -1,6 +1,6 @@
 import pytest
 from src.lib.utils.tests import DBTests, SAMPLE_CRED, SAMPLE_PRODUCT_ID
-from src.lib.types.db import NonExistent, NotOwner
+from src.lib.data.db import NonExistent, NotOwner
 from src.lib.data.db import ProductData
 from src.lib.utils.db import get_all_products, get_product_using_id, is_owner_of_product, create_product, delete_product, update_product, search_products
 

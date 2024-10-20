@@ -3,7 +3,7 @@ from langchain_community.llms.ollama import Ollama
 from langchain_community.chat_models.ollama import ChatOllama
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain.schema import SystemMessage
-import os
+import os, string
 
 # Net
 WEB_SERVER_URL = os.getenv('WEB_SERVER_URL', 'http://localhost:3000')
@@ -11,13 +11,16 @@ API_SERVER_HOST = os.getenv('API_SERVER_HOST', '0.0.0.0')
 API_SERVER_PORT = int(os.getenv('API_SERVER_PORT', 4000))
 SERVER_URL = f'http://{API_SERVER_HOST}:{API_SERVER_PORT}'
 
-# LLM
+# LLM & ML
 CREATIVE_LLM_NAME = os.getenv('CREATIVE_LLM')
 EMBEDDER_LLM_NAME = os.getenv('EMBEDDER_LLM')
 CHAT_LLM_NAME = os.getenv('CHAT_LLM')
 BASE_URL = os.getenv('BASE_URL')
 TEMPERATURE = float(os.getenv('TEMPERATURE', .5))
 MAX_CORES = max(os.cpu_count() - 2, 1)
+PAD_TOKEN = '<PAD>'
+VOCAB = dict({y:x for x,y in enumerate(string.printable)})
+VOCAB[PAD_TOKEN] = len(VOCAB)
 
 MAIN_CONFIG = dict(base_url=BASE_URL, num_thread=MAX_CORES, num_gpu=1)
 CREATIVE_LLM = Ollama(**MAIN_CONFIG, model=CREATIVE_LLM_NAME, temperature=1)

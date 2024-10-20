@@ -16,7 +16,6 @@ app.add_middleware(
     allow_headers=['*'],
 )
 app.mount('/product_images', StaticFiles(directory='../../lib/assets/images/hashed_products'), name='product_images')
-app.mount('/user_images', StaticFiles(directory='../../lib/assets/images/users'), name='user_images')
 
 # Routers
 for r in (model_r, account_r, product_r, interaction_r):

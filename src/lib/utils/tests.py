@@ -1,12 +1,12 @@
 from typing import Any, Callable, Tuple, List, Dict
 import requests, json, pytest
-from src.lib.types.db import Credentials
+from src.lib.data.db import Credentials
 from src.lib.data.constants import SERVER_URL, NOT_OK_MSG
 from src.lib.utils.db import create_account, create_product, delete_account
 
 # Check if API server is running
 try: requests.get(SERVER_URL)
-except: pytest.exit(reason='Server is not running')
+except: pytest.exit(reason='Server is not running', returncode=1)
 
 SAMPLE_CRED = Credentials(username='Test User', password='abc')
 SAMPLE_PRODUCT_ID = 40

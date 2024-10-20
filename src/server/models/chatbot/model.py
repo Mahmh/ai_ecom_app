@@ -1,26 +1,33 @@
 from langchain_chroma import Chroma
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
-from typing import List
+from typing import List, Tuple, Union
 from src.lib.data.constants import CHAT_LLM, VECSTORE_PERSIST_DIR, TOP_K, EMBEDDER, BASE_SYS_MSG, ERR_RESPONSE
 from src.lib.utils.logger import err_log
+
+Conversation = List[Tuple[Union[HumanMessage, SystemMessage, AIMessage]]]
 
 class Chatbot:
     """Chatbot assistant that answers end users' questions about products and information through RAG"""
     def __init__(self) -> None:
-        self.history = [BASE_SYS_MSG]
+        self.reset_history()
         self.llm = CHAT_LLM
         self.template = 'Context: {docs}\n\nUse the above context (if relevant) to answer any question. You must NOT synthesize information; you MUST use the context to answer the question ONLY if it is relevant. Otherwise, answer the question directly. Here is the question: "{question}"'
+
+
+    def __call__(self, prompt: str, conv: Conversation) -> str:
+        self.parse_conversation(conv)
+        return self.chat(prompt)
 
 
     def reset_history(self) -> None:
         """Resets the chatbot's conversation memory"""
         self.history = [BASE_SYS_MSG]
-    
 
-    def parse_conversation(self, conversation: List) -> None:
+
+    def parse_conversation(self, conv: Conversation) -> None:
         """Loads the given conversation history from strings to chat schemas"""
         try:
-            for lst in conversation:
+            for lst in conv:
                 role, message = lst
                 match role:
                     case 'human': self.history.append(HumanMessage(message))
@@ -28,7 +35,7 @@ class Chatbot:
                     case 'system': self.history.append(SystemMessage(message))
         except Exception as e:
             err_log('LLM.parse_conversation', e, 'model')
-    
+
 
     def _retrieve_docs(self, search_input: str, k: int = TOP_K) -> str:
         """Retrieves the top `k` relevant documents with respect to `search_input`"""
@@ -44,7 +51,7 @@ class Chatbot:
 
 
     def chat(self, prompt: str) -> str:
-        """Returns an LLM response"""
+        """Returns the LLM's response to the given prompt"""
         try:
             docs = self._retrieve_docs(prompt)
             self.history.append(HumanMessage(self.template.format(docs=docs, question=prompt)))

@@ -4,7 +4,7 @@ from typing import Tuple, Union
 from src.lib.data.db import Session, Product, Interaction
 from src.lib.utils.db import end_session, get_hashed_img_filename, create_account, sanitize
 from src.lib.utils.logger import log
-from src.lib.types.db import Credentials
+from src.lib.data.db import Credentials
 from src.lib.data.constants import CURRENT_DIR
 
 def load_data() -> Tuple[Union[pd.DataFrame, pd.Series]]:
