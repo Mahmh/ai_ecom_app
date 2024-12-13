@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 import torch, os, requests, mlflow, matplotlib.pyplot as plt, pandas as pd
 from typing import List, Tuple, Union, Optional
 from src.lib.data.constants import CURRENT_DIR, MLFLOW_TRACKING_URI
-from src.lib.data.models import ModelConfig, ReviewAnalystConfig, NeuralNetwork, DFDataset
+from src.lib.data.models import ModelConfig, NeuralNetwork, DFDataset
 
 _locate = lambda model_name, x: os.path.join(CURRENT_DIR, f'../../server/models/{model_name}/' + x)
 
@@ -71,7 +71,7 @@ def print_epoch_result(
 def train_val_test_split(config: ModelConfig, return_loaders: bool = True) -> Tuple[DataLoader | pd.DataFrame]:
     """Returns `torch.utils.data.DataLoader`s for training, validation, and test datasets with the `config` provided"""
     df = pd.read_csv(_locate(config.model_name, config.csv_file))
-    df = config.prep_ds(df if config.n_samples == 'all' else df.sample(config.n_samples))
+    df = df if config.n_samples == 'all' else df.sample(config.n_samples)
     train_rows = int(config.train_size*len(df))
     val_rows = train_rows + int(config.val_size*len(df))
     train_df, val_df, test_df = df[train_rows:], df[train_rows:val_rows], df[val_rows:]
@@ -85,14 +85,14 @@ def train_val_test_split(config: ModelConfig, return_loaders: bool = True) -> Tu
         drop_last=config.drop_last,
         persistent_workers=(config.num_workers > 1)
     )
-    return loader(train_df), loader(val_df), loader(test_df) if return_loaders else train_df, val_df, test_df
+    return (loader(train_df), loader(val_df), loader(test_df)) if return_loaders else (train_df, val_df, test_df)
         
 
 def init_training(ModelClass: NeuralNetwork, config: ModelConfig):
     """Sets up the model & optimizer to start training from scratch"""
     model = ModelClass(config).to(config.device)
     model = torch.compile(model)
-    optimizer = config.optimizer(model.parameters(), lr=config.lr)
+    optimizer = config.optimizer(model.parameters(), lr=config.lr, weight_decay=config.weight_decay)
     return model, optimizer
 
 
@@ -185,9 +185,9 @@ def save_checkpoint(
         os.mkdir(optimizer_dirname)
     
     # Let Mlflow infer automatically the model's signature using a random example
-    ex = [torch.randint(0, config.vocab_size, (1, config.seq_len)).to(config.device), torch.randn(1).to(config.device)]
-    input_ex = [ex[0].float().tolist(), ex[1].float().unsqueeze(0).tolist()]
-    output_ex = model(ex).tolist()
+    # input_ex = torch.randint(0, config.vocab_size, (1, config.seq_len)).to(config.device)
+    input_ex = 'This is a test example.'
+    output_ex = model(input_ex)
     sig = mlflow.models.infer_signature(input_ex, output_ex)
 
     # Save & log artifacts & metrics
@@ -235,49 +235,51 @@ def eval_model(model: NeuralNetwork, dl: DataLoader, loss_name: str, epoch: Opti
     losses = []
     for batch_i, (X, y) in enumerate(dl):
         losses.append(model(X, y).item())
-        print(f'\rFinished Batch {batch_i}/{len(dl)}', end='', flush=True)
+        print(f'\rFinished Batch {batch_i}/{len(dl)}  ', end='', flush=True)
     avg_loss = sum(losses) / len(losses)
     mlflow.log_metric(loss_name, avg_loss, step=(epoch if epoch else None))
     return avg_loss
 
 
-def log_bin_clf_metrics(model: NeuralNetwork, threshold: float, test_df: pd.DataFrame, target_class: str, config: ModelConfig) -> None:
-    """Logs & prints accuracy, recall, precision, and F1 score (in order) for a given binary classifier
+# def log_bin_clf_metrics(model: NeuralNetwork, threshold: float, test_df: pd.DataFrame, target_class: str) -> None:
+#     """Logs & prints accuracy, recall, precision, and F1 score (in order) for a given binary classifier
     
-    ---
-    :param model: The binary classifier neural network.
-    :param threshold: Threshold to determine if a sample is classified as positive or negative. `If prediction >= threshold: positive; else: negative`
-    :param test_df: Test dataset as a Pandas DataFrame.
-    :param target_class: Name of the dependent variable.
-    :param config: Settings used by the model.
-    """
-    TP, TN, FP, FN = 0, 0, 0, 0
+#     ---
+#     :param model: The binary classifier neural network.
+#     :param threshold: Threshold to determine if a sample is classified as positive or negative. `If prediction >= threshold: positive; else: negative`
+#     :param test_df: Test dataset as a Pandas DataFrame.
+#     :param target_class: Name of the dependent variable.
+#     :param config: Settings used by the model.
+#     """
+#     TP, TN, FP, FN = 0, 0, 0, 0
 
-    for row in test_df.iterrows():
-        sample = row[1].to_dict()
-        y = sample[target_class]
-        del sample[target_class]
-        sample = config.prep_sample(**sample)[0]
-        sample[0] = sample[0].unsqueeze(0)
-        sample[1] = sample[1].unsqueeze(0)
+#     for row in test_df.iterrows():
+#         sample = row[1].to_dict()
+#         X = [value for feature,value in sample.items() if feature != target_class]
+#         X = X if len(X) > 1 else X[0]
+#         y = sample[target_class]
+#         del sample[target_class]
 
-        y_pred = int(model(sample) >= threshold)
-        match (y_pred, y):
-            case (1, 1): TP += 1
-            case (1, 0): FP += 1
-            case (0, 1): FN += 1
-            case (0, 0): TN += 1
+#         y_pred = model(X)
+#         print(y_pred)
+#         exit()
+#         y_pred = int(y_pred >= threshold)
+#         match (y_pred, y):
+#             case (1, 1): TP += 1
+#             case (1, 0): FP += 1
+#             case (0, 1): FN += 1
+#             case (0, 0): TN += 1
     
-    accuracy = (TP + TN) / (TP + TN + FP + FN)
-    recall = TP / (TP + FN)
-    precision = TP / (TP + FP)
-    f1_score = (2 * precision * recall) / (precision + recall)
+#     accuracy = (TP + TN) / (TP + TN + FP + FN)
+#     recall = TP / (TP + FN)
+#     precision = TP / (TP + FP)
+#     f1_score = (2 * precision * recall) / (precision + recall)
 
-    mlflow.log_metric('accuracy', accuracy)
-    mlflow.log_metric('recall', recall)
-    mlflow.log_metric('precision', precision)
-    mlflow.log_metric('f1_score', f1_score)
-    print(f'Accuracy: {accuracy:.4f}')
-    print(f'Recall: {recall:.4f}')
-    print(f'Precision: {precision:.4f}')
-    print(f'F1 Score: {f1_score:.4f}')
+#     mlflow.log_metric('accuracy', accuracy)
+#     mlflow.log_metric('recall', recall)
+#     mlflow.log_metric('precision', precision)
+#     mlflow.log_metric('f1_score', f1_score)
+#     print(f'Accuracy: {accuracy:.4f}')
+#     print(f'Recall: {recall:.4f}')
+#     print(f'Precision: {precision:.4f}')
+#     print(f'F1 Score: {f1_score:.4f}')

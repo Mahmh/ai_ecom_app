@@ -8,7 +8,7 @@ def test_chatbot_response():
 
 
 def test_review_analyst_inference():
-    res = request('review_analyst', 'post', review_text='I didn\'t like it', rating=0)
+    res = request('review_analyst', 'post', review_text='I didn\'t like it')
     res_data = res.json()
     check_status(res)
-    assert type(res_data) is float, 'Invalid response type'
+    assert type(res_data) is int and res_data == -1, 'Invalid response type'

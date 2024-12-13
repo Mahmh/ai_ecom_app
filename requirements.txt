@@ -14,4 +14,5 @@ langchain-community==0.3.0
 langchain-chroma==0.1.4
 ipykernel==6.29.5
 mlflow==2.16.1
+transformers==4.45.2
 setuptools

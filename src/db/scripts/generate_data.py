@@ -6,6 +6,7 @@ from src.lib.data.constants import CREATIVE_LLM
 
 PRODUCTS_JSON = '../data/products.json'
 ACCOUNTS_JSON = '../data/accounts.json'
+SYN_DATA = '../data/syn_data.csv'
 
 def get_file_content(file: Any) -> List[Dict]:
     try: content = json.loads(file.read())
@@ -22,7 +23,7 @@ def gen_products():
     for _ in range(int(sys.argv[1])):
         result = CREATIVE_LLM.invoke(dedent('''
             Please generate synthetic JSON data about products. Please only return 4 JSON objects and nothing else. Each JSON object must contain the following properties:
-            name (string), description (string), rating (float in the range [0,5]), price (float), discount (float in the range [0,1]), category (string in ["Electronics", "Clothes", "Accessories", "Furniture"]), owner (string), reviews (empty array).
+            name (string), description (string), rating (float in the range [1,5]), price (float), discount (float in the range [0,1]), category (string in ["Electronics", "Clothes", "Accessories", "Furniture"]), owner (string), reviews (empty array).
             NOTE: make sure that each JSON object has a unique product category.
         '''))
         result = json.loads(result.replace('```json', '').replace('```', ''))
@@ -59,9 +60,36 @@ def gen_users():
     for p in processes: p.join()
 
 
+def gen_data_entry(lock: Any):
+    user_data = {
+        'username': owner.strip(),
+        'password': ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(5)]),
+        'bio': CREATIVE_LLM.invoke(f'Generate a random review text for a product and its corresponding rating (label).')
+    }
+    with lock:
+        with open(SYN_DATA, 'r+') as file:
+            content = get_file_content(file)
+            content.append(user_data)
+            file.seek(0)
+            file.write(json.dumps(content))
+            file.truncate()
+
+
+def gen_data_for_RA():
+    owners = pd.read_json(PRODUCTS_JSON)['owner'].unique()
+    processes = []
+    lock = mp.Lock()
+    for owner in owners:
+        p = mp.Process(target=gen_user, args=(owner, lock))
+        processes.append(p)
+        p.start()
+    for p in processes: p.join()
+
+
+
 if __name__ == '__main__':
     t1 = time.time()
-    gen_products()
-    gen_users()
+    # gen_products()
+    # gen_users()
     t2 = time.time()
     print(f'Took {(t2-t1):.2f} seconds.')

@@ -3,7 +3,7 @@ from langchain_community.llms.ollama import Ollama
 from langchain_community.chat_models.ollama import ChatOllama
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain.schema import SystemMessage
-import os, string
+import os #, string
 
 # Net
 WEB_SERVER_URL = os.getenv('WEB_SERVER_URL', 'http://localhost:3000')
@@ -18,9 +18,11 @@ CHAT_LLM_NAME = os.getenv('CHAT_LLM')
 BASE_URL = os.getenv('BASE_URL')
 TEMPERATURE = float(os.getenv('TEMPERATURE', .5))
 MAX_CORES = max(os.cpu_count() - 2, 1)
-PAD_TOKEN = '<PAD>'
-VOCAB = dict({y:x for x,y in enumerate(string.printable)})
-VOCAB[PAD_TOKEN] = len(VOCAB)
+# PAD_TOKEN = '<PAD>'
+# VOCAB = dict({y:x for x,y in enumerate(string.printable)})
+# VOCAB[PAD_TOKEN] = len(VOCAB)
+BERT_MODEL_TYPE = 'bert-base-uncased'
+BERT_EMBEDDING_DIM = 768
 
 MAIN_CONFIG = dict(base_url=BASE_URL, num_thread=MAX_CORES, num_gpu=1)
 CREATIVE_LLM = Ollama(**MAIN_CONFIG, model=CREATIVE_LLM_NAME, temperature=1)
