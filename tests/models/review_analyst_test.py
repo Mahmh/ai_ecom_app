@@ -1,13 +1,7 @@
 import pytest
 from src.lib.data.models import NeuralNetwork
-from src.server.models.review_analyst.model import ReviewAnalyst
+from src.server.models.review_analyst.model import review_analyst
 
-# Fixtures
-@pytest.fixture
-def review_analyst() -> NeuralNetwork:
-    return ReviewAnalyst()
-
-# Tests
 @pytest.mark.parametrize(
     'review_text',
     [
@@ -18,7 +12,7 @@ def review_analyst() -> NeuralNetwork:
         ['That was fire']
     ]
 )
-def test_positive_review(review_analyst: NeuralNetwork, review_text: str):
+def test_positive_review(review_text: str):
     assert review_analyst(review_text) == 1, 'Failed to detect positive review'
 
 
@@ -32,7 +26,7 @@ def test_positive_review(review_analyst: NeuralNetwork, review_text: str):
         ['This product stopped working within a day. Horrible.']
     ]
 )
-def test_negative_review(review_analyst: NeuralNetwork, review_text: str):
+def test_negative_review(review_text: str):
     assert review_analyst(review_text) == -1, 'Failed to detect negative review'
 
 
@@ -46,5 +40,5 @@ def test_negative_review(review_analyst: NeuralNetwork, review_text: str):
         ['I neither love it nor hate it. It works.']
     ]
 )
-def test_neutral_review(review_analyst: NeuralNetwork, review_text: str):
+def test_neutral_review(review_text: str):
     assert review_analyst(review_text) == 0, 'Failed to detect neutral review'

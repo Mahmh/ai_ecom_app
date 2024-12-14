@@ -4,7 +4,7 @@ import { ParentProps, ContextProps, ProductObject, Account, UserObject } from '@
 import { Request } from '@/helpers/utils'
 
 export const nullAccount: Account = { username: '', password: '', bio: '', cart: [] }
-export const nullProduct: ProductObject = { product_id: 0, name: '', description: '', image_file: '', price: 0, discount: 0, owner: '', category: '' }
+export const nullProduct: ProductObject = { product_id: -1, name: '', description: '', image_file: '', price: 0, discount: 0, owner: '', category: '' }
 export const nullUser: UserObject = { username: '', bio: '', owned_products: [] }
 
 export const AppContext = createContext<ContextProps>({

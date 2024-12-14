@@ -36,11 +36,13 @@ class TestInteraction(DBTests):
         result = get_reviews_of_product(SAMPLE_PRODUCT_ID)
         username = result[0]['username']
         reviews = [review['review'] for review in result]
+        sentiments = [review['sentiment'] for review in result]
 
-        assert status1 is True and status2 is True, 'Failed to add review'
+        assert status1 is True and status2 is True, 'Failed to add reviews'
         assert username == SAMPLE_CRED.username, 'Failed to get the username that made the product review'
-        assert len(result) == 2 and len(reviews) == 2, 'Failed to get product review'
-        assert reviews[0] == reviews_to_add[0] and reviews[1] == reviews_to_add[1], 'Failed to add the correct reviews'
+        assert len(result) == 2 and len(reviews) == 2, 'Failed to get product reviews'
+        assert reviews[0] == reviews_to_add[0] and reviews[1] == reviews_to_add[1], 'Failed to add correct reviews'
+        assert sentiments[0] == sentiments[1] == 1, 'Failed to get correct review sentiments'
     
 
     def test_remove_product_review(self):

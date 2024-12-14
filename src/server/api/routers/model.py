@@ -1,10 +1,9 @@
 from fastapi import APIRouter
 from src.lib.data.models import ReviewAnalystInput, ChatbotInput
 from src.server.models.chatbot.model import Chatbot
-from src.server.models.review_analyst.model import ReviewAnalyst, SentimentInt
+from src.server.models.review_analyst.model import review_analyst, SentimentInt
 
 # Init & Router
-review_analyst = ReviewAnalyst()
 chatbot = Chatbot()
 model_r = APIRouter()
 

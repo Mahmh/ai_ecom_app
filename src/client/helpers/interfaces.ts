@@ -1,6 +1,7 @@
 import { ReactNode, SetStateAction, Dispatch } from 'react'
 
 type SetState<T> = Dispatch<SetStateAction<T>>
+export type Sentiment = 'all' | 'positive' | 'neutral' | 'negative'
 export enum Status { Success, Failure, Pending }
 
 export interface Metadata {
@@ -86,6 +87,8 @@ export interface PaginationControlsProps {
 export interface Review {
     readonly username: string
     readonly review: string
+    readonly sentiment: number
+    readonly reviewIdx: number   
 }
 
 export interface Account {

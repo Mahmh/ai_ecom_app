@@ -116,14 +116,14 @@
   border: none;
 }
 #contact-us-content div button {
-  background-color: #18948c;
+  background-color: rgb(24, 148, 140);
   transition: background-color 250ms ease;
 }
 #contact-us-content div button:hover {
   background-color: rgb(12, 85, 80);
 }
 #contact-us-content div #success-submit-msg {
-  color: #18948c;
+  color: rgb(24, 148, 140);
 }
 #contact-us-content div #failure-submit-msg {
   color: rgba(255, 0, 0, 0.7);
@@ -190,7 +190,7 @@
 }
 
 .add-to-cart-btn {
-  background-color: #18948c;
+  background-color: rgb(24, 148, 140);
   width: 100%;
   transition: background-color 250ms ease;
 }
@@ -221,11 +221,6 @@
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-  transition: box-shadow 130ms ease;
-  cursor: pointer;
-}
-.product-container .product-card:hover {
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.45);
 }
 .product-container .product-card .product-name {
   text-align: center;
@@ -304,11 +299,49 @@
 #product-content #product #product-properties a:hover {
   text-decoration: underline;
 }
-#product-content .horizontal-sep {
-  border: 2px solid rgba(0, 0, 0, 0.2);
+#product-content .horizontal-sep-sec {
   width: 80%;
   margin: 70px auto;
-  margin-bottom: 0;
+  margin-bottom: 30px;
+}
+#product-content .horizontal-sep-sec .horizontal-sep-upper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#product-content .horizontal-sep-sec .horizontal-sep-upper div {
+  display: flex;
+  grid-gap: 10px;
+}
+#product-content .horizontal-sep-sec .horizontal-sep-upper button {
+  background-color: transparent;
+  border: 2px solid black;
+  color: black;
+  transition: all 250ms ease;
+}
+#product-content .horizontal-sep-sec .horizontal-sep-upper button:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+#product-content .horizontal-sep-sec .horizontal-sep-upper button.selected-sentiment {
+  background-color: black;
+  color: white;
+}
+#product-content .horizontal-sep-sec .horizontal-sep-upper h1 {
+  font-size: 2rem;
+}
+#product-content .horizontal-sep-sec .horizontal-sep-upper h1 button {
+  border-radius: 50%;
+  padding: 0;
+  width: 50px;
+  height: 50px;
+  font-size: 2rem;
+  color: black;
+  background-color: transparent;
+  border: 2px solid black;
+  margin: 0 15px;
+}
+#product-content .horizontal-sep-sec .horizontal-sep-line {
+  border: 2px solid rgba(0, 0, 0, 0.45);
 }
 #product-content #reviews {
   display: flex;
@@ -316,13 +349,74 @@
   width: 80%;
   margin: 0 auto;
 }
-#product-content #reviews a {
+#product-content #reviews #add-review-div {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+#product-content #reviews #add-review-div textarea {
+  font-family: "Poppins-Regular";
+  font-size: 1.3rem;
+  color: black;
+  margin-bottom: 10px;
+  min-height: 100px;
+  max-width: 100%;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 10px;
+}
+#product-content #reviews #add-review-div button {
+  background-color: rgb(24, 148, 140);
+  transition: background-color 250ms ease;
+}
+#product-content #reviews #add-review-div button:hover {
+  background-color: rgb(12, 85, 80);
+}
+#product-content #reviews div {
+  display: flex;
+  flex-direction: column;
+  min-width: 350px;
+  flex: 0;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 10px 0;
+  padding: 15px;
+  border-radius: 10px;
+}
+#product-content #reviews div.positive-review {
+  background-color: rgba(31, 163, 132, 0.169);
+  box-shadow: 0 10px 20px rgba(110, 241, 195, 0.25);
+}
+#product-content #reviews div.negative-review {
+  background-color: rgba(128, 9, 9, 0.228);
+  box-shadow: 0 10px 20px rgba(225, 69, 69, 0.22);
+}
+#product-content #reviews div a {
   color: black;
   font-size: 1.5rem;
   font-weight: bold;
+  flex: 0 0 auto;
+  align-self: flex-start;
 }
-#product-content #reviews a:hover {
+#product-content #reviews div a:hover {
   text-decoration: underline;
+}
+#product-content #reviews div section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#product-content #reviews div section button {
+  background-color: white;
+  color: black;
+  transition: background-color 250ms ease;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+#product-content #reviews div section button:hover {
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 #product-catalog #product-search-tools {
@@ -394,7 +488,7 @@
   text-align: center;
 }
 #login-content p a, #signup-content p a {
-  color: #18948c;
+  color: rgb(24, 148, 140);
 }
 #login-content p a:hover, #signup-content p a:hover {
   color: rgb(12, 85, 80);
@@ -409,7 +503,7 @@
   padding: 80px 50px;
   width: 3vw;
   border-radius: 10px 0 0 10px;
-  background-color: #18948c;
+  background-color: rgb(24, 148, 140);
 }
 #login-content section div, #signup-content section div {
   display: flex;
@@ -433,7 +527,7 @@
   padding: 10px 15px;
 }
 #login-content section div button, #signup-content section div button {
-  background-color: #18948c;
+  background-color: rgb(24, 148, 140);
   transition: background-color 0.2s ease;
 }
 #login-content section div button:hover, #signup-content section div button:hover {
@@ -541,7 +635,7 @@
   margin-top: 25px;
 }
 #account-content #account-cart #shopping-link {
-  color: #18948c;
+  color: rgb(24, 148, 140);
 }
 #account-content #account-cart #shopping-link:hover {
   color: rgb(12, 85, 80);
@@ -619,11 +713,6 @@
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-  transition: box-shadow 130ms ease;
-  cursor: pointer;
-}
-#user-catalog .user-container .user-card:hover {
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.45);
 }
 #user-catalog .user-container .user-card h1, #user-catalog .user-container .user-card p {
   color: black;
@@ -724,7 +813,7 @@ header nav input::placeholder {
 header nav #login-btn {
   font-family: Poppins-Medium;
   margin-left: 20px;
-  background-color: #18948c;
+  background-color: rgb(24, 148, 140);
   font-size: 1.1rem;
   min-width: 120px;
   padding: 10px;
@@ -836,7 +925,7 @@ header nav #login-btn:hover {
   font-size: 1.2rem;
   min-width: 140px;
   padding: 10px;
-  background-color: #18948c;
+  background-color: rgb(24, 148, 140);
   color: white;
   border: none;
   cursor: pointer;
@@ -876,7 +965,7 @@ header nav #login-btn:hover {
   background-color: rgba(0, 0, 0, 0.2);
 }
 .dropdown .dropdown-menu .selected-dropdown-item {
-  background-color: #18948c !important;
+  background-color: rgb(24, 148, 140) !important;
   color: white;
 }
 

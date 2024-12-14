@@ -4,6 +4,7 @@ import { Page, PaginationControls, ProductCard, UserCard } from '@/helpers/compo
 import { Request } from '@/helpers/utils'
 import { nullUser } from '@/helpers/context'
 import { UserObject, UserSearchParams } from '@/helpers/interfaces'
+import { useSearchParams } from 'next/navigation'
 import NotFound from '../not-found'
 
 const User = ({ username }: { username: string }) => {
@@ -80,7 +81,9 @@ const Catalog = (searchParams: UserSearchParams) => {
 }
 
 
-export default function UsersPage({ searchParams }: { searchParams: UserSearchParams }) {
-    const { username, search_query } = searchParams
+export default function UsersPage() {
+    const searchParams = useSearchParams()
+    const username = searchParams.get('username') || ''
+    const search_query = searchParams.get('search_query') || ''
     return username ? <User username={username}/> : <Catalog search_query={search_query}/> 
 }

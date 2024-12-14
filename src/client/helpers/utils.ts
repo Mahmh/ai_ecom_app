@@ -1,4 +1,4 @@
-import { Account, ProductObject } from '@/helpers/interfaces'
+import { Account, ProductObject, Sentiment } from '@/helpers/interfaces'
 /**
  * Rounds a given number to a given amount of decimal places
  * @param n The number
@@ -49,12 +49,24 @@ export const addToCart = async (product: ProductObject, account: Account): Promi
 }
 
 
+/** Removes this product to the logged-in user's cart */
 export const removeFromCart = async (product: ProductObject, account: Account): Promise<ProductObject[]> => {
     const product_id = product.product_id
     let new_cart = account.cart || []
     if (isProductInCart(product_id, account)) new_cart = new_cart.filter(p => p.product_id !== product_id)
     await new Request(`remove_product_from_cart?product_id=${product_id}`, undefined, getCredentials(account)).delete()
     return new_cart
+}
+
+
+/** Converts the selected sentiment to its integer equivalent */
+export const sentimentToInt = (sentiment: Sentiment): number | null => {
+    switch (sentiment) {
+        case 'positive': return 1
+        case 'neutral': return 0
+        case 'negative': return -1
+        default: return null
+    }
 }
 
 

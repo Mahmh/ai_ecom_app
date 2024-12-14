@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from typing import Union, List, Tuple, Dict
+from typing import Union, List, Dict
 import json
 from src.lib.data.db import Credentials, UpdateBioInfo
 from src.lib.utils.db import (
@@ -127,8 +127,17 @@ async def rate_product_(cred: Credentials, product_id: int, rating: int) -> Unio
 
 @interaction_r.get('/get_reviews_of_product')
 @exc_handler
-async def get_reviews_of_product_(product_id: int = Query()) -> Union[List[Dict[str, str]], str]:
-    return get_reviews_of_product(product_id)
+async def get_reviews_of_product_(product_id: int = Query()) -> Union[List[Dict[str, Union[str, int]]], str]:
+    reviews = get_reviews_of_product(product_id)
+    temp_usernames_to_ids = {}
+
+    for review in reviews:
+        username = review['username']
+        if username not in temp_usernames_to_ids:
+            temp_usernames_to_ids[username] = 0
+        review['reviewIdx'] = temp_usernames_to_ids[username]
+        temp_usernames_to_ids[username] += 1
+    return reviews
 
 
 @interaction_r.patch('/add_product_review')
@@ -139,14 +148,14 @@ async def add_product_review_(cred: Credentials, product_id: int, review: str) -
 
 @interaction_r.delete('/remove_product_review')
 @exc_handler
-async def remove_product_review_(cred: Credentials, product_id: int, review_index: int) -> Union[bool, str]:
-    return remove_product_review(cred, product_id, review_index)
+async def remove_product_review_(cred: Credentials, product_id: int, review_idx: int) -> Union[bool, str]:
+    return remove_product_review(cred, product_id, review_idx)
 
 
 @interaction_r.patch('/update_product_review')
 @exc_handler
-async def update_product_review_(cred: Credentials, product_id: int, review_index: int, new_review: str) -> Union[bool, str]:
-    return update_product_review(cred, product_id, review_index, new_review)
+async def update_product_review_(cred: Credentials, product_id: int, review_idx: int, new_review: str) -> Union[bool, str]:
+    return update_product_review(cred, product_id, review_idx, new_review)
 
 
 @interaction_r.patch('/add_product_to_cart')

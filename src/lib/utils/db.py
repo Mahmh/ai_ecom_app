@@ -8,6 +8,7 @@ import bcrypt, re
 from src.lib.data.db import Session, UserData, User, ProductData, Product, InteractionData, Interaction
 from src.lib.data.db import Credentials, SecuredCredentials, UsernameTaken, WrongCredentials, NotOwner, NonExistent
 from src.lib.utils.logger import log, err_log
+from src.server.models.review_analyst.model import review_analyst, SentimentInt
 
 # Helpers
 def exc_handler(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -53,11 +54,11 @@ def get_hashed_img_filename(product_name: str, product_id: int) -> str:
     return sha256(encoded).hexdigest()
 
 
-def _check_review_index(review_index: int, reviews: List[str]) -> None:
+def _check_review_idx(review_idx: int, reviews: List[str]) -> None:
     """Checks if the inputted review index & review list are valid"""
     if len(reviews) == 0:
         raise Exception('Attempted to manipulate an empty review list')
-    assert review_index < len(reviews), 'The index of the review you want to remove is out of the range of the review list'
+    assert review_idx < len(reviews), f'The index ({review_idx}) of the review you want to remove is out of the range ({len(reviews)}) of the review list'
 
 
 def _list_detach(lst: List[Union[User, Product, Interaction]]) -> List[Union[UserData, ProductData, InteractionData]]:
@@ -65,21 +66,32 @@ def _list_detach(lst: List[Union[User, Product, Interaction]]) -> List[Union[Use
     return [item.detach() for item in lst]
 
 
-def _prep_reviews(review_list: List[Dict[str, Union[str, List[str]]]]) -> List[Dict[str, str]]:
+def _prep_reviews(review_list: List[Dict[str, Union[str, List]]]) -> List[Dict[str, Union[str, SentimentInt]]]:
     """Converts
     ```
-    [{'username': 'user1', 'reviews': ['review1', 'review2', 'review3']}, {'username': 'user2', 'reviews': ['review1', 'review2']}]
+    [
+        {'username': 'user1', 'reviews': ['review1', 'review2', 'review3'], 'sentiments': [0, 1, 0]},
+        {'username': 'user2', 'reviews': ['review1', 'review2'], 'sentiments': [-1, 0]}
+    ]
     ```
     to 
     ```
-    [{'user1': 'review1'}, {'user1': 'review2'}, {'user1': 'review3'}, {'user2': 'review1'}, {'user2': 'review2'}]
+    [
+        {'username': 'user1', 'review': 'review1', 'sentiment': 0},
+        {'username': 'user1', 'review': 'review2', 'sentiment': 1},
+        {'username': 'user1', 'review': 'review3', 'sentiment': 0},
+        {'username': 'user2', 'review': 'review1', 'sentiment': -1},
+        {'username': 'user2', 'review': 'review2', 'sentiment': 0}
+    ]
     ```
     """
     result = []
     for entry in review_list:
-        username = entry['username']
-        reviews = entry['reviews']
-        if reviews: result.extend([{'username': username, 'review': review} for review in reviews])
+        username, reviews, sentiments  = entry['username'], entry['reviews'], entry['sentiments']
+        if reviews: result.extend([
+            {'username': username, 'review': reviews[review_idx], 'sentiment': sentiments[review_idx]} 
+            for review_idx in range(len(reviews))
+        ])
     return result
 
 
@@ -436,15 +448,15 @@ def rate_product(cred: Credentials, product_id: int, rating: int) -> bool:
 
 
 
-def _get_reviews_of_product(product_id: int, *, session: SessionType) -> List[Dict[str, str]]:
+def _get_reviews_of_product(product_id: int, *, session: SessionType) -> List[Dict[str, Union[str, int]]]:
     _get_product_using_id(product_id, session=session)
     interactions = _get_all_interactions(session=session, product_id=product_id)
     return _prep_reviews([
-        {'username': interaction.username, 'reviews': interaction.reviews}
+        {'username': interaction.username, 'reviews': interaction.reviews, 'sentiments': interaction.sentiments}
         for interaction in interactions
     ])
 
-def get_reviews_of_product(product_id: int) -> List[Dict[str, str]]:
+def get_reviews_of_product(product_id: int) -> List[Dict[str, Union[str, int]]]:
     """Returns all the reviews made on a product"""
     session = Session()
     result = _get_reviews_of_product(product_id, session=session)
@@ -455,8 +467,10 @@ def get_reviews_of_product(product_id: int) -> List[Dict[str, str]]:
 
 def _add_product_review(cred: Credentials, product_id: int, review: str, *, session: SessionType) -> bool:
     def _add_review(interaction: Interaction, attrs_values: Dict) -> None:
-        new = attrs_values['reviews'] + [review] if attrs_values['reviews'] else [review]
-        setattr(interaction, 'reviews', new)
+        reviews_new = attrs_values['reviews'] + [review] if attrs_values['reviews'] else [review]
+        sentiments_new = attrs_values['sentiments'] + [review_analyst(review)] if attrs_values['sentiments'] else [review_analyst(review)]
+        setattr(interaction, 'reviews', reviews_new)
+        setattr(interaction, 'sentiments', sentiments_new)
     return _update_interaction(cred, product_id, _add_review, session=session)
 
 def add_product_review(cred: Credentials, product_id: int, review: str) -> bool:
@@ -468,35 +482,39 @@ def add_product_review(cred: Credentials, product_id: int, review: str) -> bool:
 
 
 
-def _remove_product_review(cred: Credentials, product_id: int, review_index: int, *, session: SessionType) -> bool:
+def _remove_product_review(cred: Credentials, product_id: int, review_idx: int, *, session: SessionType) -> bool:
     def _remove_review(interaction: Interaction, attrs_values: Dict) -> None:
-        reviews = attrs_values['reviews'].copy()
-        _check_review_index(review_index, reviews)
-        del reviews[review_index]
+        reviews, sentiments = attrs_values['reviews'].copy(), attrs_values['sentiments'].copy()
+        _check_review_idx(review_idx, reviews)
+        del reviews[review_idx]
+        del sentiments[review_idx]
         setattr(interaction, 'reviews', reviews)
+        setattr(interaction, 'sentiments', sentiments)
     return _update_interaction(cred, product_id, _remove_review, session=session)
 
-def remove_product_review(cred: Credentials, product_id: int, review_index: int) -> bool:
+def remove_product_review(cred: Credentials, product_id: int, review_idx: int) -> bool:
     """Removes a user's review from a product using its index in the review list"""
     session = Session()
-    result = _remove_product_review(cred, product_id, review_index, session=session)
+    result = _remove_product_review(cred, product_id, review_idx, session=session)
     end_session(session)
     return result
 
 
 
-def _update_product_review(cred: Credentials, product_id: int, review_index: int, new_review: str, *, session: SessionType) -> bool:
+def _update_product_review(cred: Credentials, product_id: int, review_idx: int, new_review: str, *, session: SessionType) -> bool:
     def _update_review(interaction: Interaction, attrs_values: Dict) -> None:
-        reviews = attrs_values['reviews'].copy()
-        _check_review_index(review_index, reviews)
-        reviews[review_index] = new_review
+        reviews, sentiments = attrs_values['reviews'].copy(), attrs_values['sentiments'].copy()
+        _check_review_idx(review_idx, reviews)
+        reviews[review_idx] = new_review
+        sentiments[review_idx] = review_analyst(new_review)
         setattr(interaction, 'reviews', reviews)
+        setattr(interaction, 'sentiments', sentiments)
     return _update_interaction(cred, product_id, _update_review, session=session)
 
-def update_product_review(cred: Credentials, product_id: int, review_index: int, new_review: str) -> bool:
+def update_product_review(cred: Credentials, product_id: int, review_idx: int, new_review: str) -> bool:
     """Updates an existing product review"""
     session = Session()
-    result = _update_product_review(cred, product_id, review_index, new_review, session=session)
+    result = _update_product_review(cred, product_id, review_idx, new_review, session=session)
     end_session(session)
     return result
 

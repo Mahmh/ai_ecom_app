@@ -6,6 +6,8 @@ from src.lib.utils.db import end_session, get_hashed_img_filename, create_accoun
 from src.lib.utils.logger import log
 from src.lib.data.db import Credentials
 from src.lib.data.constants import CURRENT_DIR
+from src.server.models.review_analyst.model import review_analyst
+
 
 def load_data() -> Tuple[Union[pd.DataFrame, pd.Series]]:
     products_json = os.path.join(CURRENT_DIR, '../../db/data/products.json')
@@ -41,16 +43,21 @@ def add_products(products_df: pd.DataFrame, *, session) -> None:
     
 
 def add_interactions(products_df: pd.DataFrame, accounts_df: pd.Series, *, session) -> None:
+    reviews = [random.choice(['Wow', 'It worked', 'Pretty good']) for _ in range(4)]
+    sentiments = [review_analyst(review) for review in reviews]
+
     interactions = [
         dict(
             username=urow,
             product_id=prow[0],
             rating=random.randint(1, 5),
-            reviews=[random.choice(['Wow', 'It worked', 'Pretty good']) for _ in range(4)],
+            reviews=reviews,
+            sentiments=sentiments,
             in_cart=random.choice([True, False])
         )
         for urow, prow in zip(accounts_df['username'].unique(), products_df.iterrows())
     ]
+
     for row in interactions:
         session.add(Interaction(**row))
         log(f'[add_data_to_db.py] Added interaction "{row["username"]}" <-> {row["product_id"]}', 'db')

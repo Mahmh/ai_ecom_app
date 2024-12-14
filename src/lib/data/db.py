@@ -54,14 +54,14 @@ class Product(Base, ProductData):
 
 
 class InteractionData:
-    def __init__(self, username, product_id, rating=0, reviews=[], in_cart=False):
-        self.username, self.product_id, self.rating, self.reviews, self.in_cart = username, product_id, rating, reviews, in_cart
+    def __init__(self, username, product_id, rating=0, reviews=[], sentiments=[], in_cart=False):
+        self.username, self.product_id, self.rating, self.reviews, self.sentiments, self.in_cart = username, product_id, rating, reviews, sentiments, in_cart
     
     def __repr__(self):
         return f"Interaction('{self.username}', {self.product_id})"
     
     def detach(self):
-        return InteractionData(self.username, self.product_id, self.rating, self.reviews, self.in_cart)
+        return InteractionData(self.username, self.product_id, self.rating, self.reviews, self.sentiments, self.in_cart)
 
 class Interaction(Base, InteractionData):
     __tablename__ = 'interactions'
@@ -69,6 +69,7 @@ class Interaction(Base, InteractionData):
     product_id = Column(Integer, ForeignKey('products.product_id'), nullable=False, primary_key=True)
     rating = Column(Integer)
     reviews = Column(ARRAY(Text))
+    sentiments = Column(ARRAY(Integer))
     in_cart = Column(Boolean)
 
 

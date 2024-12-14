@@ -1,27 +1,103 @@
 'use client'
-import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState, useEffect, useContext } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Page, ProductCard, Dropdown, PaginationControls, CartButton } from '@/helpers/components'
-import { getDiscountedPrice, Request } from '@/helpers/utils'
-import { ProductObject, ProductSearchParams, Review } from '@/helpers/interfaces'
-import { nullProduct } from '@/helpers/context'
+import { getCredentials, getDiscountedPrice, isLoggedIn, Request, sentimentToInt } from '@/helpers/utils'
+import { Sentiment, ProductObject, ProductSearchParams, Review } from '@/helpers/interfaces'
+import { AppContext, nullProduct } from '@/helpers/context'
 import NotFound from '../not-found'
 
 const Product = ({ product_id }: { product_id: number }) => {
+    const router = useRouter()
+    const { account } = useContext(AppContext)
     const [product, setProduct] = useState<ProductObject>(nullProduct)
     const [found, setFound] = useState(true)
     const [reviews, setReviews] = useState<Review[]>([])
+    const [filteredReviews, setFilteredReviews] = useState<Review[]>([])
+    const [selectedSentiment, setSelectedSentiment] = useState<Sentiment>('all')
+    const [sentimentCounts, setSentimentCounts] = useState([0,0,0,0])
+    const [isAddReviewDivShown, setIsAddReviewDivShown] = useState(false)
+    const [updateReviewInputIdx, setUpdateReviewInputIdx] = useState(-1)
+    const [reviewToAdd, setReviewToAdd] = useState('')
+    const [reviewToUpdate, setReviewToUpdate] = useState('')
+    const sentiments = ['All', 'Positive', 'Neutral', 'Negative']
 
-    const getProductInfo = (product: ProductObject) => {
-        if (typeof product !== 'string') setProduct(product); else setFound(false)
+    const getProductInfo = async () => (
+        await new Request(`get_product_using_id?product_id=${product_id}`, (product: ProductObject) => {
+            typeof product !== 'string' ? setProduct(product) : setFound(false)
+        }).get()
+    )
+
+    const loadReviews = async () => (
+        await new Request(`get_reviews_of_product?product_id=${product_id}`, (reviews: Review[]) => {
+            setSentimentCounts([
+                reviews.length,
+                reviews.filter(review => review.sentiment === sentimentToInt('positive')).length,
+                reviews.filter(review => review.sentiment === sentimentToInt('neutral')).length,
+                reviews.filter(review => review.sentiment === sentimentToInt('negative')).length
+            ])
+            setReviews(reviews)
+        }).get()
+    )
+
+    const addReview = async () => {
+        if (isLoggedIn(account)) {
+            await new Request(
+                `add_product_review?product_id=${product.product_id}&review=${reviewToAdd}`,
+                loadReviews,
+                getCredentials(account)
+            ).patch()
+            setIsAddReviewDivShown(false)
+        } else {
+            router.push('/account/login')
+        }
     }
-    
+
+    const deleteReview = (reviewIdx: number) => (
+        async () => {
+            if (isLoggedIn(account)) {
+                await new Request(
+                    `remove_product_review?product_id=${product.product_id}&review_idx=${reviewIdx}`,
+                    loadReviews,
+                    getCredentials(account)
+                ).delete()
+            } else {
+                router.push('/account/login')
+            }
+        }
+    )
+
+    const editReview = (reviewIdx: number) => (
+        async () => {
+            if (isLoggedIn(account)) {
+                await new Request(
+                    `update_product_review?product_id=${product.product_id}&review_idx=${reviewIdx}&new_review=${reviewToUpdate}`,
+                    loadReviews,
+                    getCredentials(account)
+                ).patch()
+                setUpdateReviewInputIdx(-1)
+            } else {
+                router.push('/account/login')
+            }
+        }
+    )
+
     useEffect(() => {
-        if (typeof window !== 'undefined') window.scrollTo({ top: 0 });
-        (async () => await new Request(`get_product_using_id?product_id=${product_id}`, getProductInfo).get())();
-        (async () => await new Request(`get_reviews_of_product?product_id=${product_id}`, setReviews).get())()
+        if (typeof window !== 'undefined') window.scrollTo({ top: 0 })
+        getProductInfo()
+        loadReviews()
     }, [product_id])
+
+    useEffect(() => {
+        // Filter reviews based on selected sentiment
+        setFilteredReviews(
+            selectedSentiment != 'all'
+            ? reviews.filter(review => review.sentiment === sentimentToInt(selectedSentiment))
+            : reviews
+        )
+    }, [reviews, selectedSentiment])
 
     return found ? (
         <Page id='product-content'>
@@ -29,13 +105,12 @@ const Product = ({ product_id }: { product_id: number }) => {
                 {
                     product.image_file &&
                     <Image 
-                        src={`http://localhost:8000/product_images/${product.image_file}`} 
+                        src={`http://localhost:8000/product_images/${product.image_file}`}
                         alt={product.name ? product.name : 'product'} 
                         width={550} height={550} priority={true}
                     />
                 }
                 <div id='product-properties'>
-                    <h1 className='product-name'>{product.name}</h1>
                     <Link href={`/users?username=${product.owner.replace('&', '[amps]')}`} className='product-owner'>{product.owner}</Link>
                     <p className='product-description'>{product.description}</p>
                     <h3 id='price'>
@@ -49,14 +124,59 @@ const Product = ({ product_id }: { product_id: number }) => {
                     <CartButton product={product}/>
                 </div>
             </section>
-            <div className='horizontal-sep'></div>
-            <section id='reviews'>
-                {reviews.map((review: Review, i: number) => (
-                    <div key={i}>
-                        <Link href={`/users?username=${review.username}`}>{review.username}</Link>
-                        <p>{review.review}</p>
+
+            <section className='horizontal-sep-sec'>
+                <div className='horizontal-sep-upper'>
+                    <h1>
+                        Reviews
+                        <button onClick={() => setIsAddReviewDivShown(isAddReviewDivShown ? false : true)}>
+                            {isAddReviewDivShown ? '⨯' : '+'}
+                        </button>
+                    </h1>
+                    <div>
+                        {sentiments.map((sentiment: string, i: number) => (
+                            <button
+                                className={sentiment.toLowerCase() === selectedSentiment ? 'selected-sentiment' : ''}
+                                onClick={() => setSelectedSentiment(sentiment.toLowerCase() as Sentiment)}
+                                key={i}
+                            >{sentiment} ({sentimentCounts[i]})</button>
+                        ))}
                     </div>
-                ))}
+                </div>
+                <div className='horizontal-sep-line'></div>
+            </section>
+
+            <section id='reviews'>
+                <div id='add-review-div' style={isAddReviewDivShown ? {} : { display: 'none' }}>
+                    <textarea onChange={e => setReviewToAdd(e.target.value)}/>
+                    <button onClick={addReview}>Add Review</button>
+                </div>
+                {filteredReviews.length > 0 ? filteredReviews.map((review: Review, i: number) => (
+                    <div className={review.sentiment === 1 ? 'positive-review' : review.sentiment === -1 ? 'negative-review' : ''} key={i}>
+                        <section>
+                            <Link href={`/users?username=${review.username}`}>
+                                {review.username} {review.username === account.username ? '(You)' : ''}
+                            </Link>
+                            {
+                                updateReviewInputIdx === i 
+                                ? <textarea onChange={e => setReviewToUpdate(e.target.value)}/>
+                                : <p>{review.review}</p>
+                            }
+                        </section>
+                        <section>
+                            {review.username === account.username && <>
+                                <button
+                                    onClick={
+                                        updateReviewInputIdx === i
+                                        ? editReview(review.reviewIdx)
+                                        : () => setUpdateReviewInputIdx(i)
+                                    }
+                                >{updateReviewInputIdx === i ? 'Confirm' : 'Edit'}</button>
+                                <button onClick={deleteReview(review.reviewIdx)}>Delete</button>
+                            </>}
+                        </section>
+                    </div>
+                )) : selectedSentiment != 'all' ? `No reviews with ${selectedSentiment} sentiment.` : 'No reviews available.'}
             </section>
         </Page>
     ) : <NotFound/>
@@ -71,13 +191,14 @@ const Catalog = (searchParams: ProductSearchParams) => {
     const [searchQuery, setSearchQuery] = useState('')
     const [shownProducts, setShownProducts] = useState<ProductObject[]>([])
 
-    // Function to get the most relevant products
+    /** Retrieves the most relevant products */
     const getProducts = async () => {
         let all_products = await new Request(`get_all_products`).get()
         const filterByCategory = (products: ProductObject[]) => products.filter(product => product.category.toLowerCase() === category.toLowerCase())
         
         if (category === categories[0] && searchQuery.length === 0) {
-            setProducts(all_products); return
+            setProducts(all_products)
+            return
         }
 
         if (category && category !== categories[0]) {
@@ -87,8 +208,9 @@ const Catalog = (searchParams: ProductSearchParams) => {
 
         if (searchQuery.length > 0) {
             const candidates: ProductObject[] = await new Request(`search_products?search_query=${searchQuery}`).get()
-            if (category && category !== categories[0]) { setProducts(filterByCategory(candidates)); return }
-            setProducts(candidates)
+            category && category !== categories[0]
+            ? setProducts(filterByCategory(candidates))
+            : setProducts(candidates)
         }
     }
 
@@ -112,8 +234,8 @@ const Catalog = (searchParams: ProductSearchParams) => {
                     isLoading 
                     ? Array.from({ length: 5 }, (_, i) => <ProductCard key={i} isLoading={isLoading}/>)
                     : shownProducts.length > 0 
-                       ? shownProducts.map(product => <ProductCard key={product.product_id} product={product}/>) 
-                       : <p className='no-results-msg'>No results.</p>
+                      ? shownProducts.map(product => <ProductCard key={product.product_id} product={product}/>) 
+                      : <p className='no-results-msg'>No results.</p>
                 }
             </section>
             {!isLoading && <PaginationControls items={products} setShownItems={setShownProducts} reloadFactors={[category, searchQuery]}/>}
@@ -122,7 +244,10 @@ const Catalog = (searchParams: ProductSearchParams) => {
 }
 
 
-export default function ProductsPage({ searchParams }: { searchParams: ProductSearchParams }) {
-    const { product_id, category, search_query } = searchParams
-    return product_id ? <Product product_id={product_id}/> : <Catalog category={category} search_query={search_query}/> 
+export default function ProductsPage() {
+    const searchParams = useSearchParams()
+    const product_id = searchParams.get('product_id') || ''
+    const category = searchParams.get('category') || ''
+    const search_query = searchParams.get('search_query') || ''
+    return product_id ? <Product product_id={Number(product_id)}/> : <Catalog category={category} search_query={search_query}/> 
 }

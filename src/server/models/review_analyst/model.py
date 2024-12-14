@@ -3,7 +3,7 @@ from src.lib.data.constants import CHAT_LLM
 
 SentimentInt = Literal[1, 0, -1]
 
-class ReviewAnalyst:
+class _ReviewAnalyst:
     def __call__(self, review: str) -> SentimentInt:
         return self.predict(review)
 
@@ -27,3 +27,5 @@ class ReviewAnalyst:
         elif 'neutral' in sentiment: return 0
         elif 'negative' in sentiment: return -1
         else: return 0
+
+review_analyst = _ReviewAnalyst()
