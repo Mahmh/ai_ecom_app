@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { useState, useEffect, useRef, useContext, MouseEvent } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { NavLinkProps, PageProps, ProductObject, DropdownProps, PaginationControlsProps, Account, UserObject } from '@/helpers/interfaces'
@@ -6,7 +7,7 @@ import { AppContext } from '@/helpers/context'
 import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import Link from 'next/link'
+import Chatbot from '@/components/Chatbot'
 
 
 export const NavLink = ({ href, exact = false, children, ...props }: NavLinkProps) => {
@@ -21,6 +22,7 @@ export const Page = ({ children, id, constHeaderBgcolor=true }: PageProps) => (
     <>
         <Header constHeaderBgcolor={constHeaderBgcolor}/>
         <main id={id}>{children}</main>
+        <Chatbot/>
         <Footer/>
     </>
 )
@@ -146,7 +148,7 @@ export const Dropdown = ({ options, selectedOption, setSelectedOption }: Dropdow
                 {selectedOption}
             </button>
             <ul className={`dropdown-menu ${isOpen ? 'open' : ''}`}>
-                {options.map((option: string, i: number) => (
+                {options.map((option: string, i) => (
                     <li
                         key={i}
                         onClick={() => { setSelectedOption(option); setIsOpen(false) }}

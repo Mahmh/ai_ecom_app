@@ -15,12 +15,10 @@ SERVER_URL = f'http://{API_SERVER_HOST}:{API_SERVER_PORT}'
 CREATIVE_LLM_NAME = os.getenv('CREATIVE_LLM')
 EMBEDDER_LLM_NAME = os.getenv('EMBEDDER_LLM')
 CHAT_LLM_NAME = os.getenv('CHAT_LLM')
+CONDITIONAL_LLM_NAME = os.getenv('CONDITIONAL_LLM')
 BASE_URL = os.getenv('BASE_URL')
 TEMPERATURE = float(os.getenv('TEMPERATURE', .5))
 MAX_CORES = max(os.cpu_count() - 2, 1)
-# PAD_TOKEN = '<PAD>'
-# VOCAB = dict({y:x for x,y in enumerate(string.printable)})
-# VOCAB[PAD_TOKEN] = len(VOCAB)
 BERT_MODEL_TYPE = 'bert-base-uncased'
 BERT_EMBEDDING_DIM = 768
 
@@ -28,6 +26,7 @@ MAIN_CONFIG = dict(base_url=BASE_URL, num_thread=MAX_CORES, num_gpu=1)
 CREATIVE_LLM = Ollama(**MAIN_CONFIG, model=CREATIVE_LLM_NAME, temperature=1)
 EMBEDDER = OllamaEmbeddings(**MAIN_CONFIG, model=EMBEDDER_LLM_NAME, temperature=TEMPERATURE)
 CHAT_LLM = ChatOllama(**MAIN_CONFIG, model=CHAT_LLM_NAME, temperature=TEMPERATURE)
+CONDITIONAL_LLM = Ollama(**MAIN_CONFIG, model=CONDITIONAL_LLM_NAME, temperature=0)
 
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 200
@@ -36,7 +35,7 @@ VECSTORE_PERSIST_DIR=os.path.join(CURRENT_DIR, '../../db/vectorstore')
 TOP_K = 9
 
 BASE_SYS_MSG = SystemMessage('You are a helpful assistant that uses EcomGo\'s (our e-commerce company) documents to answer customer questions.')
-ERR_RESPONSE = 'Sorry, something went wrong.'
+ERR_RESPONSE = 'Sorry, something went wrong. Please try again later.'
 
 # DB
 PSQL_HOST = os.getenv('POSTGRES_HOST', 'localhost')
@@ -50,4 +49,3 @@ ENGINE_URL = f'postgresql+psycopg2://{PSQL_USER}:{PSQL_PASSWORD}@{PSQL_HOST}:{PS
 HASHING_ALGORITHM = os.getenv('HASHING_ALGORITHM', 'sha256')
 ENABLE_LOGGING = os.getenv('ENABLE_LOGGING', 'false')
 MLFLOW_TRACKING_URI = os.getenv('MLFLOW_TRACKING_URI', 'http://127.0.0.1:5000')
-NOT_OK_MSG = 'Status code not OK'

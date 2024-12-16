@@ -13,5 +13,8 @@ async def review_analyst_inference(data: ReviewAnalystInput) -> SentimentInt:
     return review_analyst(data.review_text)
 
 @model_r.post('/chatbot')
-async def chatbot_response(data: ChatbotInput) -> str:
-    return chatbot(data.prompt, data.conversation)
+async def chatbot_response(data: ChatbotInput) -> dict[str, str]:
+    return {
+        'sender': 'chatbot',
+        'content': chatbot(data.content, data.sender, data.conversation)
+    }

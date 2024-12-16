@@ -1,36 +1,23 @@
 import { ReactNode, SetStateAction, Dispatch } from 'react'
 
+// Types & Enums
 type SetState<T> = Dispatch<SetStateAction<T>>
 export type Sentiment = 'all' | 'positive' | 'neutral' | 'negative'
 export enum Status { Success, Failure, Pending }
 
+// General
 export interface Metadata {
     readonly title: string
     readonly description: string
 }
 
-export interface ProductObject {
-    readonly product_id: number
-    readonly name: string
-    readonly description: string
-    readonly image_file: string
-    readonly price: number
-    readonly discount: number
-    readonly owner: string
-    readonly category: string
-}
-
-export interface ProductSearchParams {
-    readonly product_id?: number
-    readonly category: string
-    readonly search_query: string
-}
-
-
-//// Props ////
-// General
 export interface ParentProps {
     readonly children: ReactNode
+}
+
+export interface Message {
+    sender: string
+    content: string
 }
 
 export interface ContextProps {
@@ -39,6 +26,8 @@ export interface ContextProps {
     topRated: ProductObject[],
     setTopRated: SetState<ProductObject[]>
     isTopRatedLoading: boolean
+    conversation: Message[]
+    setConversation: SetState<Message[]>
 }
 
 
@@ -60,6 +49,23 @@ export interface TooltipProps {
 
 
 // Components
+export interface ProductObject {
+    readonly product_id: number
+    readonly name: string
+    readonly description: string
+    readonly image_file: string
+    readonly price: number
+    readonly discount: number
+    readonly owner: string
+    readonly category: string
+}
+
+export interface ProductSearchParams {
+    readonly product_id?: number
+    readonly category: string
+    readonly search_query: string
+}
+
 export interface NavLinkProps extends ParentProps {
     readonly href: string
     readonly exact?: boolean
@@ -109,8 +115,10 @@ export interface UserSearchParams {
     readonly search_query: string
 }
 
+export interface MessageToSend extends Message {
+    conversation: Message[]
+}
 
-// Misc
 export interface AboutLinkProps extends ParentProps {
     readonly section: string
 }

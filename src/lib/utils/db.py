@@ -1,5 +1,5 @@
 from sqlalchemy import func, select, desc
-from sqlalchemy.orm import Session as SessionType
+from sqlalchemy.orm import Session as _SessionType
 from typing import Callable, Any, List, Union, Tuple, Dict
 from functools import wraps
 from difflib import SequenceMatcher
@@ -23,7 +23,7 @@ def exc_handler(func: Callable[..., Any]) -> Callable[..., Any]:
     return wrapper
 
 
-def end_session(session: SessionType, commit: bool = True) -> None:
+def end_session(session: _SessionType, commit: bool = True) -> None:
     """Ends a given SQLAlchemy session and handles errors when unsuccessful"""
     try:
         if commit: session.commit()
@@ -121,7 +121,7 @@ def _check_password(input_cred: Credentials, account: Union[User, SecuredCredent
 
 # Tables
 ### Users ###
-def _get_all_users(*, session: SessionType, **filter_kwargs) -> List[User]:
+def _get_all_users(*, session: _SessionType, **filter_kwargs) -> List[User]:
     return session.query(User).filter_by(**filter_kwargs).all()
 
 def get_all_users(**filter_kwargs) -> List[UserData]:
@@ -134,7 +134,7 @@ def get_all_users(**filter_kwargs) -> List[UserData]:
 
 
 
-def _account_exists(cred: Credentials, *, session: SessionType) -> Union[User, bool]:
+def _account_exists(cred: Credentials, *, session: _SessionType) -> Union[User, bool]:
     users = _get_all_users(session=session)
     for user in users:
         if cred.username == user.username: return user
@@ -150,7 +150,7 @@ def account_exists(cred: Credentials) -> Union[UserData, bool]:
 
 
 
-def _log_in_account(cred: Credentials, *, session: SessionType) -> User:
+def _log_in_account(cred: Credentials, *, session: _SessionType) -> User:
     account = _account_exists(cred, session=session)
     if account:
         if _check_password(cred, account): return account
@@ -168,7 +168,7 @@ def log_in_account(cred: Credentials) -> UserData:
 
 
 
-def _create_account(cred: Credentials, *, session: SessionType, **user_info) -> Union[User, bool]:
+def _create_account(cred: Credentials, *, session: _SessionType, **user_info) -> Union[User, bool]:
     account = _account_exists(cred, session=session)
     if account:
         raise UsernameTaken(cred.username)
@@ -189,7 +189,7 @@ def create_account(cred: Credentials, **user_info) -> Union[UserData, bool]:
 
 
 
-def _delete_account(cred: Credentials, *, session: SessionType) -> bool:
+def _delete_account(cred: Credentials, *, session: _SessionType) -> bool:
     account = _log_in_account(cred, session=session)
 
     for product in session.query(Product).filter_by(owner=account.username).all():
@@ -210,7 +210,7 @@ def delete_account(cred: Credentials) -> bool:
 
 
 
-def _edit_bio(cred: Credentials, new_bio: str, *, session: SessionType) -> bool:
+def _edit_bio(cred: Credentials, new_bio: str, *, session: _SessionType) -> bool:
     account = _log_in_account(cred, session=session)
     account.bio = new_bio
     return True
@@ -224,11 +224,11 @@ def edit_bio(cred: Credentials, new_bio: str) -> bool:
 
 
 
-def _get_user_info(username: str, *, session: SessionType) -> Dict[str, Union[str, List[Product]]]:
+def _get_user_info(username: str, *, session: _SessionType) -> Dict[str, Union[str, List[Product]]]:
     if _account_exists(Credentials(username=username, password=''), session=session):
         user = _get_all_users(username=username, session=session)[0]
         products = _get_all_products(owner=username, session=session)
-        return { 'username': user.username, 'bio': user.bio, 'owned_products': products }
+        return {'username': user.username, 'bio': user.bio, 'owned_products': products}
     else:
         raise NonExistent('user', username)
 
@@ -241,7 +241,7 @@ def get_user_info(username: str) -> Dict[str, Union[str, List[ProductData]]]:
 
 
 
-def _search_users(search_query: str, similarity_threshold: int = 0.6, *, session: SessionType) -> List[User]:
+def _search_users(search_query: str, similarity_threshold: int = 0.6, *, session: _SessionType) -> List[User]:
     similarity = lambda username: SequenceMatcher(None, username, search_query).ratio()  # Algorithm for computing similarity scores
 
     # Compare the name of each user with the `search_query` to compute similarity
@@ -265,7 +265,7 @@ def search_users(search_query: str, similarity_threshold: float = 0.6) -> List[U
 
 
 ### Products ###
-def _get_all_products(*, session: SessionType, **filter_kwargs) -> List[Product]:
+def _get_all_products(*, session: _SessionType, **filter_kwargs) -> List[Product]:
     return session.query(Product).filter_by(**filter_kwargs).all()
 
 def get_all_products(**filter_kwargs) -> List[ProductData]:
@@ -278,7 +278,7 @@ def get_all_products(**filter_kwargs) -> List[ProductData]:
 
 
 
-def _get_product_using_id(product_id: int, *, session: SessionType) -> Product:
+def _get_product_using_id(product_id: int, *, session: _SessionType) -> Product:
     products = _get_all_products(session=session)
     for product in products:
         if product_id == product.product_id:
@@ -295,7 +295,7 @@ def get_product_using_id(product_id: int) -> ProductData:
 
 
 
-def _is_owner_of_product(cred: Credentials, product_id: int, *, session: SessionType) -> bool:
+def _is_owner_of_product(cred: Credentials, product_id: int, *, session: _SessionType) -> bool:
     product = session.query(Product).filter_by(product_id=product_id).first()
 
     if product is None:
@@ -313,7 +313,7 @@ def is_owner_of_product(cred: Credentials, product_id: int) -> bool:
 
 
 
-def _create_product(cred: Credentials, *, session: SessionType, **product_info) -> bool:
+def _create_product(cred: Credentials, *, session: _SessionType, **product_info) -> bool:
     account = _log_in_account(cred, session=session)
     if account:
         max_id = session.query(func.max(Product.product_id)).scalar()
@@ -331,7 +331,7 @@ def create_product(cred: Credentials, **product_info) -> bool:
 
 
 
-def _delete_product(cred: Credentials, product_id: int, *, session: SessionType) -> bool:
+def _delete_product(cred: Credentials, product_id: int, *, session: _SessionType) -> bool:
     _log_in_account(cred, session=session)
     product = _get_product_using_id(product_id, session=session)
     is_owner = _is_owner_of_product(cred, product_id, session=session)
@@ -354,7 +354,7 @@ def delete_product(cred: Credentials, product_id: int) -> bool:
 
 
 
-def _update_product(cred: Credentials, product_id: int, *, session: SessionType, **update_kwargs) -> bool:
+def _update_product(cred: Credentials, product_id: int, *, session: _SessionType, **update_kwargs) -> bool:
     _log_in_account(cred, session=session)
     product = _get_product_using_id(product_id, session=session)
     is_owner = _is_owner_of_product(cred, product.product_id, session=session)
@@ -374,7 +374,7 @@ def update_product(cred: Credentials, product_id: int, **update_kwargs) -> bool:
 
 
 
-def _search_products(search_query: str, similarity_threshold: int = 0.6, *, session: SessionType) -> List[Product]:
+def _search_products(search_query: str, similarity_threshold: int = 0.6, *, session: _SessionType) -> List[Product]:
     similarity = lambda product_name: SequenceMatcher(None, product_name, search_query).ratio() 
 
     matches = []
@@ -397,7 +397,7 @@ def search_products(search_query: str, similarity_threshold: float = 0.6) -> Lis
 
 
 ### User-product interactions ###
-def _get_all_interactions(*, session: SessionType, **filter_kwargs) -> List[Interaction]:
+def _get_all_interactions(*, session: _SessionType, **filter_kwargs) -> List[Interaction]:
     return session.query(Interaction).filter_by(**filter_kwargs).all()
 
 def get_all_interactions(**filter_kwargs) -> List[InteractionData]:
@@ -410,7 +410,7 @@ def get_all_interactions(**filter_kwargs) -> List[InteractionData]:
 
 
 
-def _update_interaction(cred: Credentials, product_id: int, updater: Callable[[Interaction, Dict], None], *, session: SessionType) -> bool:
+def _update_interaction(cred: Credentials, product_id: int, updater: Callable[[Interaction, Dict], None], *, session: _SessionType) -> bool:
     account = _log_in_account(cred, session=session)
     _get_product_using_id(product_id, session=session)
     interactions = _get_all_interactions(username=account.username, product_id=product_id, session=session)
@@ -435,7 +435,7 @@ def update_interaction(cred: Credentials, product_id: int, updater: Callable[[In
 
 
 
-def _rate_product(cred: Credentials, product_id: int, rating: int, *, session: SessionType) -> bool:
+def _rate_product(cred: Credentials, product_id: int, rating: int, *, session: _SessionType) -> bool:
     assert 0 <= rating <= 5, 'Rating must be in the range [0, 5]'
     return _update_interaction(cred, product_id, lambda interaction, _: setattr(interaction, 'rating', rating), session=session)
 
@@ -448,7 +448,7 @@ def rate_product(cred: Credentials, product_id: int, rating: int) -> bool:
 
 
 
-def _get_reviews_of_product(product_id: int, *, session: SessionType) -> List[Dict[str, Union[str, int]]]:
+def _get_reviews_of_product(product_id: int, *, session: _SessionType) -> List[Dict[str, Union[str, int]]]:
     _get_product_using_id(product_id, session=session)
     interactions = _get_all_interactions(session=session, product_id=product_id)
     return _prep_reviews([
@@ -465,7 +465,7 @@ def get_reviews_of_product(product_id: int) -> List[Dict[str, Union[str, int]]]:
 
 
 
-def _add_product_review(cred: Credentials, product_id: int, review: str, *, session: SessionType) -> bool:
+def _add_product_review(cred: Credentials, product_id: int, review: str, *, session: _SessionType) -> bool:
     def _add_review(interaction: Interaction, attrs_values: Dict) -> None:
         reviews_new = attrs_values['reviews'] + [review] if attrs_values['reviews'] else [review]
         sentiments_new = attrs_values['sentiments'] + [review_analyst(review)] if attrs_values['sentiments'] else [review_analyst(review)]
@@ -482,7 +482,7 @@ def add_product_review(cred: Credentials, product_id: int, review: str) -> bool:
 
 
 
-def _remove_product_review(cred: Credentials, product_id: int, review_idx: int, *, session: SessionType) -> bool:
+def _remove_product_review(cred: Credentials, product_id: int, review_idx: int, *, session: _SessionType) -> bool:
     def _remove_review(interaction: Interaction, attrs_values: Dict) -> None:
         reviews, sentiments = attrs_values['reviews'].copy(), attrs_values['sentiments'].copy()
         _check_review_idx(review_idx, reviews)
@@ -501,7 +501,7 @@ def remove_product_review(cred: Credentials, product_id: int, review_idx: int) -
 
 
 
-def _update_product_review(cred: Credentials, product_id: int, review_idx: int, new_review: str, *, session: SessionType) -> bool:
+def _update_product_review(cred: Credentials, product_id: int, review_idx: int, new_review: str, *, session: _SessionType) -> bool:
     def _update_review(interaction: Interaction, attrs_values: Dict) -> None:
         reviews, sentiments = attrs_values['reviews'].copy(), attrs_values['sentiments'].copy()
         _check_review_idx(review_idx, reviews)
@@ -520,7 +520,7 @@ def update_product_review(cred: Credentials, product_id: int, review_idx: int, n
 
 
 
-def _is_product_in_cart(cred: Credentials, product_id: int, *, session: SessionType) -> bool:
+def _is_product_in_cart(cred: Credentials, product_id: int, *, session: _SessionType) -> bool:
     in_cart = False
     for product in _get_cart(cred, session=session):
         if product.product_id == product_id: in_cart = True
@@ -535,7 +535,7 @@ def is_product_in_cart(cred: Credentials, product_id: int):
 
 
 
-def _add_product_to_cart(cred: Credentials, product_id: int, *, session: SessionType) -> bool:
+def _add_product_to_cart(cred: Credentials, product_id: int, *, session: _SessionType) -> bool:
     assert not _is_product_in_cart(cred, product_id, session=session), 'Product is already in cart'
     return _update_interaction(cred, product_id, lambda interaction, _: setattr(interaction, 'in_cart', True), session=session)
 
@@ -548,7 +548,7 @@ def add_product_to_cart(cred: Credentials, product_id: int) -> bool:
 
 
 
-def _remove_product_from_cart(cred: Credentials, product_id: int, *, session: SessionType) -> bool:
+def _remove_product_from_cart(cred: Credentials, product_id: int, *, session: _SessionType) -> bool:
     assert _is_product_in_cart(cred, product_id, session=session), 'Product is not in cart'
     return _update_interaction(cred, product_id, lambda interaction, _: setattr(interaction, 'in_cart', False), session=session)
 
@@ -561,7 +561,7 @@ def remove_product_from_cart(cred: Credentials, product_id: int) -> bool:
 
 
 
-def _get_most_rated_products(k: int = 3, *, session: SessionType) -> List[Product]:
+def _get_most_rated_products(k: int = 3, *, session: _SessionType) -> List[Product]:
     stmt = select(Interaction).order_by(desc(Interaction.rating)).limit(k)
     interactions = session.execute(stmt).scalars().all()
     return [
@@ -579,7 +579,7 @@ def get_most_rated_products(k: int = 3) -> List[ProductData]:
 
 
 
-def _get_cart(cred: Credentials, *, session: SessionType) -> List[Product]:
+def _get_cart(cred: Credentials, *, session: _SessionType) -> List[Product]:
     if log_in_account(cred):
         interactions = _get_all_interactions(username=cred.username, session=session)
         return [

@@ -10,7 +10,7 @@ const Banner = () => (
     <section id='banner'>
         <div id='slogan'>
             <h1>World's Top Digital Marketplace</h1>
-            <p>Shop Smart, Shop Fast, Shop EcomGo!</p>
+            <p>Your AI-powered e-commerce platform.</p>
         </div>
     </section>
 )
@@ -25,7 +25,7 @@ export const TopRatedProducts = () => {
                 {
                     isTopRatedLoading 
                     ? Array.from({ length: 5 }, (_, i) => <ProductCard key={i} isLoading={isTopRatedLoading}/>)
-                    : topRated && topRated.map((product: ProductObject, i: number) => <ProductCard key={i} product={product}/>)
+                    : topRated && topRated.map((product: ProductObject, i) => <ProductCard key={i} product={product}/>)
                 }
             </div>
         </section>

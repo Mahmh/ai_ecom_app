@@ -1,7 +1,7 @@
 from typing import Any, Callable, Tuple, List, Dict
 import requests, json, pytest
 from src.lib.data.db import Credentials
-from src.lib.data.constants import SERVER_URL, NOT_OK_MSG
+from src.lib.data.constants import SERVER_URL
 from src.lib.utils.db import create_account, create_product, delete_account
 
 # Check if API server is running
@@ -23,7 +23,7 @@ def request(endpoint_name: str, req_type: str, **data) -> requests.Response:
 
 def check_status(res: requests.Response):
     """Checks if the response status code is OK"""
-    assert res.status_code == 200, NOT_OK_MSG
+    assert res.status_code == 200, 'Status code not OK'
 
 
 class Tasks:

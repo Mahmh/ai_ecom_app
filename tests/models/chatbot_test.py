@@ -8,27 +8,31 @@ def chatbot() -> Chatbot:
 
 # Tests
 def test_parse_conversation(chatbot):
-    msgs = [('human', 'Hi.'), ('ai', 'Hello.'), ('system', '...')]
-    chatbot.parse_conversation(msgs)
-    all_msgs = ' '.join(msg.content for msg in chatbot.history)
-    assert len(chatbot.history) == 4
-    assert all(msg[1] in all_msgs for msg in msgs)
+    msgs = [{'sender': '', 'content': 'Hi.'}, {'sender': 'chatbot', 'content': 'Hello.'}, {'sender': 'system', 'content': '...'}]
+    chatbot._parse_conversation(msgs)
+    all_msgs = [msg.content for msg in chatbot.history]
+    assert len(chatbot.history) == 4, 'Invalid conversation history'
+    assert all(msg['content'] in all_msgs for msg in msgs), 'Could not parse messages'
 
 
 def test_memory(chatbot):
-    chatbot.parse_conversation([('human', 'My name is Beraw'), ('ai', 'Okay.')])
-    answer = chatbot.chat('What is my name?')
-    assert len(chatbot.history) == 1 # memory was reset
-    assert 'Beraw' in answer
+    conv = [
+        {'sender': '', 'content': 'my name is Beraw'}, 
+        {'sender': 'chatbot', 'content': "Hello Beraw! Welcome to EcomGo's customer support! It's great to have you on board. I don't see any specific questions or concerns from you yet, so feel free to ask me anything about our products, services, or platform in general. I'm here to help!"}
+    ]
+    answer = chatbot('what is my name', conv=conv)
+    assert len(chatbot.history) == 1, 'Memory was not reset'
+    assert 'beraw' in answer.lower(), 'Could not remember past info'
 
 
 @pytest.mark.parametrize(
     'question, answer',
     [
-        ('Does EcomGo offer 24/7 customer support?', 'yes')
+        ('Does EcomGo sell electronics?', 'yes'),
+        ('What is my username?', 'gadgetco')
     ]
 )
 def test_retrieve_docs(chatbot, question, answer):
-    response = chatbot.chat(question)
-    assert len(chatbot.history) == 1
-    assert answer in response.lower()
+    response = chatbot.chat(question, sender='GadgetCo')
+    assert len(chatbot.history) == 1, 'Memory was not reset'
+    assert answer in response.lower(), 'Answer was not in response'

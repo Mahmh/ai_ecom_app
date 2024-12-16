@@ -1,6 +1,6 @@
 'use client'
 import { createContext, useState, useEffect } from 'react'
-import { ParentProps, ContextProps, ProductObject, Account, UserObject } from '@/helpers/interfaces'
+import { ParentProps, ContextProps, ProductObject, Account, UserObject, Message } from '@/helpers/interfaces'
 import { Request } from '@/helpers/utils'
 
 export const nullAccount: Account = { username: '', password: '', bio: '', cart: [] }
@@ -12,13 +12,16 @@ export const AppContext = createContext<ContextProps>({
     setAccount: () => {},
     topRated: [],
     setTopRated: () => {},
-    isTopRatedLoading: true
+    isTopRatedLoading: true,
+    conversation: [],
+    setConversation: () => {}
 })
 
 export function AppProvider({ children }: ParentProps) {
     const [account, setAccount] = useState<Account>(nullAccount)
     const [topRated, setTopRated] = useState<ProductObject[]>([])
     const [isTopRatedLoading, setIsTopRatedLoading] = useState(true)
+    const [conversation, setConversation] = useState<Message[]>([])
     
     useEffect(() => {
         const num_topRated = 5
@@ -31,7 +34,8 @@ export function AppProvider({ children }: ParentProps) {
         <AppContext.Provider value={{
             account, setAccount,
             topRated, setTopRated,
-            isTopRatedLoading
+            isTopRatedLoading,
+            conversation, setConversation
         }}>{children}</AppContext.Provider>
     )
 }

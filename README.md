@@ -1,7 +1,7 @@
 # AI-Powered E-Commerce Website
 <u>Problem statement</u>: A fictional e-commerce company named "EcomGo" wants to integrate AI technology in their website to enhance user experience and customer satisfaction. Their plan was to add the following AI-powered features:
 
-- **Chatbot Assistant**: It uses a large language model (LLM) that has access to the company's internal database of products and other helpful information (e.g., delivery info, product discounts).
+- **Chatbot Assistant**: It uses a large language model (LLM) that has access to the company's internal database of products, manufacturers, and other helpful information (e.g., discounts & promotions).
 - **Review Analyst**: The company considers using an internal model that reads a user's review on a particular product to determine their message's sentiment (positive, neutral, or negative). Reviews with positive sentiment are colored green in the website, ones with negative are colored red, whereas the neutral ones are colored white; in addition, reviews with the same sentiment are grouped together. This AI feature is useful for users as they can quickly estimate the public's opinion about a specific product before buying it.
 - **Product Recommender**: A custom trained AI model is used to recommend products to users based on their preferences and purchasing style.
 
@@ -10,12 +10,12 @@
 # AI Models
 Here is a more detailed description for each aforementioned model:
 - **Chatbot Assistant**:
-    1. Queries the internal database.
-    2. Stores the top relevant results in an index for better retrieval.
-    3. Retrieves them as embedded information.
-    4. Decides to use which information to properly answer a user's question.
+    1. A customer asks a question by typing & sending the prompt.
+    2. The chatbot intelligently determines whether the customer is asking for a specific product(s) or a manufacturer(s).
+    3. It then decides to query EcomGo's internal database, fetching relevant information and/or documents needed to answer the customer's question.
+    4. Responds with a nicely-formatted response.
 - **Review Analyst**:
-    1. A self-hosted Llama 3 model (8B parameters) for analyzing sentiments intelligently.
+    1. An LLM for analyzing sentiments intelligently.
     2. Preprocesses and postprocesses user and output data respectively.
     3. Predicts and displays the sentiment of the user on a product given only their review about it.
 - **Product Recommender**:
@@ -29,11 +29,10 @@ Here is a more detailed description for each aforementioned model:
 # Tech Stack
 Here are all the tools that I used to create this project:
 - AI:
-    - LLMs (hosted locally):
-        - **Llama 3** for accuracy in some tasks (4.7 GB).
-        - **Llama 3.2 (1B)** for accuracy & speed in other tasks (1.3 GB).
-        - **Orca Mini** for creativity & speed (2.0 GB).
     - Deep learning framework: **PyTorch**.
+    - Self-hosted LLMs:
+        - **Llama 3 (8B)** for accuracy in some tasks (4.7 GB).
+        - **Llama 3.2 (1B)** for accuracy & speed in other tasks (1.3 GB).
     
 - Frontend:
     - **Next.js & TypeScript** for website programming.

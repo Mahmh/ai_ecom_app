@@ -111,6 +111,7 @@ const Product = ({ product_id }: { product_id: number }) => {
                     />
                 }
                 <div id='product-properties'>
+                    <h1 className='product-name'>{product.name}</h1>
                     <Link href={`/users?username=${product.owner.replace('&', '[amps]')}`} className='product-owner'>{product.owner}</Link>
                     <p className='product-description'>{product.description}</p>
                     <h3 id='price'>
@@ -134,7 +135,7 @@ const Product = ({ product_id }: { product_id: number }) => {
                         </button>
                     </h1>
                     <div>
-                        {sentiments.map((sentiment: string, i: number) => (
+                        {sentiments.map((sentiment: string, i) => (
                             <button
                                 className={sentiment.toLowerCase() === selectedSentiment ? 'selected-sentiment' : ''}
                                 onClick={() => setSelectedSentiment(sentiment.toLowerCase() as Sentiment)}
@@ -151,7 +152,7 @@ const Product = ({ product_id }: { product_id: number }) => {
                     <textarea onChange={e => setReviewToAdd(e.target.value)}/>
                     <button onClick={addReview}>Add Review</button>
                 </div>
-                {filteredReviews.length > 0 ? filteredReviews.map((review: Review, i: number) => (
+                {filteredReviews.length > 0 ? filteredReviews.map((review: Review, i) => (
                     <div className={review.sentiment === 1 ? 'positive-review' : review.sentiment === -1 ? 'negative-review' : ''} key={i}>
                         <section>
                             <Link href={`/users?username=${review.username}`}>

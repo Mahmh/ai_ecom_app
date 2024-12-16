@@ -133,8 +133,9 @@ class ReviewAnalystInput(BaseModel):
 
 
 class ChatbotInput(BaseModel):
-    """Model for accepting required input for the chatbot"""
-    prompt: str
+    """Model for accepting user prompt for the chatbot"""
+    sender: str
+    content: str
     conversation: List = []
 
 

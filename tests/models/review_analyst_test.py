@@ -1,5 +1,4 @@
 import pytest
-from src.lib.data.models import NeuralNetwork
 from src.server.models.review_analyst.model import review_analyst
 
 @pytest.mark.parametrize(

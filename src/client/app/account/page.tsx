@@ -86,7 +86,7 @@ export default function Account() {
                     <div className={`product-container ${productDisplay && account.cart?.length > 0 ? `${productDisplay}-display` : ''}`}>
                         {
                             account.cart?.length > 0
-                            ? account.cart.map((product: ProductObject, i: number) => <ProductCard product={product} key={i}/>)
+                            ? account.cart.map((product: ProductObject, i) => <ProductCard product={product} key={i}/>)
                             : <p>No items in cart. <Link href='/' id='shopping-link'>Start shopping!</Link></p>
                         }
                     </div>
@@ -98,7 +98,7 @@ export default function Account() {
                     account.cart?.length > 0
                     ? <>
                         <ol>
-                            {account.cart.map((product: ProductObject, i: number) => (
+                            {account.cart.map((product: ProductObject, i) => (
                                 <li key={i}>{product.name} (${getDiscountedPrice(product.price, product.discount)})</li>
                             ))}
                         </ol>
