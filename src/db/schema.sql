@@ -21,7 +21,7 @@ CREATE TABLE products(
 CREATE TABLE interactions(
     username        VARCHAR(255) NOT NULL REFERENCES users(username),
     product_id      SERIAL NOT NULL REFERENCES products(product_id),
-    rating          INT,
+    rating          INT,  -- 0 or 1
     reviews         TEXT[],  -- The same user can have multiple reviews on the same product
     sentiments      INT[],
     in_cart         BOOLEAN,

@@ -8,12 +8,15 @@ import { getCredentials, getDiscountedPrice, isLoggedIn, Request, sentimentToInt
 import { Sentiment, ProductObject, ProductSearchParams, Review } from '@/helpers/interfaces'
 import { AppContext, nullProduct } from '@/helpers/context'
 import NotFound from '../not-found'
+import ratedIcon from '@icons/rated.png'
+import unratedIcon from '@icons/unrated.png'
 
 const Product = ({ product_id }: { product_id: number }) => {
     const router = useRouter()
     const { account } = useContext(AppContext)
     const [product, setProduct] = useState<ProductObject>(nullProduct)
     const [found, setFound] = useState(true)
+    const [rated, setRated] = useState(false)
     const [reviews, setReviews] = useState<Review[]>([])
     const [filteredReviews, setFilteredReviews] = useState<Review[]>([])
     const [selectedSentiment, setSelectedSentiment] = useState<Sentiment>('all')
@@ -31,7 +34,8 @@ const Product = ({ product_id }: { product_id: number }) => {
     )
 
     const loadReviews = async () => (
-        await new Request(`get_reviews_of_product?product_id=${product_id}`, (reviews: Review[]) => {
+        await new Request(`get_reviews_of_product?product_id=${product_id}`, (reviews: Review[] | string) => {
+            if (typeof reviews == 'string') { console.error(reviews); return }
             setSentimentCounts([
                 reviews.length,
                 reviews.filter(review => review.sentiment === sentimentToInt('positive')).length,
@@ -50,9 +54,7 @@ const Product = ({ product_id }: { product_id: number }) => {
                 getCredentials(account)
             ).patch()
             setIsAddReviewDivShown(false)
-        } else {
-            router.push('/account/login')
-        }
+        } else router.push('/account/login')
     }
 
     const deleteReview = (reviewIdx: number) => (
@@ -63,9 +65,7 @@ const Product = ({ product_id }: { product_id: number }) => {
                     loadReviews,
                     getCredentials(account)
                 ).delete()
-            } else {
-                router.push('/account/login')
-            }
+            } else router.push('/account/login')
         }
     )
 
@@ -78,15 +78,34 @@ const Product = ({ product_id }: { product_id: number }) => {
                     getCredentials(account)
                 ).patch()
                 setUpdateReviewInputIdx(-1)
-            } else {
-                router.push('/account/login')
-            }
+            } else router.push('/account/login')
         }
     )
+
+    const rateOrUnrateProduct = async () => {
+        if (isLoggedIn(account)) {
+            await new Request(
+                `${rated ? 'unrate_product' : 'rate_product'}?product_id=${product.product_id}`,
+                x=>x,
+                getCredentials(account)
+            ).patch()
+            setRated(!rated)
+            getUserRating()
+        } else router.push('/account/login')
+    }
+
+    const getUserRating = async () => {
+        if (!isLoggedIn(account)) return
+        await new Request(
+            `get_raters_of_product?product_id=${product_id}`,
+            (raters: string[]) => setRated(raters.includes(account.username))
+        ).get()
+    }
 
     useEffect(() => {
         if (typeof window !== 'undefined') window.scrollTo({ top: 0 })
         getProductInfo()
+        getUserRating()
         loadReviews()
     }, [product_id])
 
@@ -111,7 +130,12 @@ const Product = ({ product_id }: { product_id: number }) => {
                     />
                 }
                 <div id='product-properties'>
-                    <h1 className='product-name'>{product.name}</h1>
+                    <h1 className='product-name'>
+                        {product.name}
+                        <button onClick={rateOrUnrateProduct} id='rate-btn' className={rated ? 'rated' : ''}>
+                            <Image src={rated ? ratedIcon : unratedIcon} alt={'Rate product'} width={40} height={40} priority={true}/>
+                        </button>
+                    </h1>
                     <Link href={`/users?username=${product.owner.replace('&', '[amps]')}`} className='product-owner'>{product.owner}</Link>
                     <p className='product-description'>{product.description}</p>
                     <h3 id='price'>

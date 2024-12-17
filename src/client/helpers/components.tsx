@@ -1,10 +1,10 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect, useRef, useContext, MouseEvent } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { NavLinkProps, PageProps, ProductObject, DropdownProps, PaginationControlsProps, Account, UserObject } from '@/helpers/interfaces'
 import { Request, addToCart, removeFromCart, getDiscountedPrice, isLoggedIn, isProductInCart, round } from '@/helpers/utils'
 import { AppContext } from '@/helpers/context'
-import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Chatbot from '@/components/Chatbot'
@@ -90,7 +90,11 @@ export const ProductCard = ({ product, isLoading }: { product?: ProductObject, i
             <div className='product-card'>
                 <Link href={`/products?product_id=${product_id}`}>
                     <div>
-                        <Image src={`http://localhost:8000/product_images/${image_file}`} alt={name ? name : 'product'} width={250} height={250} priority={true}/>
+                        <Image 
+                            src={`http://localhost:8000/product_images/${image_file}`}
+                            alt={name ? name : 'product'}
+                            width={250} height={250} priority={true}
+                        />
                         <article>
                             <h1 className='product-name'>{name}</h1>
                             <label className='product-description'>{description}</label>

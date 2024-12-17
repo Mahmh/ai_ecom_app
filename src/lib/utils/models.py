@@ -68,7 +68,10 @@ def print_epoch_result(
     return avg_train_loss, avg_val_loss
 
 
-def train_val_test_split(config: ModelConfig, return_loaders: bool = True) -> Tuple[DataLoader | pd.DataFrame]:
+def train_val_test_split(
+        config: ModelConfig, 
+        return_loaders: bool = True
+    ) -> Union[Tuple[DataLoader, DataLoader, DataLoader], Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """Returns `torch.utils.data.DataLoader`s for training, validation, and test datasets with the `config` provided"""
     df = pd.read_csv(_locate(config.model_name, config.csv_file))
     df = df if config.n_samples == 'all' else df.sample(config.n_samples)
@@ -100,7 +103,7 @@ def load_checkpoint(
         ModelClass: NeuralNetwork, 
         config: ModelConfig, 
         run_name: Optional[str] = None
-    ) -> Optional[Tuple[torch.nn.Module | str]]:
+    ) -> Optional[Tuple[Union[torch.nn.Module, str]]]:
     """Loads the model & its optimizer from the latest checkpoint saved"""
     model_dirname, optimizer_dirname, nameformat = config.persist_model_dir_name, config.persist_optimizer_dir_name, config.persist_name_fmt
 

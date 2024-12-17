@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, Text, ARRAY, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.orm import sessionmaker, declarative_base
-from typing import Any, Union
+from typing import Union, Literal
 from pydantic import BaseModel
 from src.lib.data.constants import ENGINE_URL
 
@@ -117,7 +117,7 @@ class NotOwner(Exception):
 
 class NonExistent(Exception):
     """Exception for entering entities that don't exist"""
-    def __init__(self, entity: str, identifier: Any):
+    def __init__(self, entity: Literal['user', 'product'], identifier: Union[str, int]):
         match entity:
             case 'user': 
                 super().__init__(f'Account with username "{identifier}" is non-existent')

@@ -6,7 +6,7 @@ from src.lib.utils.db import end_session, get_hashed_img_filename, create_accoun
 from src.lib.utils.logger import log
 from src.lib.data.db import Credentials
 from src.lib.data.constants import CURRENT_DIR
-from src.server.models.review_analyst.model import review_analyst
+from src.server.models.review_analyst import review_analyst
 
 
 def load_data() -> Tuple[Union[pd.DataFrame, pd.Series]]:
@@ -50,7 +50,7 @@ def add_interactions(products_df: pd.DataFrame, accounts_df: pd.Series, *, sessi
         dict(
             username=urow,
             product_id=prow[0],
-            rating=random.randint(1, 5),
+            rating=random.randint(0, 1),
             reviews=reviews,
             sentiments=sentiments,
             in_cart=random.choice([True, False])

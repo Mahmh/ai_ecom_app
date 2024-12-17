@@ -1,5 +1,5 @@
 import pytest
-from src.server.models.review_analyst.model import review_analyst
+from src.server.models.review_analyst import review_analyst
 
 @pytest.mark.parametrize(
     'review_text',

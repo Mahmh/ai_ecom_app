@@ -3,7 +3,8 @@ from src.lib.data.db import InteractionData
 from src.lib.utils.db import (
     is_product_in_cart,
     get_all_interactions, 
-    rate_product, 
+    rate_product,
+    unrate_product,
     get_reviews_of_product, 
     add_product_review,
     remove_product_review,
@@ -19,13 +20,20 @@ class TestInteraction(DBTests):
         assert type(interactions) is list and len(interactions) > 0 and type(interactions[0]) is InteractionData, 'Failed to get all interactions'
     
     
-    def test_rate_product(self):
-        status1 = rate_product(SAMPLE_CRED, SAMPLE_PRODUCT_ID, 3)
+    def test_rate_and_unrate_product(self):
+        status1 = rate_product(SAMPLE_CRED, SAMPLE_PRODUCT_ID)
         rating1 = get_all_interactions(username=SAMPLE_CRED.username, product_id=SAMPLE_PRODUCT_ID)[0].rating
-        status2 = rate_product(SAMPLE_CRED, SAMPLE_PRODUCT_ID, 5)
+        status2 = rate_product(SAMPLE_CRED, SAMPLE_PRODUCT_ID)
         rating2 = get_all_interactions(username=SAMPLE_CRED.username, product_id=SAMPLE_PRODUCT_ID)[0].rating
         assert status1 is True and status2 is True, 'Failed to rate product'
-        assert rating1 == 3 and rating2 == 5, "Failed to update product's rating"
+        assert rating1 == 1 and rating2 == 1, "Failed to rate product"
+
+        status1 = unrate_product(SAMPLE_CRED, SAMPLE_PRODUCT_ID)
+        rating1 = get_all_interactions(username=SAMPLE_CRED.username, product_id=SAMPLE_PRODUCT_ID)[0].rating
+        status2 = unrate_product(SAMPLE_CRED, SAMPLE_PRODUCT_ID)
+        rating2 = get_all_interactions(username=SAMPLE_CRED.username, product_id=SAMPLE_PRODUCT_ID)[0].rating
+        assert status1 is True and status2 is True, 'Failed to rate product'
+        assert rating1 == 0 and rating2 == 0, "Failed to unrate product"
     
 
     def test_add_and_get_reviews_of_product(self):

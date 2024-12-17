@@ -63,9 +63,29 @@ const DiscoverProducts = () => {
 
 const Recommended = () => {
     const { account } = useContext(AppContext)
-    return isLoggedIn(account) && (
+    const [isLoading, setIsLoading] = useState(true)
+    const [products, setProducts] = useState<ProductObject[]>([])
+
+    const getRecommendedProducts = async () => {
+        if (!isLoggedIn(account)) return
+        setIsLoading(true)
+        await new Request(
+            `recommender?username=${account.username}`,
+            (response: ProductObject[]) => {
+                setProducts(response)
+                setIsLoading(false)
+            }
+        ).get()
+    }
+
+    useEffect(() => { getRecommendedProducts() }, [])
+
+    return isLoggedIn(account) && products.length > 0 && (
         <section id='recommended-sec'>
             <h1>Recommended</h1>
+            <div className='product-container'>
+                {products.map((p, i) => <ProductCard product={p} isLoading={isLoading} key={i}/>)}
+            </div>
         </section>
     )
 }

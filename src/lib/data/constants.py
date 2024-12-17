@@ -3,7 +3,7 @@ from langchain_community.llms.ollama import Ollama
 from langchain_community.chat_models.ollama import ChatOllama
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain.schema import SystemMessage
-import os #, string
+import os
 
 # Net
 WEB_SERVER_URL = os.getenv('WEB_SERVER_URL', 'http://localhost:3000')
@@ -31,7 +31,7 @@ CONDITIONAL_LLM = Ollama(**MAIN_CONFIG, model=CONDITIONAL_LLM_NAME, temperature=
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 200
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))  # path with respect to this file
-VECSTORE_PERSIST_DIR=os.path.join(CURRENT_DIR, '../../db/vectorstore')
+VECSTORE_PERSIST_DIR = os.path.join(CURRENT_DIR, '../../db/vectorstore')
 TOP_K = 9
 
 BASE_SYS_MSG = SystemMessage('You are a helpful assistant that uses EcomGo\'s (our e-commerce company) documents to answer customer questions.')
@@ -44,6 +44,12 @@ PSQL_DB = os.getenv('POSTGRES_DB')
 PSQL_USER = os.getenv('POSTGRES_USER')
 PSQL_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 ENGINE_URL = f'postgresql+psycopg2://{PSQL_USER}:{PSQL_PASSWORD}@{PSQL_HOST}:{PSQL_PORT}/{PSQL_DB}'
+
+# Recommendation Data Pipeline
+PIPELINE_INTERVAL = 240  # 4 minutes in seconds
+TRANSFORMED_DATA_PATH = os.path.join(CURRENT_DIR, '../../db/data/transformed_interactions.csv')
+TOP_K_RECOMMENDED = 5
+EMBEDDER_FOR_RECOMMENDATION = 'all-MiniLM-L6-v2'
 
 # Misc
 HASHING_ALGORITHM = os.getenv('HASHING_ALGORITHM', 'sha256')

@@ -47,9 +47,7 @@ export default function Account() {
                 for (const product of account.cart) newTotal += getDiscountedPrice(product.price, product.discount);
                 setTotal(newTotal)
             }
-        } else {
-            logOut()
-        }
+        } else logOut()
     }, [account])
     
     return (
@@ -98,13 +96,13 @@ export default function Account() {
                     account.cart?.length > 0
                     ? <>
                         <ol>
-                            {account.cart.map((product: ProductObject, i) => (
+                            {account.cart.map((product: ProductObject, i) => 
                                 <li key={i}>{product.name} (${getDiscountedPrice(product.price, product.discount)})</li>
-                            ))}
+                            )}
                         </ol>
                         <p>Total: ${total}</p>
                     </>
-                    : <p>Details will available once you have added a product to your cart.</p>
+                    : <p>Details will be available once you have added a product to your cart.</p>
                 }
             </div>
         </Page>

@@ -19,12 +19,14 @@ from src.lib.utils.db import (
     update_product,
     search_products,
     rate_product,
+    unrate_product,
     get_reviews_of_product,
     add_product_review,
     remove_product_review,
     update_product_review,
     add_product_to_cart,
     remove_product_from_cart,
+    get_raters_of_product,
     get_most_rated_products,
     get_cart
 )
@@ -121,8 +123,14 @@ async def search_products_(search_query: str = Query(), similarity_threshold: fl
 ### Interactions ###
 @interaction_r.patch('/rate_product')
 @exc_handler
-async def rate_product_(cred: Credentials, product_id: int, rating: int) -> Union[bool, str]:
-    return rate_product(cred, product_id, rating)
+async def rate_product_(cred: Credentials, product_id: int) -> Union[bool, str]:
+    return rate_product(cred, product_id)
+
+
+@interaction_r.patch('/unrate_product')
+@exc_handler
+async def unrate_product_(cred: Credentials, product_id: int) -> Union[bool, str]:
+    return unrate_product(cred, product_id)
 
 
 @interaction_r.get('/get_reviews_of_product')
@@ -171,9 +179,15 @@ async def remove_product_from_cart_(cred: Credentials, product_id: int) -> Union
     return remove_product_from_cart(cred, product_id)
 
 
+@interaction_r.get('/get_raters_of_product')
+@exc_handler
+async def get_raters_of_product_(product_id: int) -> Union[List[str], str]:
+    return get_raters_of_product(product_id)
+
+
 @interaction_r.get('/get_most_rated_products')
 @exc_handler
-async def remove_product_from_cart_(k: int = Query(3)) -> Union[List[Dict], str]:
+async def get_most_rated_products_(k: int = Query(3)) -> Union[List[Dict], str]:
     return [todict(i) for i in get_most_rated_products(k)]
 
 

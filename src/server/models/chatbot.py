@@ -1,8 +1,7 @@
 from langchain_chroma import Chroma
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from typing import List, Dict, TypeAlias
-from textwrap import dedent
-import random
+import random, textwrap
 from src.lib.data.constants import CHAT_LLM, CONDITIONAL_LLM, VECSTORE_PERSIST_DIR, TOP_K, EMBEDDER, BASE_SYS_MSG, ERR_RESPONSE
 from src.lib.utils.logger import err_log
 from src.lib.utils.db import search_products, get_all_products, search_users, get_all_users, get_user_info
@@ -12,7 +11,7 @@ _Conversation: TypeAlias = List[Dict[str, str]]
 
 def _prompt(string: str) -> str:
     """Formats prompts for LLMs"""
-    res = dedent(string)
+    res = textwrap.dedent(string)
     if res[0] == '\n': res = res[1:]
     if res[-1] == '\n': res = res[:-2]
     return res

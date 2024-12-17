@@ -5,10 +5,15 @@ from functools import wraps
 from difflib import SequenceMatcher
 from hashlib import sha256
 import bcrypt, re
-from src.lib.data.db import Session, UserData, User, ProductData, Product, InteractionData, Interaction
-from src.lib.data.db import Credentials, SecuredCredentials, UsernameTaken, WrongCredentials, NotOwner, NonExistent
 from src.lib.utils.logger import log, err_log
-from src.server.models.review_analyst.model import review_analyst, SentimentInt
+from src.server.models.review_analyst import review_analyst, SentimentInt
+from src.lib.data.db import (
+    Session,
+    UserData, User, 
+    ProductData, Product, 
+    InteractionData, Interaction,
+    Credentials, SecuredCredentials, UsernameTaken, WrongCredentials, NotOwner, NonExistent
+)
 
 # Helpers
 def exc_handler(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -435,14 +440,25 @@ def update_interaction(cred: Credentials, product_id: int, updater: Callable[[In
 
 
 
-def _rate_product(cred: Credentials, product_id: int, rating: int, *, session: _SessionType) -> bool:
-    assert 0 <= rating <= 5, 'Rating must be in the range [0, 5]'
-    return _update_interaction(cred, product_id, lambda interaction, _: setattr(interaction, 'rating', rating), session=session)
+def _rate_product(cred: Credentials, product_id: int, *, session: _SessionType) -> bool:
+    return _update_interaction(cred, product_id, lambda interaction, _: setattr(interaction, 'rating', 1), session=session)
 
-def rate_product(cred: Credentials, product_id: int, rating: int) -> bool:
+def rate_product(cred: Credentials, product_id: int) -> bool:
     """Makes a user (indicated by the given credentials) rate a product"""
     session = Session()
-    result = _rate_product(cred, product_id, rating, session=session)
+    result = _rate_product(cred, product_id, session=session)
+    end_session(session)
+    return result
+
+
+
+def _unrate_product(cred: Credentials, product_id: int, *, session: _SessionType) -> bool:
+    return _update_interaction(cred, product_id, lambda interaction, _: setattr(interaction, 'rating', 0), session=session)
+
+def unrate_product(cred: Credentials, product_id: int) -> bool:
+    """Removes the rating of a user on a product"""
+    session = Session()
+    result = _unrate_product(cred, product_id, session=session)
     end_session(session)
     return result
 
@@ -530,7 +546,7 @@ def is_product_in_cart(cred: Credentials, product_id: int):
     """Checks if a product is in a user's cart"""
     session = Session()
     result = _is_product_in_cart(cred, product_id, session=session)
-    end_session(session)
+    end_session(session, commit=False)
     return result
 
 
@@ -561,6 +577,22 @@ def remove_product_from_cart(cred: Credentials, product_id: int) -> bool:
 
 
 
+def _get_raters_of_product(product_id: int, *, session: _SessionType) -> List[str]:
+    return [
+        interaction.username
+        for interaction in session.query(Interaction).filter_by(product_id=product_id).all()
+        if interaction.rating == 1
+    ]
+
+def get_raters_of_product(product_id: int) -> List[str]:
+    """Returns the usernames of the raters of a product"""
+    session = Session()
+    result = _get_raters_of_product(product_id, session=session)
+    end_session(session, commit=False)
+    return result
+
+
+
 def _get_most_rated_products(k: int = 3, *, session: _SessionType) -> List[Product]:
     stmt = select(Interaction).order_by(desc(Interaction.rating)).limit(k)
     interactions = session.execute(stmt).scalars().all()
@@ -574,7 +606,7 @@ def get_most_rated_products(k: int = 3) -> List[ProductData]:
     session = Session()
     result = _get_most_rated_products(k, session=session)
     result = _list_detach(result)
-    end_session(session)
+    end_session(session, commit=False)
     return result
 
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from torch.utils.data import Dataset
 from transformers import BertModel
-from typing import List, Tuple, Callable, Optional, Literal, Any
+from typing import List, Tuple, Callable, Optional, Literal, Any, Union
 from abc import abstractmethod
 from pydantic import BaseModel
 import torch, torch.nn as nn, pandas as pd
@@ -34,7 +34,7 @@ class ModelConfig:
     # padding_idx: int = VOCAB[PAD_TOKEN]  # ID of the padding token in the embedding table
     shuffle: bool = True
     drop_last: bool = True
-    n_samples: int | Literal['all'] = 'all'
+    n_samples: Union[int, Literal['all']] = 'all'
     # Saving
     persist_model_dir_name: str = 'artifacts/saved_models'
     persist_optimizer_dir_name: str = 'artifacts/saved_optimizers'
@@ -108,7 +108,7 @@ class NeuralNetwork(nn.Module):
         self.apply(self._init_weights)
 
     @abstractmethod
-    def forward(self, input_batch: List[torch.Tensor] | Any, targets: Optional[torch.Tensor] = None, training: bool = False) -> torch.Tensor: ...
+    def forward(self, input_batch: Union[List[torch.Tensor], Any], targets: Optional[torch.Tensor] = None, training: bool = False) -> torch.Tensor: ...
     @abstractmethod
     def _init_weights(self, module) -> None: ...
 

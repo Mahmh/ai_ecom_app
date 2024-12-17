@@ -29,5 +29,12 @@ serve_api() {
     cd ../..
 }
 
+run_recommendation_pipeline() {
+    sleep 20
+    cd db/scripts
+    python3 recommendation_data_pipeline.py
+    cd ../..
+}
+
 sudo echo -n ''
-serve_db & serve_api & serve_web $1
+serve_db & serve_api & serve_web $1 & run_recommendation_pipeline

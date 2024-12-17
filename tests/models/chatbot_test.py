@@ -1,5 +1,5 @@
 import pytest
-from src.server.models.chatbot.model import Chatbot
+from src.server.models.chatbot import Chatbot
 
 # Fixtures
 @pytest.fixture
