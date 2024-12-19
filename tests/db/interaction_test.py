@@ -18,7 +18,7 @@ class TestInteraction(DBTests):
     def test_get_all_interactions(self):
         interactions = get_all_interactions()
         assert type(interactions) is list and len(interactions) > 0 and type(interactions[0]) is InteractionData, 'Failed to get all interactions'
-    
+
     
     def test_rate_and_unrate_product(self):
         status1 = rate_product(SAMPLE_CRED, SAMPLE_PRODUCT_ID)

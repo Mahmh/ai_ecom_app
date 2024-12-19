@@ -64,7 +64,7 @@ export const CartButton = ({ product }: { product: ProductObject }) => {
 
 
 export const ProductCard = ({ product, isLoading }: { product?: ProductObject, isLoading?: boolean }) => {
-    if (isLoading || !product) {
+    if (isLoading || typeof product === 'undefined') {
         return (
             <div className='product-card loading-product-card'>
                 <a>
@@ -91,7 +91,7 @@ export const ProductCard = ({ product, isLoading }: { product?: ProductObject, i
                 <Link href={`/products?product_id=${product_id}`}>
                     <div>
                         <Image 
-                            src={`http://localhost:8000/product_images/${image_file}`}
+                            src={`http://backend_c:8000/product_images/${image_file}`}
                             alt={name ? name : 'product'}
                             width={250} height={250} priority={true}
                         />

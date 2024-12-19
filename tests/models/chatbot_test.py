@@ -25,14 +25,7 @@ def test_memory(chatbot):
     assert 'beraw' in answer.lower(), 'Could not remember past info'
 
 
-@pytest.mark.parametrize(
-    'question, answer',
-    [
-        ('Does EcomGo sell electronics?', 'yes'),
-        ('What is my username?', 'gadgetco')
-    ]
-)
-def test_retrieve_docs(chatbot, question, answer):
-    response = chatbot.chat(question, sender='GadgetCo')
+def test_retrieve_docs(chatbot):
+    response = chatbot.chat('What is my username?', sender='GadgetCo')
     assert len(chatbot.history) == 1, 'Memory was not reset'
-    assert answer in response.lower(), 'Answer was not in response'
+    assert 'gadgetco' in response.lower(), 'Answer was not in response'

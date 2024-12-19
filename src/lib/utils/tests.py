@@ -1,10 +1,9 @@
-from typing import Any, Callable, Tuple, List, Dict
 import requests, json, pytest
 from src.lib.data.db import Credentials
-from src.lib.data.constants import SERVER_URL
 from src.lib.utils.db import create_account, create_product, delete_account
 
 # Check if API server is running
+SERVER_URL = 'http://backend_c:8000'
 try: requests.get(SERVER_URL)
 except: pytest.exit(reason='Server is not running', returncode=1)
 
@@ -24,38 +23,6 @@ def request(endpoint_name: str, req_type: str, **data) -> requests.Response:
 def check_status(res: requests.Response):
     """Checks if the response status code is OK"""
     assert res.status_code == 200, 'Status code not OK'
-
-
-class Tasks:
-    """Used for chaining outputs of independent sequential tasks.
-
-    Example input:
-    >>> tasks = Tasks(
-    >>>     (lambda: 'hello world',),
-    >>>     (lambda x: abs(x), [-4]),
-    >>>     (custom_function, [7], dict(id=30))
-    >>> )
-    >>> outputs = tasks.execute()
-    """
-    def __init__(self, *func_args_kwargs: Tuple[Tuple[Callable[..., Any], List, Dict]]):
-        self.func_args_kwargs = []
-        for func_args_kwargs_tuple in func_args_kwargs:
-            if len(func_args_kwargs_tuple) == 1:
-                self.func_args_kwargs.append((func_args_kwargs_tuple[0], [], {}))
-            elif len(func_args_kwargs_tuple) == 2:
-                self.func_args_kwargs.append((func_args_kwargs_tuple[0], func_args_kwargs_tuple[1], {}))
-            else:
-                self.func_args_kwargs.append(func_args_kwargs_tuple)
-
-    def execute(self) -> List[Any]:
-        """Executes all tasks & collects & returns their outputs"""
-        results = []
-        for func, args, kwargs in self.func_args_kwargs:
-            if args and kwargs: results.append(func(*args, **kwargs))
-            elif kwargs: results.append(func(**kwargs))
-            elif args: results.append(func(*args))
-            else: results.append(func())
-        return results
 
 
 class DBTests:

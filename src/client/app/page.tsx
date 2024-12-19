@@ -25,7 +25,7 @@ export const TopRatedProducts = () => {
                 {
                     isTopRatedLoading 
                     ? Array.from({ length: 5 }, (_, i) => <ProductCard key={i} isLoading={isTopRatedLoading}/>)
-                    : topRated && topRated.map((product: ProductObject, i) => <ProductCard key={i} product={product}/>)
+                    : topRated && topRated.map((product, i) => <ProductCard key={i} product={product} isLoading={isTopRatedLoading}/>)
                 }
             </div>
         </section>
@@ -84,7 +84,7 @@ const Recommended = () => {
         <section id='recommended-sec'>
             <h1>Recommended</h1>
             <div className='product-container'>
-                {products.map((p, i) => <ProductCard product={p} isLoading={isLoading} key={i}/>)}
+                {products.map((p, i) => <ProductCard key={i} product={p} isLoading={isLoading}/>)}
             </div>
         </section>
     )

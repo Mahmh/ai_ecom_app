@@ -1,6 +1,55 @@
+networks:
+  ai_ecom_app_net:
+    driver: bridge
+    external: true
+
 services:
   db:
-    build: ./db
+    build: 
+      context: ./db
+      dockerfile: db.Dockerfile
     container_name: db_c
     env_file: [../.env]
     ports: [5432:5432]
+    networks: [ai_ecom_app_net]
+
+  backend:
+    build:
+      context: ./
+      dockerfile: ./backend.Dockerfile
+    container_name: backend_c
+    env_file: [../.env]
+    ports: [8000:8000]
+    networks: [ai_ecom_app_net]
+    depends_on: [db, ollama]
+    volumes: [./server:/app/src/server, ./lib:/app/src/lib, ./db:/app/src/db]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           capabilities: [gpu]
+
+  frontend:
+    build:
+      context: ./
+      dockerfile: ./client/frontend.Dockerfile
+    container_name: frontend_c
+    ports: [3000:3000]
+    networks: [ai_ecom_app_net]
+    depends_on: [backend]
+    volumes: [./client:/app/client, /app/client/node_modules]
+
+  ollama:
+    build:
+      context: ./ollama
+      dockerfile: ollama.Dockerfile
+    container_name: ollama_c
+    ports: [11435:11434]
+    networks: [ai_ecom_app_net]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           capabilities: [gpu]

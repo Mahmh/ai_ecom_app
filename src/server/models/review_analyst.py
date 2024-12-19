@@ -1,7 +1,7 @@
-from typing import Literal
+from typing import TypeAlias, Literal
 from src.lib.data.constants import CHAT_LLM
 
-SentimentInt = Literal[1, 0, -1]
+SentimentInt: TypeAlias = Literal[1, 0, -1]
 
 class _ReviewAnalyst:
     def __call__(self, review: str) -> SentimentInt:

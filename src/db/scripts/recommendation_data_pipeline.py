@@ -5,7 +5,8 @@ from typing import Dict, Tuple
 from time import sleep
 from datetime import datetime
 import pandas as pd, numpy as np
-from src.lib.data.constants import PIPELINE_INTERVAL, TRANSFORMED_DATA_PATH, EMBEDDER_FOR_RECOMMENDATION
+from src.lib.utils.logger import log
+from src.lib.data.constants import PIPELINE_INTERVAL, TRANSFORMED_DATA_PATH, EMBEDDER_NAME
 from src.server.models.recommender import _retrieve
 
 def extract_interaction_data() -> pd.DataFrame:
@@ -28,7 +29,7 @@ def transform_data(interactions_df: pd.DataFrame) -> Tuple[pd.DataFrame, Standar
 
     # Step 3: Text Embedding
     text_columns = ['bio', 'name', 'description']
-    embedder = SentenceTransformer(EMBEDDER_FOR_RECOMMENDATION)
+    embedder = SentenceTransformer(EMBEDDER_NAME)
 
     def _embed_text(column: pd.Series) -> pd.Series:
         return column.fillna('').apply(lambda x: embedder.encode(x) if isinstance(x, str) else embedder.encode(''))
@@ -57,11 +58,7 @@ def transform_data(interactions_df: pd.DataFrame) -> Tuple[pd.DataFrame, Standar
 
     # Step 7: Combine embeddings
     embedding_features = result_df[text_columns].apply(lambda x: np.concatenate(x.values), axis=1)
-
-    transformed_df = pd.concat([
-        result_df.drop(columns=text_columns), 
-        pd.DataFrame(embedding_features.tolist())
-    ], axis=1)
+    transformed_df = pd.concat([result_df.drop(columns=text_columns), pd.DataFrame(embedding_features.tolist())], axis=1)
     return transformed_df, scaler, label_encoders
 
 
@@ -70,28 +67,29 @@ def save_transformed_data(df: pd.DataFrame) -> None:
     df.to_csv(TRANSFORMED_DATA_PATH, index=False)
 
 
-def main(run_once: bool = False) -> None:
+def main() -> None:
     """Runs the pipeline in the background every 4 minutes"""
     print(f'[{datetime.now()}] Starting Recommendation Pipeline...')
     while True:
         try:
             print(f'[{datetime.now()}] Extracting data...')
             interactions_df = extract_interaction_data()
+            log('Extracted interaction data.', 'model')
 
             print(f'[{datetime.now()}] Transforming data...')
             transformed_df = transform_data(interactions_df)[0]
+            log('Transformed interaction data.', 'model')
 
             print(f'[{datetime.now()}] Saving transformed data...')
             save_transformed_data(transformed_df)
-
-            print(f'[{datetime.now()}] Pipeline complete.')
-            if run_once: break
+            log('Saved transformed data.', 'model')
 
             print(f'[{datetime.now()}] Sleeping for {PIPELINE_INTERVAL} seconds...')
+            log(f'Sleeping for {PIPELINE_INTERVAL} seconds.', 'model')
             sleep(PIPELINE_INTERVAL)
         except KeyboardInterrupt:
             print(f'[{datetime.now()}] Stopping pipeline...')
             break
-
+    log(f'Pipeline stopped.', 'model')
 
 if __name__ == "__main__": main()

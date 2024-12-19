@@ -31,8 +31,8 @@ export default function ContactUsPage() {
         <Page id='contact-us-content'>
             <h1>Contact Us</h1>
             <div>
-                <input placeholder='Type your e-mail' onChange={e => setEmail(e.target.value)} ref={emailRef}/>
-                <textarea placeholder='Type your feedback, suggestion, or business query' onChange={e => setFeedback(e.target.value)} ref={feedbackRef}/>
+                <input placeholder='Type your E-mail' onChange={e => setEmail(e.target.value)} ref={emailRef}/>
+                <textarea placeholder='Type your feedback, suggestion, or business inquiry' onChange={e => setFeedback(e.target.value)} ref={feedbackRef}/>
                 <button onClick={handleSubmit}>Submit</button>
                 <label id={submitMsg.status === Status.Success ? `success-submit-msg` : `failure-submit-msg`}>{submitMsg.msg}</label>
             </div>

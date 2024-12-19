@@ -28,9 +28,10 @@ const Product = ({ product_id }: { product_id: number }) => {
     const sentiments = ['All', 'Positive', 'Neutral', 'Negative']
 
     const getProductInfo = async () => (
-        await new Request(`get_product_using_id?product_id=${product_id}`, (product: ProductObject) => {
-            typeof product !== 'string' ? setProduct(product) : setFound(false)
-        }).get()
+        await new Request(
+            `get_product_using_id?product_id=${product_id}`,
+            (product: ProductObject) => typeof product !== 'string' ? setProduct(product) : setFound(false)
+        ).get()
     )
 
     const loadReviews = async () => (
@@ -124,8 +125,8 @@ const Product = ({ product_id }: { product_id: number }) => {
                 {
                     product.image_file &&
                     <Image 
-                        src={`http://localhost:8000/product_images/${product.image_file}`}
-                        alt={product.name ? product.name : 'product'} 
+                        src={`http://backend_c:8000/product_images/${product.image_file}`}
+                        alt={product.name ? product.name : 'product'}
                         width={550} height={550} priority={true}
                     />
                 }

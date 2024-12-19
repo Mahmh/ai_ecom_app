@@ -9,18 +9,15 @@ import os
 WEB_SERVER_URL = os.getenv('WEB_SERVER_URL', 'http://localhost:3000')
 API_SERVER_HOST = os.getenv('API_SERVER_HOST', '0.0.0.0')
 API_SERVER_PORT = int(os.getenv('API_SERVER_PORT', 4000))
-SERVER_URL = f'http://{API_SERVER_HOST}:{API_SERVER_PORT}'
 
-# LLM & ML
-CREATIVE_LLM_NAME = os.getenv('CREATIVE_LLM')
-EMBEDDER_LLM_NAME = os.getenv('EMBEDDER_LLM')
-CHAT_LLM_NAME = os.getenv('CHAT_LLM')
-CONDITIONAL_LLM_NAME = os.getenv('CONDITIONAL_LLM')
-BASE_URL = os.getenv('BASE_URL')
+# LLM
+CREATIVE_LLM_NAME = os.getenv('CREATIVE_LLM', 'llama3')
+EMBEDDER_LLM_NAME = os.getenv('EMBEDDER_LLM', 'llama3')
+CHAT_LLM_NAME = os.getenv('CHAT_LLM', 'llama3')
+CONDITIONAL_LLM_NAME = os.getenv('CONDITIONAL_LLM', 'llama3')
+BASE_URL = os.getenv('BASE_URL', 'http://ollama_c:11434')
 TEMPERATURE = float(os.getenv('TEMPERATURE', .5))
 MAX_CORES = max(os.cpu_count() - 2, 1)
-BERT_MODEL_TYPE = 'bert-base-uncased'
-BERT_EMBEDDING_DIM = 768
 
 MAIN_CONFIG = dict(base_url=BASE_URL, num_thread=MAX_CORES, num_gpu=1)
 CREATIVE_LLM = Ollama(**MAIN_CONFIG, model=CREATIVE_LLM_NAME, temperature=1)
@@ -49,9 +46,8 @@ ENGINE_URL = f'postgresql+psycopg2://{PSQL_USER}:{PSQL_PASSWORD}@{PSQL_HOST}:{PS
 PIPELINE_INTERVAL = 240  # 4 minutes in seconds
 TRANSFORMED_DATA_PATH = os.path.join(CURRENT_DIR, '../../db/data/transformed_interactions.csv')
 TOP_K_RECOMMENDED = 5
-EMBEDDER_FOR_RECOMMENDATION = 'all-MiniLM-L6-v2'
+EMBEDDER_NAME = 'all-MiniLM-L6-v2'
 
 # Misc
 HASHING_ALGORITHM = os.getenv('HASHING_ALGORITHM', 'sha256')
 ENABLE_LOGGING = os.getenv('ENABLE_LOGGING', 'false')
-MLFLOW_TRACKING_URI = os.getenv('MLFLOW_TRACKING_URI', 'http://127.0.0.1:5000')

@@ -1,5 +1,6 @@
 from sqlalchemy import func, select, desc
 from sqlalchemy.orm import Session as _SessionType
+from datasketch import MinHash, MinHashLSH
 from typing import Callable, Any, List, Union, Tuple, Dict
 from functools import wraps
 from difflib import SequenceMatcher
@@ -379,17 +380,51 @@ def update_product(cred: Credentials, product_id: int, **update_kwargs) -> bool:
 
 
 
-def _search_products(search_query: str, similarity_threshold: int = 0.6, *, session: _SessionType) -> List[Product]:
-    similarity = lambda product_name: SequenceMatcher(None, product_name, search_query).ratio() 
+def _search_products(search_query: str, similarity_threshold: float = .7, *, session: _SessionType) -> List[Product]:
+    # Get all product names
+    products = _get_all_products(session=session)
+    product_names = [product.name for product in products]
 
-    matches = []
-    for product in _get_all_products(session=session):
-        match_score = similarity(product.name)
-        if match_score >= similarity_threshold:
-            matches.append((product, match_score))
-    
-    matches.sort(key=lambda x: x[1], reverse=True) 
-    return [match[0] for match in matches]
+    if len(search_query.split()) < 3:
+        return [p for p in products if search_query.lower() in p.name.lower()]
+
+    def _get_minhash(text: str, num_perm: int = 128) -> MinHash:
+        """Generate a MinHash object for a given text."""
+        minhash = MinHash(num_perm=num_perm)
+        for shingle in set(_generate_ngrams(text, n=2)):  # Use trigrams
+            minhash.update(shingle.encode('utf8'))
+        return minhash
+
+    def _generate_ngrams(text: str, n: int) -> List[str]:
+        """Generate n-grams from text."""
+        text = text.lower()
+        return [text[i:i+n] for i in range(len(text) - n + 1)]
+
+    # Initialize LSH
+    lsh = MinHashLSH(threshold=similarity_threshold, num_perm=128)
+
+    # Add product names to LSH
+    product_minhashes = {}
+    for i, name in enumerate(product_names):
+        minhash = _get_minhash(name)
+        lsh.insert(f"product_{i}", minhash)
+        product_minhashes[f"product_{i}"] = (products[i], minhash)
+
+    # Query LSH with the search query
+    query_minhash = _get_minhash(search_query)
+    matches = lsh.query(query_minhash)
+
+    # Retrieve matched products and scores
+    results = []
+    for match in matches:
+        product, minhash = product_minhashes[match]
+        similarity = query_minhash.jaccard(minhash)  # Compute actual Jaccard similarity
+        results.append((product, similarity))
+
+    # Sort results by similarity
+    results.sort(key=lambda x: x[1], reverse=True)
+
+    return [result[0] for result in results]
 
 def search_products(search_query: str, similarity_threshold: float = 0.6) -> List[ProductData]:
     """Returns the most relevant products with respect to the `search_query` by computing their similarity scores and returning the products with scores >= `similarity_threshold`"""

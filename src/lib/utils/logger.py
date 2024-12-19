@@ -11,15 +11,16 @@ def log(msg: str, filename: str, level: int = logging.INFO) -> logging.Logger:
     :param filename: The name of the logging file you want to log the message to. You don't need to include the `.log` file extension.
     :param level: The logging level (INFO, WARNING, etc.).
     """
-
     if ENABLE_LOGGING.lower() != 'true': return
-
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    filename += '.log' if filename[-4:] != '.log' else ''
-    filename = current_dir + '/../../server/logs/' + filename
-
-    logging.basicConfig(filename=filename, level=level, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
-    logging.log(level, msg)
+    try:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        filename += '.log' if filename[-4:] != '.log' else ''
+        filename = current_dir + '/../../server/logs/' + filename
+        logging.basicConfig(filename=filename, level=level, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
+        logging.log(level, msg)
+    except FileNotFoundError:
+        print('[src.lib.utils.logger] FileNotFoundError: Logging did not work.')
+        return
 
 
 def err_log(func_name: str, e: Exception, filename: str) -> None:

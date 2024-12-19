@@ -8,8 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.11']
+        os: [ubuntu-latest, ubuntu-20.04]
+        python-version: ['3.10', '3.11']
     
     name: Test
     runs-on: ${{ matrix.os }}
@@ -17,15 +17,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      
-      - name: Install dependencies
+      - name: Create .env File
+        env:
+          ENV_FILE_CONTENT: ${{ secrets.ENV_FILE_CONTENT }}
+        run: echo "$ENV_FILE_CONTENT" > .env
+
+      - name: Install Docker and Docker Compose
         run: |
-          pip install -e .
-          pip install -r requirements.txt
+          sudo apt update
+          sudo apt remove -y containerd containerd.io
+          sudo apt install docker.io
+          curl -SL https://github.com/docker/compose/releases/download/v2.32.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          sudo apt install docker-buildx
+          sudo systemctl start docker
+          sudo systemctl enable docker
+          docker --version
       
-      - name: Run tests
+      - name: Run Tests
         run: sh run_tests.sh
